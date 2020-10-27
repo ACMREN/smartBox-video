@@ -31,4 +31,18 @@ public class SipContentHelper {
          content.append("y="+ssrc+"\r\n");
         return content.toString();
 	}
+
+	public static String generateKeepAliveContent(String clientId, String sn) {
+        StringBuffer content = new StringBuffer(200);
+        content.append("<?xml version=\"1.0\" encoding=\"GB2312\"?>\r\n");
+        content.append("<Notify>\r\n");
+        content.append("<CmdType>KeepAlive</CmdType>\r\n");
+        content.append("<SN>"+sn+"</SN>\r\n");
+        content.append("<Status>OK</Status>\r\n");
+        content.append("<DeviceID>"+clientId+"</DeviceID>\r\n");
+        content.append("<Info>\r\n");
+        content.append("</Info>\r\n");
+        content.append("</Notify>");
+        return content.toString();
+    }
 }
