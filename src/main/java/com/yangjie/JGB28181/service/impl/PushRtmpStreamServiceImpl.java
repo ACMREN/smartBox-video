@@ -1,0 +1,13 @@
+package com.yangjie.JGB28181.service.impl;
+
+import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.service.IPushStreamService;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PushRtmpStreamServiceImpl implements IPushStreamService {
+    @Override
+    public GBResult pushStream(String deviceId, String channelId) {
+        return null;
+    }
+}

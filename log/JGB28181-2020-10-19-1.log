@@ -1,0 +1,980 @@
+13:53:30.066 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+13:53:30.089 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on huangmingendeMacBook-Pro.local with PID 34049 (/Users/huangmingen/IdeaProjects/JGB28181/JGB28181/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/JGB28181/JGB28181)
+13:53:30.089 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+13:53:30.136 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47f4e407: startup date [Mon Oct 19 13:53:30 CST 2020]; root of context hierarchy
+13:53:31.637 [main] WARN  org.mybatis.spring.mapper.ClassPathMapperScanner.doScan(ClassPathMapperScanner.java:166) - No MyBatis mapper was found in '[com.yangjie.JGB28181]' package. Please check your configuration.
+13:53:33.854 [main] INFO  org.eclipse.jetty.util.log.Log.initialized(Log.java:193) - Logging initialized @10670ms to org.eclipse.jetty.util.log.Slf4jLog
+13:53:34.131 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory.getEmbeddedServletContainer(JettyEmbeddedServletContainerFactory.java:177) - Server initialized with port: 1998
+13:53:34.134 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:374) - jetty-9.4.10.v20180503; built: 2018-05-03T15:56:21.710Z; git: daa59876e6f384329b122929e70a80934569428c; jvm 15+36-1562
+13:53:34.399 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:365) - DefaultSessionIdManager workerName=node0
+13:53:34.400 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:370) - No SessionScavenger set, using defaults
+13:53:34.402 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.startScavenging(HouseKeeper.java:149) - node0 Scavenging every 600000ms
+13:53:34.412 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring embedded WebApplicationContext
+13:53:34.413 [main] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 4277 ms
+13:53:35.263 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+13:53:35.267 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+13:53:35.267 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+13:53:35.268 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+13:53:35.268 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+13:53:35.268 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+13:53:35.269 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+13:53:35.278 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:788) - Started o.s.b.c.e.j.JettyEmbeddedWebAppContext@47ac613b{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.2057851655353816652.1998/],AVAILABLE}
+13:53:35.279 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:411) - Started @12096ms
+13:53:35.446 [main] WARN  org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551) - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sipLayerConfig': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'config.listenIp' in value "${config.listenIp}"
+13:53:35.450 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.stopScavenging(HouseKeeper.java:167) - node0 Stopped scavenging
+13:53:35.453 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStop(ContextHandler.java:957) - Stopped o.s.b.c.e.j.JettyEmbeddedWebAppContext@47ac613b{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.2057851655353816652.1998/],UNAVAILABLE}
+13:53:35.471 [main] INFO  org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer.logAutoConfigurationReport(AutoConfigurationReportLoggingInitializer.java:101) - 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+13:53:35.479 [main] ERROR org.springframework.boot.SpringApplication.reportFailure(SpringApplication.java:771) - Application startup failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sipLayerConfig': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'config.listenIp' in value "${config.listenIp}"
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues(AutowiredAnnotationBeanPostProcessor.java:372) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1272) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:553) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:483) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:312) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:230) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:308) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:197) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:761) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:867) ~[spring-context-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:543) ~[spring-context-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:122) ~[spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:693) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:360) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:303) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1118) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1107) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at com.yangjie.JGB28181.StartApplication.main(StartApplication.java:14) [classes/:?]
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'config.listenIp' in value "${config.listenIp}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:174) ~[spring-core-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126) ~[spring-core-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:236) ~[spring-core-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210) ~[spring-core-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$2.resolveStringValue(PropertySourcesPlaceholderConfigurer.java:172) ~[spring-context-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:837) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1086) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1066) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:585) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:88) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues(AutowiredAnnotationBeanPostProcessor.java:366) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 17 more
+13:54:40.405 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on huangmingendeMacBook-Pro.local with PID 34074 (/Users/huangmingen/IdeaProjects/JGB28181/JGB28181/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/JGB28181/JGB28181)
+13:54:40.408 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+13:54:40.470 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+13:54:40.679 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2b0f373b: startup date [Mon Oct 19 13:54:40 CST 2020]; root of context hierarchy
+13:54:42.856 [main] WARN  org.mybatis.spring.mapper.ClassPathMapperScanner.doScan(ClassPathMapperScanner.java:166) - No MyBatis mapper was found in '[com.yangjie.JGB28181]' package. Please check your configuration.
+13:54:45.100 [main] INFO  org.eclipse.jetty.util.log.Log.initialized(Log.java:193) - Logging initialized @9467ms to org.eclipse.jetty.util.log.Slf4jLog
+13:54:45.273 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory.getEmbeddedServletContainer(JettyEmbeddedServletContainerFactory.java:177) - Server initialized with port: 1998
+13:54:45.275 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:374) - jetty-9.4.10.v20180503; built: 2018-05-03T15:56:21.710Z; git: daa59876e6f384329b122929e70a80934569428c; jvm 15+36-1562
+13:54:45.737 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:365) - DefaultSessionIdManager workerName=node0
+13:54:45.737 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:370) - No SessionScavenger set, using defaults
+13:54:45.738 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.startScavenging(HouseKeeper.java:149) - node0 Scavenging every 660000ms
+13:54:45.744 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring embedded WebApplicationContext
+13:54:45.744 [main] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 5065 ms
+13:54:46.603 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+13:54:46.606 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+13:54:46.607 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+13:54:46.608 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+13:54:46.608 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+13:54:46.608 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+13:54:46.608 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+13:54:46.634 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:788) - Started o.s.b.c.e.j.JettyEmbeddedWebAppContext@167381c7{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.13063793417332234342.1998/],AVAILABLE}
+13:54:46.635 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:411) - Started @11002ms
+13:54:46.812 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - using default tls security policy
+13:54:46.815 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default keystore type pkcs12
+13:54:46.816 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS server settings will be inactive - TLS key store will use JVM defaults keyStoreType=pkcs12 javax.net.ssl.keyStore=null javax.net.ssl.keyStorePassword=null
+13:54:46.816 [main] INFO  gov.nist.core.LogWriter.logInfo(LogWriter.java:461) - javax.net.ssl.trustStorePassword is null, using the password passed through javax.net.ssl.keyStorePassword
+13:54:46.817 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default truststore type pkcs12
+13:54:46.817 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS trust settings will be inactive - TLS trust store will use JVM defaults. trustStoreType=pkcs12 javax.net.ssl.trustStore=null javax.net.ssl.trustStorePassword=null
+13:54:47.619 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15060
+13:54:48.623 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2b0f373b: startup date [Mon Oct 19 13:54:40 CST 2020]; root of context hierarchy
+13:54:48.689 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.String,java.lang.String,java.lang.String)
+13:54:48.690 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/camera/hls]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.toHls(java.lang.String)
+13:54:48.690 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+13:54:48.692 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+13:54:48.693 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+13:54:48.995 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+13:54:48.995 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+13:54:49.168 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+13:54:51.481 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+13:54:51.484 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+13:54:51.488 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+13:54:51.498 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+13:54:51.514 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+13:54:51.514 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+13:54:51.525 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 11 ms
+13:54:51.733 [main] INFO  org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:289) - Started ServerConnector@608b1fd2{HTTP/1.1,[http/1.1]}{0.0.0.0:1998}
+13:54:51.737 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer.start(JettyEmbeddedServletContainer.java:155) - Jetty started on port(s) 1998 (http/1.1)
+13:54:51.741 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 12.383 seconds (JVM running for 16.108)
+13:55:45.225 [Thread-15] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2b0f373b: startup date [Mon Oct 19 13:54:40 CST 2020]; root of context hierarchy
+14:41:54.528 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+14:41:54.722 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on huangmingendeMacBook-Pro.local with PID 34998 (/Users/huangmingen/IdeaProjects/JGB28181/JGB28181/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/JGB28181/JGB28181)
+14:41:54.723 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+14:41:54.771 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2072acb2: startup date [Mon Oct 19 14:41:54 CST 2020]; root of context hierarchy
+14:41:56.502 [main] WARN  org.mybatis.spring.mapper.ClassPathMapperScanner.doScan(ClassPathMapperScanner.java:166) - No MyBatis mapper was found in '[com.yangjie.JGB28181]' package. Please check your configuration.
+14:41:59.129 [main] INFO  org.eclipse.jetty.util.log.Log.initialized(Log.java:193) - Logging initialized @9892ms to org.eclipse.jetty.util.log.Slf4jLog
+14:41:59.423 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory.getEmbeddedServletContainer(JettyEmbeddedServletContainerFactory.java:177) - Server initialized with port: 1998
+14:41:59.425 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:374) - jetty-9.4.10.v20180503; built: 2018-05-03T15:56:21.710Z; git: daa59876e6f384329b122929e70a80934569428c; jvm 15+36-1562
+14:41:59.675 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:365) - DefaultSessionIdManager workerName=node0
+14:41:59.676 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:370) - No SessionScavenger set, using defaults
+14:41:59.678 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.startScavenging(HouseKeeper.java:149) - node0 Scavenging every 600000ms
+14:41:59.688 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring embedded WebApplicationContext
+14:41:59.688 [main] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 4917 ms
+14:42:00.341 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+14:42:00.348 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+14:42:00.351 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+14:42:00.351 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+14:42:00.352 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+14:42:00.352 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+14:42:00.352 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+14:42:00.361 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:788) - Started o.s.b.c.e.j.JettyEmbeddedWebAppContext@1d50a7ca{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.14825889746481608646.1998/],AVAILABLE}
+14:42:00.363 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:411) - Started @11129ms
+14:42:00.598 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - using default tls security policy
+14:42:00.600 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default keystore type pkcs12
+14:42:00.600 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS server settings will be inactive - TLS key store will use JVM defaults keyStoreType=pkcs12 javax.net.ssl.keyStore=null javax.net.ssl.keyStorePassword=null
+14:42:00.600 [main] INFO  gov.nist.core.LogWriter.logInfo(LogWriter.java:461) - javax.net.ssl.trustStorePassword is null, using the password passed through javax.net.ssl.keyStorePassword
+14:42:00.600 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default truststore type pkcs12
+14:42:00.601 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS trust settings will be inactive - TLS trust store will use JVM defaults. trustStoreType=pkcs12 javax.net.ssl.trustStore=null javax.net.ssl.trustStorePassword=null
+14:42:01.327 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15060
+14:42:02.216 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2072acb2: startup date [Mon Oct 19 14:41:54 CST 2020]; root of context hierarchy
+14:42:02.274 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.String,java.lang.String,java.lang.String)
+14:42:02.275 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/camera/hls]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.toHls(java.lang.String)
+14:42:02.276 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+14:42:02.278 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+14:42:02.279 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+14:42:02.478 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+14:42:02.478 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+14:42:02.693 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+14:42:05.068 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+14:42:05.071 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+14:42:05.075 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+14:42:05.087 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+14:42:05.103 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+14:42:05.104 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+14:42:05.116 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 12 ms
+14:42:05.153 [main] INFO  org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:289) - Started ServerConnector@51ab1ee3{HTTP/1.1,[http/1.1]}{0.0.0.0:1998}
+14:42:05.156 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer.start(JettyEmbeddedServletContainer.java:155) - Jetty started on port(s) 1998 (http/1.1)
+14:42:05.160 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 11.699 seconds (JVM running for 15.926)
+15:33:35.279 [Thread-15] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2072acb2: startup date [Mon Oct 19 14:41:54 CST 2020]; root of context hierarchy
+15:33:35.293 [Thread-15] INFO  org.springframework.jmx.export.MBeanExporter.destroy(MBeanExporter.java:449) - Unregistering JMX-exposed beans on shutdown
+15:33:35.294 [Thread-15] INFO  org.springframework.jmx.support.MBeanRegistrationSupport.unregisterBeans(MBeanRegistrationSupport.java:241) - Unregistering JMX-exposed beans
+15:33:35.310 [Thread-15] INFO  org.eclipse.jetty.server.AbstractConnector.doStop(AbstractConnector.java:332) - Stopped ServerConnector@51ab1ee3{HTTP/1.1,[http/1.1]}{0.0.0.0:1998}
+15:33:35.310 [Thread-15] INFO  org.eclipse.jetty.server.session.HouseKeeper.stopScavenging(HouseKeeper.java:167) - node0 Stopped scavenging
+15:33:35.315 [Thread-15] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Destroying Spring FrameworkServlet 'dispatcherServlet'
+15:33:35.316 [Thread-15] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStop(ContextHandler.java:957) - Stopped o.s.b.c.e.j.JettyEmbeddedWebAppContext@1d50a7ca{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.14825889746481608646.1998/],UNAVAILABLE}
+17:16:32.113 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on huangmingendeMacBook-Pro.local with PID 38045 (/Users/huangmingen/IdeaProjects/JGB28181/JGB28181/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/JGB28181/JGB28181)
+17:16:32.135 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+17:16:32.176 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@708400f6: startup date [Mon Oct 19 17:16:32 CST 2020]; root of context hierarchy
+17:16:32.211 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+17:16:33.889 [main] WARN  org.mybatis.spring.mapper.ClassPathMapperScanner.doScan(ClassPathMapperScanner.java:166) - No MyBatis mapper was found in '[com.yangjie.JGB28181]' package. Please check your configuration.
+17:16:36.450 [main] INFO  org.eclipse.jetty.util.log.Log.initialized(Log.java:193) - Logging initialized @9551ms to org.eclipse.jetty.util.log.Slf4jLog
+17:16:36.696 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory.getEmbeddedServletContainer(JettyEmbeddedServletContainerFactory.java:177) - Server initialized with port: 1998
+17:16:36.699 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:374) - jetty-9.4.10.v20180503; built: 2018-05-03T15:56:21.710Z; git: daa59876e6f384329b122929e70a80934569428c; jvm 15+36-1562
+17:16:36.987 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:365) - DefaultSessionIdManager workerName=node0
+17:16:36.987 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:370) - No SessionScavenger set, using defaults
+17:16:36.990 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.startScavenging(HouseKeeper.java:149) - node0 Scavenging every 600000ms
+17:16:36.997 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring embedded WebApplicationContext
+17:16:36.997 [main] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 4821 ms
+17:16:37.602 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+17:16:37.610 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+17:16:37.611 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+17:16:37.612 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+17:16:37.612 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+17:16:37.612 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+17:16:37.613 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+17:16:37.618 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:788) - Started o.s.b.c.e.j.JettyEmbeddedWebAppContext@42cc183e{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.11776079177177808961.1998/],AVAILABLE}
+17:16:37.619 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:411) - Started @10722ms
+17:16:37.956 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - using default tls security policy
+17:16:37.958 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default keystore type pkcs12
+17:16:37.958 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS server settings will be inactive - TLS key store will use JVM defaults keyStoreType=pkcs12 javax.net.ssl.keyStore=null javax.net.ssl.keyStorePassword=null
+17:16:37.958 [main] INFO  gov.nist.core.LogWriter.logInfo(LogWriter.java:461) - javax.net.ssl.trustStorePassword is null, using the password passed through javax.net.ssl.keyStorePassword
+17:16:37.959 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default truststore type pkcs12
+17:16:37.959 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS trust settings will be inactive - TLS trust store will use JVM defaults. trustStoreType=pkcs12 javax.net.ssl.trustStore=null javax.net.ssl.trustStorePassword=null
+17:16:38.814 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15060
+17:16:39.863 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@708400f6: startup date [Mon Oct 19 17:16:32 CST 2020]; root of context hierarchy
+17:16:40.147 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+17:16:40.150 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.String,java.lang.String,java.lang.String)
+17:16:40.151 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/hls]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.toHls(java.lang.String)
+17:16:40.151 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+17:16:40.154 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+17:16:40.155 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+17:16:40.220 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:16:40.221 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:16:40.383 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:16:43.013 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+17:16:43.016 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+17:16:43.023 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+17:16:43.039 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+17:16:43.187 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+17:16:43.188 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+17:16:43.201 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 13 ms
+17:16:43.243 [main] INFO  org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:289) - Started ServerConnector@3e4e8fdf{HTTP/1.1,[http/1.1]}{0.0.0.0:1998}
+17:16:43.245 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer.start(JettyEmbeddedServletContainer.java:155) - Jetty started on port(s) 1998 (http/1.1)
+17:16:43.251 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 12.472 seconds (JVM running for 16.353)
+17:17:44.006 [qtp1453650546-24] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+17:17:50.163 [qtp1453650546-24] WARN  org.apache.cxf.common.logging.LogUtils.doLog(LogUtils.java:475) - Interceptor for {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy#{http://cxf.apache.org/jaxws/dispatch}Invoke has thrown exception, unwinding now
+org.apache.cxf.interceptor.Fault: Could not receive Message.
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:65) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:308) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) [cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) [cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) [cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) [classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:861) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:687) [javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790) [javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:865) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1655) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:215) [websocket-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) [druid-1.1.0.jar:1.1.0]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:109) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:146) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:548) [jetty-security-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:257) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.Server.handle(Server.java:531) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:333) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:310) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:168) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:126) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:366) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at java.lang.Thread.run(Thread.java:832) [?:?]
+Caused by: java.net.SocketTimeoutException: Receive timed out
+	at sun.nio.ch.DatagramChannelImpl.trustedBlockingReceive(DatagramChannelImpl.java:700) ~[?:?]
+	at sun.nio.ch.DatagramChannelImpl.blockingReceive(DatagramChannelImpl.java:630) ~[?:?]
+	at sun.nio.ch.DatagramSocketAdaptor.receive(DatagramSocketAdaptor.java:239) ~[?:?]
+	at java.net.DatagramSocket.receive(DatagramSocket.java:569) ~[?:?]
+	at org.apache.cxf.transport.udp.UDPConduit$UDPBroadcastOutputStream.close(UDPConduit.java:317) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.AbstractConduit.close(AbstractConduit.java:56) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.udp.UDPConduit.close(UDPConduit.java:140) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:63) ~[cxf-core-3.3.1.jar:3.3.1]
+	... 73 more
+17:17:50.222 [qtp1453650546-24] WARN  org.eclipse.jetty.server.HttpChannel.handleException(HttpChannel.java:573) - /camera/discoverDevice
+org.springframework.web.util.NestedServletException: Request processing failed; nested exception is javax.xml.ws.soap.SOAPFaultException: Fault string, and possibly fault code, not set
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:982) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:861) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:687) ~[javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790) ~[javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:865) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1655) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:215) ~[websocket-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) ~[druid-1.1.0.jar:1.1.0]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:109) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:146) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:548) ~[jetty-security-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:257) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.Server.handle(Server.java:531) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:333) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:310) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:168) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:126) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:366) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at java.lang.Thread.run(Thread.java:832) [?:?]
+Caused by: javax.xml.ws.soap.SOAPFaultException: Fault string, and possibly fault code, not set
+	at org.apache.cxf.jaxws.DispatchImpl.mapException(DispatchImpl.java:285) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:463) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 51 more
+Caused by: javax.xml.ws.WebServiceException: Could not receive Message.
+	at org.apache.cxf.jaxws.DispatchImpl.mapException(DispatchImpl.java:267) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.access$000(DispatchImpl.java:98) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl$1.mapThrowable(DispatchImpl.java:431) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.JaxwsClientCallback.handleException(JaxwsClientCallback.java:85) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.ClientOutFaultObserver.onMessage(ClientOutFaultObserver.java:60) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl$2.onMessage(ClientImpl.java:522) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.wrapExceptionAsFault(PhaseInterceptorChain.java:374) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:332) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 51 more
+Caused by: java.net.SocketTimeoutException: Receive timed out
+	at sun.nio.ch.DatagramChannelImpl.trustedBlockingReceive(DatagramChannelImpl.java:700) ~[?:?]
+	at sun.nio.ch.DatagramChannelImpl.blockingReceive(DatagramChannelImpl.java:630) ~[?:?]
+	at sun.nio.ch.DatagramSocketAdaptor.receive(DatagramSocketAdaptor.java:239) ~[?:?]
+	at java.net.DatagramSocket.receive(DatagramSocket.java:569) ~[?:?]
+	at org.apache.cxf.transport.udp.UDPConduit$UDPBroadcastOutputStream.close(UDPConduit.java:317) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.AbstractConduit.close(AbstractConduit.java:56) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.udp.UDPConduit.close(UDPConduit.java:140) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:63) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:308) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 51 more
+17:18:42.146 [qtp1453650546-24] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+17:19:19.041 [qtp1453650546-24] WARN  org.apache.cxf.common.logging.LogUtils.doLog(LogUtils.java:475) - Interceptor for {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy#{http://cxf.apache.org/jaxws/dispatch}Invoke has thrown exception, unwinding now
+org.apache.cxf.interceptor.Fault: Could not receive Message.
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:65) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:308) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) [cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) [cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) [cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) [classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:861) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:687) [javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790) [javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:865) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1655) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:215) [websocket-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) [druid-1.1.0.jar:1.1.0]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:109) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:146) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:548) [jetty-security-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:257) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.Server.handle(Server.java:531) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:333) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:310) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:168) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:126) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:366) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at java.lang.Thread.run(Thread.java:832) [?:?]
+Caused by: java.net.SocketTimeoutException: Receive timed out
+	at sun.nio.ch.DatagramChannelImpl.trustedBlockingReceive(DatagramChannelImpl.java:700) ~[?:?]
+	at sun.nio.ch.DatagramChannelImpl.blockingReceive(DatagramChannelImpl.java:630) ~[?:?]
+	at sun.nio.ch.DatagramSocketAdaptor.receive(DatagramSocketAdaptor.java:239) ~[?:?]
+	at java.net.DatagramSocket.receive(DatagramSocket.java:569) ~[?:?]
+	at org.apache.cxf.transport.udp.UDPConduit$UDPBroadcastOutputStream.close(UDPConduit.java:317) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.AbstractConduit.close(AbstractConduit.java:56) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.udp.UDPConduit.close(UDPConduit.java:140) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:63) ~[cxf-core-3.3.1.jar:3.3.1]
+	... 73 more
+17:19:19.088 [qtp1453650546-24] WARN  org.eclipse.jetty.server.HttpChannel.handleException(HttpChannel.java:573) - /camera/discoverDevice
+org.springframework.web.util.NestedServletException: Request processing failed; nested exception is javax.xml.ws.soap.SOAPFaultException: Fault string, and possibly fault code, not set
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:982) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:861) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:687) ~[javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790) ~[javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:865) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1655) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:215) ~[websocket-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) ~[druid-1.1.0.jar:1.1.0]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:109) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:146) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:548) ~[jetty-security-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:257) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.Server.handle(Server.java:531) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:333) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:310) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:168) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:126) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:366) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at java.lang.Thread.run(Thread.java:832) [?:?]
+Caused by: javax.xml.ws.soap.SOAPFaultException: Fault string, and possibly fault code, not set
+	at org.apache.cxf.jaxws.DispatchImpl.mapException(DispatchImpl.java:285) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:463) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 51 more
+Caused by: javax.xml.ws.WebServiceException: Could not receive Message.
+	at org.apache.cxf.jaxws.DispatchImpl.mapException(DispatchImpl.java:267) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.access$000(DispatchImpl.java:98) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl$1.mapThrowable(DispatchImpl.java:431) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.JaxwsClientCallback.handleException(JaxwsClientCallback.java:85) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.ClientOutFaultObserver.onMessage(ClientOutFaultObserver.java:60) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl$2.onMessage(ClientImpl.java:522) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.wrapExceptionAsFault(PhaseInterceptorChain.java:374) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:332) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 51 more
+Caused by: java.net.SocketTimeoutException: Receive timed out
+	at sun.nio.ch.DatagramChannelImpl.trustedBlockingReceive(DatagramChannelImpl.java:700) ~[?:?]
+	at sun.nio.ch.DatagramChannelImpl.blockingReceive(DatagramChannelImpl.java:630) ~[?:?]
+	at sun.nio.ch.DatagramSocketAdaptor.receive(DatagramSocketAdaptor.java:239) ~[?:?]
+	at java.net.DatagramSocket.receive(DatagramSocket.java:569) ~[?:?]
+	at org.apache.cxf.transport.udp.UDPConduit$UDPBroadcastOutputStream.close(UDPConduit.java:317) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.AbstractConduit.close(AbstractConduit.java:56) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.udp.UDPConduit.close(UDPConduit.java:140) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:63) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:308) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 51 more
+17:29:17.701 [Thread-15] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@708400f6: startup date [Mon Oct 19 17:16:32 CST 2020]; root of context hierarchy
+17:29:40.299 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+17:29:40.304 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on huangmingendeMacBook-Pro.local with PID 38295 (/Users/huangmingen/IdeaProjects/JGB28181/JGB28181/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/JGB28181/JGB28181)
+17:29:40.305 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+17:29:40.603 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@5829e4f4: startup date [Mon Oct 19 17:29:40 CST 2020]; root of context hierarchy
+17:29:42.366 [main] WARN  org.mybatis.spring.mapper.ClassPathMapperScanner.doScan(ClassPathMapperScanner.java:166) - No MyBatis mapper was found in '[com.yangjie.JGB28181]' package. Please check your configuration.
+17:29:44.970 [main] INFO  org.eclipse.jetty.util.log.Log.initialized(Log.java:193) - Logging initialized @9642ms to org.eclipse.jetty.util.log.Slf4jLog
+17:29:45.047 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory.getEmbeddedServletContainer(JettyEmbeddedServletContainerFactory.java:177) - Server initialized with port: 1998
+17:29:45.049 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:374) - jetty-9.4.10.v20180503; built: 2018-05-03T15:56:21.710Z; git: daa59876e6f384329b122929e70a80934569428c; jvm 15+36-1562
+17:29:45.307 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:365) - DefaultSessionIdManager workerName=node0
+17:29:45.307 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:370) - No SessionScavenger set, using defaults
+17:29:45.309 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.startScavenging(HouseKeeper.java:149) - node0 Scavenging every 660000ms
+17:29:45.315 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring embedded WebApplicationContext
+17:29:45.316 [main] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 4713 ms
+17:29:45.971 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+17:29:45.975 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+17:29:45.975 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+17:29:45.976 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+17:29:45.976 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+17:29:45.976 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+17:29:45.976 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+17:29:45.980 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:788) - Started o.s.b.c.e.j.JettyEmbeddedWebAppContext@4fc5563d{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.14398499531440950865.1998/],AVAILABLE}
+17:29:45.981 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:411) - Started @10654ms
+17:29:46.263 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - using default tls security policy
+17:29:46.266 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default keystore type pkcs12
+17:29:46.267 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS server settings will be inactive - TLS key store will use JVM defaults keyStoreType=pkcs12 javax.net.ssl.keyStore=null javax.net.ssl.keyStorePassword=null
+17:29:46.268 [main] INFO  gov.nist.core.LogWriter.logInfo(LogWriter.java:461) - javax.net.ssl.trustStorePassword is null, using the password passed through javax.net.ssl.keyStorePassword
+17:29:46.268 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default truststore type pkcs12
+17:29:46.268 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS trust settings will be inactive - TLS trust store will use JVM defaults. trustStoreType=pkcs12 javax.net.ssl.trustStore=null javax.net.ssl.trustStorePassword=null
+17:29:47.100 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15060
+17:29:47.943 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@5829e4f4: startup date [Mon Oct 19 17:29:40 CST 2020]; root of context hierarchy
+17:29:48.142 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.String,java.lang.String,java.lang.String)
+17:29:48.143 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/hls]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.toHls(java.lang.String)
+17:29:48.144 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+17:29:48.144 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+17:29:48.146 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+17:29:48.147 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+17:29:48.374 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:29:48.374 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:29:48.498 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:29:51.109 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+17:29:51.112 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+17:29:51.116 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+17:29:51.206 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+17:29:51.259 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+17:29:51.260 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+17:29:51.279 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 19 ms
+17:29:51.526 [main] INFO  org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:289) - Started ServerConnector@286090c{HTTP/1.1,[http/1.1]}{0.0.0.0:1998}
+17:29:51.545 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer.start(JettyEmbeddedServletContainer.java:155) - Jetty started on port(s) 1998 (http/1.1)
+17:29:51.572 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 12.286 seconds (JVM running for 16.245)
+17:30:09.553 [qtp1601800698-22] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+17:30:24.259 [qtp1601800698-27] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+17:30:45.351 [qtp1601800698-25] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+17:36:22.317 [Thread-15] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@5829e4f4: startup date [Mon Oct 19 17:29:40 CST 2020]; root of context hierarchy
+17:40:37.769 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on huangmingendeMacBook-Pro.local with PID 38533 (/Users/huangmingen/IdeaProjects/JGB28181/JGB28181/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/JGB28181/JGB28181)
+17:40:37.769 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+17:40:37.777 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+17:40:37.831 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@708400f6: startup date [Mon Oct 19 17:40:37 CST 2020]; root of context hierarchy
+17:40:39.664 [main] WARN  org.mybatis.spring.mapper.ClassPathMapperScanner.doScan(ClassPathMapperScanner.java:166) - No MyBatis mapper was found in '[com.yangjie.JGB28181]' package. Please check your configuration.
+17:40:42.646 [main] INFO  org.eclipse.jetty.util.log.Log.initialized(Log.java:193) - Logging initialized @10159ms to org.eclipse.jetty.util.log.Slf4jLog
+17:40:42.886 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory.getEmbeddedServletContainer(JettyEmbeddedServletContainerFactory.java:177) - Server initialized with port: 1998
+17:40:42.892 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:374) - jetty-9.4.10.v20180503; built: 2018-05-03T15:56:21.710Z; git: daa59876e6f384329b122929e70a80934569428c; jvm 15+36-1562
+17:40:43.207 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:365) - DefaultSessionIdManager workerName=node0
+17:40:43.208 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:370) - No SessionScavenger set, using defaults
+17:40:43.209 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.startScavenging(HouseKeeper.java:149) - node0 Scavenging every 600000ms
+17:40:43.218 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring embedded WebApplicationContext
+17:40:43.219 [main] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 5388 ms
+17:40:44.062 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+17:40:44.071 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+17:40:44.072 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+17:40:44.073 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+17:40:44.073 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+17:40:44.073 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+17:40:44.074 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+17:40:44.080 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:788) - Started o.s.b.c.e.j.JettyEmbeddedWebAppContext@34a2d6e0{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.15092528270388914496.1998/],AVAILABLE}
+17:40:44.082 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:411) - Started @11596ms
+17:40:44.384 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - using default tls security policy
+17:40:44.386 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default keystore type pkcs12
+17:40:44.386 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS server settings will be inactive - TLS key store will use JVM defaults keyStoreType=pkcs12 javax.net.ssl.keyStore=null javax.net.ssl.keyStorePassword=null
+17:40:44.386 [main] INFO  gov.nist.core.LogWriter.logInfo(LogWriter.java:461) - javax.net.ssl.trustStorePassword is null, using the password passed through javax.net.ssl.keyStorePassword
+17:40:44.387 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default truststore type pkcs12
+17:40:44.387 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS trust settings will be inactive - TLS trust store will use JVM defaults. trustStoreType=pkcs12 javax.net.ssl.trustStore=null javax.net.ssl.trustStorePassword=null
+17:40:45.110 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15060
+17:40:45.907 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@708400f6: startup date [Mon Oct 19 17:40:37 CST 2020]; root of context hierarchy
+17:40:46.110 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+17:40:46.114 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.String,java.lang.String,java.lang.String)
+17:40:46.114 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/hls]}" onto public void com.yangjie.JGB28181.web.controller.ActionController.toHls(java.lang.String)
+17:40:46.115 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+17:40:46.118 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+17:40:46.119 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+17:40:46.248 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:40:46.248 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:40:46.436 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+17:40:48.859 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+17:40:48.863 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+17:40:48.867 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+17:40:48.878 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+17:40:48.894 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+17:40:48.894 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+17:40:48.906 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 12 ms
+17:40:49.113 [main] INFO  org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:289) - Started ServerConnector@2525a5b8{HTTP/1.1,[http/1.1]}{0.0.0.0:1998}
+17:40:49.118 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer.start(JettyEmbeddedServletContainer.java:155) - Jetty started on port(s) 1998 (http/1.1)
+17:40:49.122 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 12.546 seconds (JVM running for 16.637)
+17:40:54.063 [qtp356519935-26] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+17:41:11.698 [qtp356519935-26] WARN  org.apache.cxf.common.logging.LogUtils.doLog(LogUtils.java:475) - Interceptor for {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy#{http://cxf.apache.org/jaxws/dispatch}Invoke has thrown exception, unwinding now
+org.apache.cxf.interceptor.Fault: Could not receive Message.
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:65) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:308) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) [cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) [cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) [cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) [cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) [classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:861) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:687) [javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) [spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790) [javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:865) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1655) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:215) [websocket-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) [druid-1.1.0.jar:1.1.0]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:109) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) [spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:146) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:548) [jetty-security-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:257) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473) [jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.Server.handle(Server.java:531) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at java.lang.Thread.run(Thread.java:832) [?:?]
+Caused by: java.net.SocketTimeoutException: Receive timed out
+	at sun.nio.ch.DatagramChannelImpl.trustedBlockingReceive(DatagramChannelImpl.java:700) ~[?:?]
+	at sun.nio.ch.DatagramChannelImpl.blockingReceive(DatagramChannelImpl.java:630) ~[?:?]
+	at sun.nio.ch.DatagramSocketAdaptor.receive(DatagramSocketAdaptor.java:239) ~[?:?]
+	at java.net.DatagramSocket.receive(DatagramSocket.java:569) ~[?:?]
+	at org.apache.cxf.transport.udp.UDPConduit$UDPBroadcastOutputStream.close(UDPConduit.java:317) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.AbstractConduit.close(AbstractConduit.java:56) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.udp.UDPConduit.close(UDPConduit.java:140) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:63) ~[cxf-core-3.3.1.jar:3.3.1]
+	... 68 more
+17:41:11.789 [qtp356519935-26] WARN  org.eclipse.jetty.server.HttpChannel.handleException(HttpChannel.java:573) - /camera/discoverDevice
+org.springframework.web.util.NestedServletException: Request processing failed; nested exception is javax.xml.ws.soap.SOAPFaultException: Fault string, and possibly fault code, not set
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:982) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:861) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:687) ~[javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790) ~[javax.servlet-api-3.1.0.jar:3.1.0]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:865) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1655) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:215) ~[websocket-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) ~[druid-1.1.0.jar:1.1.0]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:109) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1642) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:533) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:146) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:548) ~[jetty-security-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:257) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1595) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1253) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:473) ~[jetty-servlet-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1564) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1155) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.Server.handle(Server.java:531) ~[jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:352) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260) [jetty-server-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:281) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:102) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118) [jetty-io-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:760) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:678) [jetty-util-9.4.10.v20180503.jar:9.4.10.v20180503]
+	at java.lang.Thread.run(Thread.java:832) [?:?]
+Caused by: javax.xml.ws.soap.SOAPFaultException: Fault string, and possibly fault code, not set
+	at org.apache.cxf.jaxws.DispatchImpl.mapException(DispatchImpl.java:285) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:463) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 46 more
+Caused by: javax.xml.ws.WebServiceException: Could not receive Message.
+	at org.apache.cxf.jaxws.DispatchImpl.mapException(DispatchImpl.java:267) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.access$000(DispatchImpl.java:98) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl$1.mapThrowable(DispatchImpl.java:431) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.JaxwsClientCallback.handleException(JaxwsClientCallback.java:85) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.ClientOutFaultObserver.onMessage(ClientOutFaultObserver.java:60) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl$2.onMessage(ClientImpl.java:522) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.wrapExceptionAsFault(PhaseInterceptorChain.java:374) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:332) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 46 more
+Caused by: java.net.SocketTimeoutException: Receive timed out
+	at sun.nio.ch.DatagramChannelImpl.trustedBlockingReceive(DatagramChannelImpl.java:700) ~[?:?]
+	at sun.nio.ch.DatagramChannelImpl.blockingReceive(DatagramChannelImpl.java:630) ~[?:?]
+	at sun.nio.ch.DatagramSocketAdaptor.receive(DatagramSocketAdaptor.java:239) ~[?:?]
+	at java.net.DatagramSocket.receive(DatagramSocket.java:569) ~[?:?]
+	at org.apache.cxf.transport.udp.UDPConduit$UDPBroadcastOutputStream.close(UDPConduit.java:317) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.AbstractConduit.close(AbstractConduit.java:56) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.transport.udp.UDPConduit.close(UDPConduit.java:140) ~[cxf-rt-transports-udp-3.3.1.jar:3.3.1]
+	at org.apache.cxf.interceptor.MessageSenderInterceptor$MessageSenderEndingInterceptor.handleMessage(MessageSenderInterceptor.java:63) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:308) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.doInvoke(ClientImpl.java:531) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:433) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invoke(ClientImpl.java:411) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.endpoint.ClientImpl.invokeWrapped(ClientImpl.java:404) ~[cxf-core-3.3.1.jar:3.3.1]
+	at org.apache.cxf.jaxws.DispatchImpl.invokeAsync(DispatchImpl.java:457) ~[cxf-rt-frontend-jaxws-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:384) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at org.apache.cxf.ws.discovery.WSDiscoveryClient.probe(WSDiscoveryClient.java:353) ~[cxf-services-ws-discovery-api-3.3.1.jar:3.3.1]
+	at com.yangjie.JGB28181.web.controller.ActionController.discoverDevice(ActionController.java:165) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:564) ~[?:?]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 46 more
+17:41:34.002 [Thread-15] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@708400f6: startup date [Mon Oct 19 17:40:37 CST 2020]; root of context hierarchy
