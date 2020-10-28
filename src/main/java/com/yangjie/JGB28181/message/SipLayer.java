@@ -119,7 +119,7 @@ public class SipLayer implements SipListener{
 	public static final String SESSION_NAME_DOWNLOAD = "Download";
 	public static final String SESSION_NAME_PLAY_BACK = "Playback";
 
-
+	private int expiredTime = 180;
 
 	private MessageManager mMessageManager = MessageManager.getInstance();
 	private PushStreamDeviceManager mPushStreamDeviceManager = PushStreamDeviceManager.getInstance();
@@ -229,7 +229,7 @@ public class SipLayer implements SipListener{
 		//不在线回复400
 		if(MESSAGE_KEEP_ALIVE.equals(cmd)){
 			if(RedisUtil.checkExist(deviceId)){
-				RedisUtil.expire(deviceId, RedisUtil.EXPIRE);
+				RedisUtil.expire(deviceId, expiredTime);
 			}else {
 				response = mMessageFactory.createResponse(Response.BAD_REQUEST,request);
 			}
@@ -327,6 +327,7 @@ public class SipLayer implements SipListener{
 			//添加date头
 			response.addHeader(mHeaderFactory.createDateHeader(Calendar.getInstance(Locale.ENGLISH)));
 			ExpiresHeader expiresHeader = (ExpiresHeader) request.getHeader(Expires.NAME);
+			expiredTime = expiresHeader.getExpires();
 			//添加Contact头
 			response.addHeader(request.getHeader(ContactHeader.NAME));
 			//添加Expires头
@@ -357,7 +358,7 @@ public class SipLayer implements SipListener{
 		if(isRegisterSuceess && device != null){
 			String callId = IDUtils.id();
 			String fromTag = IDUtils.id();
-			RedisUtil.set(device.getDeviceId(), RedisUtil.EXPIRE, JSONObject.toJSONString(device));
+			RedisUtil.set(device.getDeviceId(), expiredTime, JSONObject.toJSONString(device));
 			sendCatalog(device, callId, fromTag, mCseq, String.valueOf(mSN));
 		}
 	}
