@@ -36,7 +36,7 @@ public class SipContentHelper {
         StringBuffer content = new StringBuffer(200);
         content.append("<?xml version=\"1.0\" encoding=\"GB2312\"?>\r\n");
         content.append("<Notify>\r\n");
-        content.append("<CmdType>KeepAlive</CmdType>\r\n");
+        content.append("<CmdType>Keepalive</CmdType>\r\n");
         content.append("<SN>"+sn+"</SN>\r\n");
         content.append("<Status>OK</Status>\r\n");
         content.append("<DeviceID>"+clientId+"</DeviceID>\r\n");

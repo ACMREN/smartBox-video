@@ -124,7 +124,7 @@ public class SipLayer implements SipListener{
 	private MessageManager mMessageManager = MessageManager.getInstance();
 	private PushStreamDeviceManager mPushStreamDeviceManager = PushStreamDeviceManager.getInstance();
 
-	private static ServerInfoBo connectServerInfo = new ServerInfoBo();
+	private ServerInfoBo connectServerInfo = new ServerInfoBo();
 
 	public SipLayer(String sipId,String sipRealm,String password,String localIp,int localPort,String streamMediaIp){
 		this.mSipId = sipId;
@@ -380,7 +380,6 @@ public class SipLayer implements SipListener{
 
 	public void sendInvite(Device device,String sessionName,String callId,String channelId,int port,String ssrc,
 			boolean isTcp) throws Exception{
-
 		String fromTag = IDUtils.id();
 		Host host = device.getHost();
 		String realm = channelId.substring(0,8);
@@ -423,7 +422,7 @@ public class SipLayer implements SipListener{
 			Address contactAddress = mAddressFactory.createAddress(clientInfo.getId(), mAddressFactory.createURI(uri));
 			ContactHeader contactHeader = mHeaderFactory.createContactHeader(contactAddress);
 
-			// 设置过期头
+			// 设置过期头，一小时后过期
 			ExpiresHeader expiresHeader = mHeaderFactory.createExpiresHeader(3600);
 
 			// 把头部信息放到请求中
@@ -452,12 +451,15 @@ public class SipLayer implements SipListener{
 		String callId = IDUtils.id();
 		String fromTag = IDUtils.id();
 		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
+		// 获取级联的上级服务器的参数
 		String serverAddress = connectServerInfo.getHost() + ":" + connectServerInfo.getPort();
 		String serverId = connectServerInfo.getId();
 		Request request = createRequest(serverId, serverAddress, clientInfo.getHost(), Integer.valueOf(clientInfo.getPort()), "UDP",
 				clientInfo.getId(), clientInfo.getDomain(), fromTag, serverId, clientInfo.getDomain(), null,
 				callId, cseq, Request.MESSAGE);
+		// 设置存活的消息体
 		String keepAliveContent = SipContentHelper.generateKeepAliveContent(clientInfo.getId(), "20");
+		// 设置请求头类型
 		ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "MANSCDP+xml");
 		request.setContent(keepAliveContent, contentTypeHeader);
 		request.addHeader(contentTypeHeader);
