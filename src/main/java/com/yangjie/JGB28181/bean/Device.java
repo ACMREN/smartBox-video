@@ -27,6 +27,11 @@ public class Device {
 	private Host host;
 
 	/**
+	 * 设备的类型（暂时为platform和camera)
+	 */
+	private String deviceType;
+
+	/**
 	 * 通道列表
 	 */
 	private Map<String,DeviceChannel> channelMap;
@@ -62,6 +67,14 @@ public class Device {
 
 	public void setHost(Host host) {
 		this.host = host;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 
 	public Map<String, DeviceChannel> getChannelMap() {
