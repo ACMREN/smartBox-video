@@ -440,8 +440,29 @@ public class SipLayer implements SipListener{
 		sendRequest(request);
 	}
 
-	public void sendKeepAlive(String serverId, String serverDomain, String serverIp, String serverPort) {
+	/**
+	 * 发送存活的消息包
+	 * @param cseq
+	 * @throws ParseException
+	 * @throws InvalidArgumentException
+	 * @throws SipException
+	 */
+	public void sendKeepAlive(long cseq)
+			throws ParseException, InvalidArgumentException, SipException {
+		String callId = IDUtils.id();
+		String fromTag = IDUtils.id();
+		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
+		String serverAddress = connectServerInfo.getHost() + ":" + connectServerInfo.getPort();
+		String serverId = connectServerInfo.getId();
+		Request request = createRequest(serverId, serverAddress, clientInfo.getHost(), Integer.valueOf(clientInfo.getPort()), "UDP",
+				clientInfo.getId(), clientInfo.getDomain(), fromTag, serverId, clientInfo.getDomain(), null,
+				callId, cseq, Request.MESSAGE);
+		String keepAliveContent = SipContentHelper.generateKeepAliveContent(clientInfo.getId(), "20");
+		ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "MANSCDP+xml");
+		request.setContent(keepAliveContent, contentTypeHeader);
+		request.addHeader(contentTypeHeader);
 
+		sendRequest(request);
 	}
 
 	private Request createRequest(String deviceId,String address,String targetIp,int targetPort,String protocol,
@@ -589,7 +610,21 @@ public class SipLayer implements SipListener{
 				}
 				if (statusCode == Response.OK) {
 					ActionController.executor.execute(() -> {
-
+						// 发送存活数据包
+						while (true) {
+							try {
+								Thread.sleep(60*1000);
+								this.sendKeepAlive(20);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							} catch (ParseException e) {
+								e.printStackTrace();
+							} catch (InvalidArgumentException e) {
+								e.printStackTrace();
+							} catch (SipException e) {
+								e.printStackTrace();
+							}
+						}
 					});
 				}
 			}
