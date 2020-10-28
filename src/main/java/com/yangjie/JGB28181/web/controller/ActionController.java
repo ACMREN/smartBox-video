@@ -165,6 +165,7 @@ public class ActionController implements OnProcessListener {
 	public GBResult testSendRegister(String serverId, String serverDomain, String serverIp, String serverPort, String password, long cseq) {
 		String callId = IDUtils.id();
 		String fromTag = IDUtils.id();
+		callId = "platform-" + callId;
 		try	{
 			mSipLayer.sendRegister(serverId, serverDomain, serverIp, serverPort, password, callId, fromTag, null, null, null, cseq);
 		} catch (Exception e) {
