@@ -11,4 +11,8 @@ public class DateUtils {
 	public static String getGBFormatDate(Date date){
 		return dateFormat.format(date).replace(" ", "T");
 	}
+
+	public static String getFormatDateTime(Date date) {
+		return dateFormat.format(date);
+	}
 }

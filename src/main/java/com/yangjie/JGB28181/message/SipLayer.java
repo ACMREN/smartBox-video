@@ -342,13 +342,21 @@ public class SipLayer implements SipListener{
 				//1.获取到通信地址等信息，保存到Redis
 				FromHeader fromHeader = (FromHeader) request.getHeader(FromHeader.NAME);
 				ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
+				CallIdHeader callIdHeader = (CallIdHeader) request.getHeader(CallIdHeader.NAME);
 				Host host = getHost(viaHeader);
 				String deviceId = getDeviceId(fromHeader);
-				device =new Device();
+				String callId = callIdHeader.getCallId();
+				device = new Device();
 				device.setDeviceId(deviceId);
 				device.setHost(host);
 				device.setProtocol(isTcp?TCP:UDP);
-
+				// 设备类型默认为摄像头
+				if (callId.contains ("platform")) {
+					// 如果含有platform标识，则为平台
+					device.setDeviceType("platform");
+				} else {
+					device.setDeviceType("camera");
+				}
 			}
 		}
 		sendResponse(response,serverTransaction);

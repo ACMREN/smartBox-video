@@ -1,5 +1,6 @@
 package com.yangjie.JGB28181.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,11 @@ import com.yangjie.JGB28181.message.config.ConfigProperties;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.ScanResult;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Redis操作工具类
@@ -85,6 +91,39 @@ public class RedisUtil {
 			logger.error(e.toString());
 			return null;
 		}
+	}
+
+	public static Map<String, String> scanAllKeys() {
+		return scanAllKeys(DEFAULT_DB);
+	}
+
+	public static Map<String, String> scanAllKeys(int dbIndex) {
+		Jedis jedis = getJedis();
+		if (jedis == null) {
+			return null;
+		}
+		jedis.select(dbIndex);
+		try {
+			boolean isFinished = false;
+			String cursor = "0";
+			Map<String, String> resultMap = new HashMap();
+			while (!isFinished) {
+				ScanResult<String> scanResult = jedis.scan(cursor);
+				cursor = scanResult.getCursor();
+				List<String> result = scanResult.getResult();
+				for (String key : result) {
+					String value = get(key);
+					resultMap.put(key, value);
+				}
+				if ("0".equals(cursor)) {
+					isFinished = true;
+				}
+			}
+			return resultMap;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new HashMap<>();
 	}
 
 	public static String set(String key,String value){

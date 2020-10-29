@@ -1,9 +1,10 @@
 package com.yangjie.JGB28181.common.constants;
 
-public class DeviceConstants {
+public interface DeviceConstants {
+	int ON_LINE = 0;
+	int OFF_LINE = 0;
 
-
-	public static final int ON_LINE = 0;
-	public static final int OFF_LINE = 0;
+	String DEVICE_TYPE_PLATFORM = "platform";
+	String DEVICE_TYPE_CAMERA = "camera";
 }
 

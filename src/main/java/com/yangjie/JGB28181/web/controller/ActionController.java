@@ -12,7 +12,9 @@ import javax.sip.SipException;
 import javax.xml.namespace.QName;
 
 import com.yangjie.JGB28181.common.constants.BaseConstants;
+import com.yangjie.JGB28181.entity.LiveCamInfoVo;
 import com.yangjie.JGB28181.media.server.handler.TCPHandler;
+import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
 import org.apache.cxf.ws.discovery.WSDiscoveryClient;
 import org.apache.cxf.ws.discovery.wsdl.ProbeMatchType;
@@ -61,6 +63,9 @@ public class ActionController implements OnProcessListener {
 	@Autowired
 	private PushHlsStreamServiceImpl pushHlsStreamService;
 
+	@Autowired
+	private IDeviceManagerService deviceManagerService;
+
 	private MessageManager mMessageManager = MessageManager.getInstance();
 
 	public static PushStreamDeviceManager mPushStreamDeviceManager = PushStreamDeviceManager.getInstance();
@@ -82,6 +87,8 @@ public class ActionController implements OnProcessListener {
 	public static Map<String, JSONObject> streamRelationMap = new HashMap<>(20);
 
 	public static Map<String, TCPHandler> tcpHandlerMap = new HashMap<>(20);
+
+	public static List<LiveCamInfoVo> liveCamVoList = new ArrayList<>();
 
 	/**
 	 * 播放rtmp基础视频流
@@ -245,28 +252,8 @@ public class ActionController implements OnProcessListener {
 	 */
 	@RequestMapping(value = "discoverDevice")
 	public GBResult discoverDevice() {
-		Set<String> deviceUrlSet = new HashSet<>();
-		WSDiscoveryClient client = new WSDiscoveryClient();
-		client.setVersion10();
-		client.setDefaultProbeTimeout(5000);
-		ProbeType probeType = new ProbeType();
-		probeType.getTypes().add(new QName("tds:Device"));
-		probeType.getTypes().add(new QName("dn:Network Video Transmitter"));
-		try	{
-			ProbeMatchesType probeMatchesType = client.probe(probeType);
-			List<ProbeMatchType> probeMatchTypeList = probeMatchesType.getProbeMatch();
-			for (ProbeMatchType type : probeMatchTypeList) {
-				List<String> xAddrs = type.getXAddrs();
-				for (String XAddr : xAddrs) {
-					if (XAddr.contains("onvif/device_service")) {
-						deviceUrlSet.add(XAddr);
-					}
-				}
-			}
-			return GBResult.ok(deviceUrlSet);
-		} catch (Exception e) {
-			return GBResult.build(NOT_FOUND_DEVICE_CODE, NOT_FOUND_DEVICE);
-		}
+		Set<String> result = deviceManagerService.discoverDevice();
+		return GBResult.ok(result);
 	}
 
 	@RequestMapping("bye")
