@@ -2,6 +2,7 @@ package com.yangjie.JGB28181.common.scheduleJob;
 
 import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
+import com.yangjie.JGB28181.common.constants.DeviceConstants;
 import com.yangjie.JGB28181.common.utils.DateUtils;
 import com.yangjie.JGB28181.entity.*;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
@@ -63,6 +64,10 @@ public class UpdateDeviceJob {
         // 把国标设备放入到结果list中
         for (Device GBDevice : GBDeviceSet) {
             String wanIp = GBDevice.getHost().getWanIp();
+            String deviceType = GBDevice.getDeviceType();
+            if (DeviceConstants.DEVICE_TYPE_PLATFORM.equals(deviceType)) {
+                continue;
+            }
             LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
             data.setCid(cid);

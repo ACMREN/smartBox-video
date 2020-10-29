@@ -3,9 +3,11 @@ package com.yangjie.JGB28181.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
+import com.yangjie.JGB28181.common.constants.DeviceConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.DateUtils;
 import com.yangjie.JGB28181.entity.*;
+import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.TestTableService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,9 @@ public class DeviceManagerController {
 
     @Autowired
     private IDeviceManagerService deviceManagerService;
+
+    @Autowired
+    private CameraInfoService cameraInfoService;
 
     static {
         File file = new File("src/main/resources/config.properties");
@@ -167,22 +172,81 @@ public class DeviceManagerController {
         this.removeDuplicateDevice(deviceSet, GBDeviceSet, onvifDuplicateSet, onvifNoDuplicateSet);
 
         // 4. 把去重后的onvif设备和国标设备放入到数据结构中
-        List<LiveCamInfoVo> dataList = packageVoList(onvifDuplicateSet, onvifNoDuplicateSet, GBDeviceSet);
-        System.out.println(dataList);
+        List<LiveCamInfoVo> unregisteredDataList = packageVoList(onvifDuplicateSet, onvifNoDuplicateSet, GBDeviceSet);
 
-        return GBResult.ok(dataList);
+        // 5. 从数据库中获取已注册的摄像头
+        List<CameraInfo> cameraInfoList = cameraInfoService.getAllData();
+        List<LiveCamInfoVo> registeredDataList = parseCameraInfoToLiveCamInfoVo(cameraInfoList);
+
+        // TODO 6. 数据库中的摄像头数据与步骤四中的数据进行去重
+        Set<LiveCamInfoVo> resultSet = removeDuplicateLiveCamData(registeredDataList, unregisteredDataList);
+
+
+        return GBResult.ok(resultSet);
+    }
+
+    private Set<LiveCamInfoVo> removeDuplicateLiveCamData(List<LiveCamInfoVo> registeredDataList, List<LiveCamInfoVo> unregisteredDataList) {
+        Set<LiveCamInfoVo> resultList = new HashSet<>();
+        // 将未注册的设备放入到结果数据结构中
+        for (LiveCamInfoVo item : unregisteredDataList) {
+            String unregisteredIp = item.getIp();
+            boolean isDuplicate = false;
+            for (LiveCamInfoVo item1 : registeredDataList) {
+                String registeredIp = item1.getIp();
+                if (unregisteredIp.equals(registeredIp)) {
+                    // 把重复的已注册的设备设置为在线状态
+                    item1.setNetStatus(NetStatusEnum.ONLINE.name());
+                    isDuplicate = true;
+                }
+            }
+            if (!isDuplicate) {
+                resultList.add(item);
+            }
+        }
+
+        // 将已注册的设备放入到结果数据结构中
+        for (LiveCamInfoVo item : registeredDataList) {
+            item.setNetStatus(NetStatusEnum.OFFLINE.name());
+            resultList.add(item);
+        }
+
+        return resultList;
+    }
+
+    private List<LiveCamInfoVo> parseCameraInfoToLiveCamInfoVo(List<CameraInfo> cameraInfoList) {
+        List<LiveCamInfoVo> dataList = new ArrayList<>();
+        Random random = new Random();
+        for (CameraInfo item : cameraInfoList) {
+            LiveCamInfoVo data = new LiveCamInfoVo();
+            data.setCid(random.nextInt(10000));
+            data.setDeviceId(item.getId());
+            data.setIp(item.getIp());
+            data.setDeviceName(item.getDeviceName());
+            data.setProject(item.getProject());
+            data.setLinkStatus(LinkStatusEnum.REGISTERED.getName());
+            data.setLinkType(LinkTypeEnum.getDataByCode(item.getLinkType()).getName());
+            data.setNetType(NetTypeEnum.getDataByCode(item.getNetType()).getName());
+
+            dataList.add(data);
+        }
+        return dataList;
     }
 
     private void removeDuplicateDevice(Set<String> onvifDeviceUrlSet, Set<Device> GBDeviceSet,
                                        Set<String> onvifDuplicateSet, Set<String> onvifNoDuplicateSet) {
         for (String onvifDeviceUrl : onvifDeviceUrlSet) {
+            boolean isWan = false;
             for (Device GBDevice : GBDeviceSet) {
                 String wanIp = GBDevice.getHost().getWanIp();
-                if (!onvifDeviceUrl.contains(wanIp)) {
-                    onvifNoDuplicateSet.add(onvifDeviceUrl);
-                } else {
-                    onvifDuplicateSet.add(onvifDeviceUrl);
+                if (onvifDeviceUrl.contains(wanIp)) {
+                    isWan = true;
+                    break;
                 }
+            }
+            if (isWan) {
+                onvifDuplicateSet.add(onvifDeviceUrl);
+            } else {
+                onvifNoDuplicateSet.add(onvifDeviceUrl);
             }
         }
     }
@@ -195,6 +259,10 @@ public class DeviceManagerController {
         // 把国标设备放入到结果list中
         for (Device GBDevice : GBDeviceSet) {
             String wanIp = GBDevice.getHost().getWanIp();
+            String deviceType = GBDevice.getDeviceType();
+            if (DeviceConstants.DEVICE_TYPE_PLATFORM.equals(deviceType)) {
+                continue;
+            }
             LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
             data.setCid(cid);
