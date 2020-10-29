@@ -1,4 +1,4 @@
-package com.yangjie.JGB28181.entity;
+package com.yangjie.JGB28181.entity.enumEntity;
 
 public enum LinkStatusEnum {
     REGISTERED(1, "registered"),

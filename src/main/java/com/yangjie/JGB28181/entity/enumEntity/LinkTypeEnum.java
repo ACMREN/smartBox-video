@@ -1,13 +1,14 @@
-package com.yangjie.JGB28181.entity;
+package com.yangjie.JGB28181.entity.enumEntity;
 
-public enum NetTypeEnum {
-    WAN(0, "WAN"),
-    IT(1, "IT");
+public enum LinkTypeEnum {
+    ONVIF(0, "onvif"),
+    GB28181(1, "gb28181"),
+    PLATFORM(2, "platform");
 
     private int code;
     private String name;
 
-    NetTypeEnum(int code, String name) {
+    LinkTypeEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
@@ -20,8 +21,8 @@ public enum NetTypeEnum {
         return name;
     }
 
-    public static NetTypeEnum getDataByCode(int code) {
-        for (NetTypeEnum item : NetTypeEnum.values()) {
+    public static LinkTypeEnum getDataByCode(int code) {
+        for (LinkTypeEnum item : LinkTypeEnum.values()) {
             int itemCode = item.getCode();
             if (code == itemCode) {
                 return item;

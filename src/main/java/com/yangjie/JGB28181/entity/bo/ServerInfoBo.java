@@ -1,4 +1,4 @@
-package com.yangjie.JGB28181.entity;
+package com.yangjie.JGB28181.entity.bo;
 
 import com.alibaba.fastjson.JSONObject;
 

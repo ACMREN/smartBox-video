@@ -9,17 +9,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.sip.Dialog;
 import javax.sip.SipException;
-import javax.xml.namespace.QName;
 
 import com.yangjie.JGB28181.common.constants.BaseConstants;
-import com.yangjie.JGB28181.entity.LiveCamInfoVo;
 import com.yangjie.JGB28181.media.server.handler.TCPHandler;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
-import org.apache.cxf.ws.discovery.WSDiscoveryClient;
-import org.apache.cxf.ws.discovery.wsdl.ProbeMatchType;
-import org.apache.cxf.ws.discovery.wsdl.ProbeMatchesType;
-import org.apache.cxf.ws.discovery.wsdl.ProbeType;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,8 +42,6 @@ import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.message.config.ConfigProperties;
 import com.yangjie.JGB28181.message.session.MessageManager;
 import com.yangjie.JGB28181.message.session.SyncFuture;
-
-import static com.yangjie.JGB28181.common.constants.ResultConstants.*;
 
 
 @RestController
@@ -88,7 +80,7 @@ public class ActionController implements OnProcessListener {
 
 	public static Map<String, TCPHandler> tcpHandlerMap = new HashMap<>(20);
 
-	public static List<LiveCamInfoVo> liveCamVoList = new ArrayList<>();
+
 
 	/**
 	 * 播放rtmp基础视频流

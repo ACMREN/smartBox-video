@@ -1,14 +1,13 @@
-package com.yangjie.JGB28181.entity;
+package com.yangjie.JGB28181.entity.enumEntity;
 
-public enum LinkTypeEnum {
-    ONVIF(0, "onvif"),
-    GB28181(1, "gb28181"),
-    PLATFORM(2, "platform");
+public enum NetStatusEnum {
+    OFFLINE(0, "offline"),
+    ONLINE(1, "online");
 
     private int code;
     private String name;
 
-    LinkTypeEnum(int code, String name) {
+    NetStatusEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
@@ -21,8 +20,8 @@ public enum LinkTypeEnum {
         return name;
     }
 
-    public static LinkTypeEnum getDataByCode(int code) {
-        for (LinkTypeEnum item : LinkTypeEnum.values()) {
+    public static NetStatusEnum getDataByCode(int code) {
+        for (NetStatusEnum item : NetStatusEnum.values()) {
             int itemCode = item.getCode();
             if (code == itemCode) {
                 return item;

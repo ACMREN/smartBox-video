@@ -5,9 +5,16 @@ import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.constants.DeviceConstants;
 import com.yangjie.JGB28181.common.utils.DateUtils;
 import com.yangjie.JGB28181.entity.*;
+import com.yangjie.JGB28181.entity.enumEntity.LinkStatusEnum;
+import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
+import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
+import com.yangjie.JGB28181.entity.enumEntity.NetTypeEnum;
+import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
-import com.yangjie.JGB28181.web.controller.ActionController;
+import com.yangjie.JGB28181.web.controller.DeviceManagerController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +25,8 @@ import java.util.regex.Pattern;
 
 @Component
 public class UpdateDeviceJob {
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private IDeviceManagerService deviceManagerService;
 
@@ -27,8 +36,10 @@ public class UpdateDeviceJob {
     /**
      * 每1分钟更新一次设备
      */
-    @Scheduled(cron = "0 0/1 * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void updateDevice() {
+        logger.info("==============================更新设备开始======================");
+
         // 1. 根据onvif协议搜索内网摄像头
         Set<String> deviceSet = deviceManagerService.discoverDevice();
 
@@ -50,7 +61,9 @@ public class UpdateDeviceJob {
         // 6. 数据库中的摄像头数据与步骤四中的数据进行去重
         Set<LiveCamInfoVo> resultSet = removeDuplicateLiveCamData(registeredDataList, unregisteredDataList);
 
-        ActionController.liveCamVoList = new ArrayList<>(resultSet);
+        DeviceManagerController.liveCamVoList = new ArrayList<>(resultSet);
+
+        logger.info("==============================更新设备完成======================");
     }
 
     /**
