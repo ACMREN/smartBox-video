@@ -73,7 +73,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             }
             return deviceSet;
         }
-        return null;
+        return new HashSet<>();
     }
 
     @Override
@@ -83,7 +83,6 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             for (DeviceBaseInfo item : deviceBaseInfos) {
                 DeviceBaseInfoVo data = new DeviceBaseInfoVo();
                 data.setDeviceId(item.getId());
-                data.setRtspLink(item.getRtspLink());
                 data.setProject(item.getProject());
                 data.setDeviceName(item.getDeviceName());
                 data.setAddress(item.getAddress());

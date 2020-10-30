@@ -4,6 +4,10 @@ import lombok.Data;
 
 @Data
 public class CameraInfoVo extends DeviceBaseInfoVo {
+    /**
+     * 作为标识id
+     */
+    private Integer cid;
     private String rtspLink;
 
     public CameraInfoVo() {

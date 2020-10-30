@@ -101,6 +101,7 @@ public class DeviceBaseInfo implements Serializable {
 
     public DeviceBaseInfo (CameraInfoVo cameraInfoVo) {
         this.id = cameraInfoVo.getDeviceId();
+        this.rtspLink = cameraInfoVo.getRtspLink();
         this.project = cameraInfoVo.getProject();
         this.address = cameraInfoVo.getAddress();
         this.deviceLink = DeviceLinkEnum.getDataByName(cameraInfoVo.getDeviceLink()).getCode();

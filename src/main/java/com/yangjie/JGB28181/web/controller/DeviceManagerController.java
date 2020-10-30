@@ -2,6 +2,7 @@ package com.yangjie.JGB28181.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
@@ -26,6 +27,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -281,18 +283,23 @@ public class DeviceManagerController {
 
     /**
      * 注册摄像头/修改摄像头信息
-     * @param cameraInfoVo
+     * @param cameraInfoVos
      * @return
      */
     @PostMapping(value = "registerCamera")
-    public GBResult registerCamera(@RequestBody CameraInfoVo cameraInfoVo) {
-        Integer id = cameraInfoVo.getDeviceId();
-        DeviceBaseInfo data = deviceBaseInfoService.getBaseMapper().selectById(id);
-        DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(cameraInfoVo);
-        if (null != data) {
-            deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
-        } else {
-            deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
+    public GBResult registerCamera(@RequestBody List<CameraInfoVo> cameraInfoVos) {
+        List<Integer> cameraDeviceIds = cameraInfoVos.stream().map(CameraInfoVo::getDeviceId).collect(Collectors.toList());
+        List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(cameraDeviceIds);
+        Map<Integer, DeviceBaseInfo> deviceBaseInfoIdMap = deviceBaseInfos.stream().collect(Collectors.toMap(DeviceBaseInfo::getId, Function.identity()));
+
+        for (CameraInfoVo item : cameraInfoVos) {
+            Integer cameraDeviceId = item.getDeviceId();
+            DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(item);
+            if (deviceBaseInfoIdMap.containsKey(cameraDeviceId)) {
+                deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
+            } else {
+                deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
+            }
         }
 
         return GBResult.ok();
