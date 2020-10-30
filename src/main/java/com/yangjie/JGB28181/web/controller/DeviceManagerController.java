@@ -2,10 +2,18 @@ package com.yangjie.JGB28181.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.result.GBResult;
-import com.yangjie.JGB28181.entity.*;
+import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
+import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
+import com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition;
+import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
+import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
+import com.yangjie.JGB28181.service.CameraInfoService;
+import com.yangjie.JGB28181.service.DeviceBaseInfoService;
+import com.yangjie.JGB28181.service.IDeviceManagerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +50,12 @@ public class DeviceManagerController {
     private JSONObject udpPort;
 
     private JSONObject tcpPort;
+
+    @Autowired
+    private DeviceBaseInfoService deviceBaseInfoService;
+
+    @Autowired
+    private IDeviceManagerService deviceManagerService;
 
     public static ServerInfoBo serverInfoBo = new ServerInfoBo();
 
@@ -139,6 +153,11 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
+    /**
+     * 按条件搜索实时摄像头列表
+     * @param searchLiveCamCondition
+     * @return
+     */
     @PostMapping(value = "getLiveCamList")
     public GBResult getLiveCamList(SearchLiveCamCondition searchLiveCamCondition) {
         List<LiveCamInfoVo> resultList = liveCamVoList;
@@ -208,6 +227,75 @@ public class DeviceManagerController {
         }
 
         return GBResult.ok(resultList);
+    }
+
+    /**
+     * 获取设备的基本信息列表
+     * @param deviceBaseCondition
+     * @return
+     */
+    @GetMapping(value = "getDeviceInfo")
+    public GBResult getDeviceInfo(@ModelAttribute DeviceBaseCondition deviceBaseCondition) {
+        List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+        List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceIds);
+        List<DeviceBaseInfoVo> deviceBaseInfoVos = deviceManagerService.parseDeviceBaseInfoToVo(deviceBaseInfos);
+
+        return GBResult.ok(deviceBaseInfoVos);
+    }
+
+    /**
+     * 保存设备的基本信息列表
+     * @param deviceBaseInfoVo
+     * @return
+     */
+    @PostMapping(value = "setDeviceInfo")
+    public GBResult setDeviceInfo(@RequestBody DeviceBaseInfoVo deviceBaseInfoVo) {
+        Integer id = deviceBaseInfoVo.getDeviceId();
+        DeviceBaseInfo data = deviceBaseInfoService.getBaseMapper().selectById(id);
+        DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(deviceBaseInfoVo);
+        if (null != data) {
+            deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
+        } else {
+            deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
+        }
+
+        return GBResult.ok();
+    }
+
+    /**
+     * 获取摄像头设备的详细信息
+     * @param deviceBaseCondition
+     * @return
+     */
+    @GetMapping(value = "getDeviceDetail")
+    public GBResult getDeviceDetail(@ModelAttribute DeviceBaseCondition deviceBaseCondition) {
+        List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+        List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceIds);
+        List<DeviceBaseInfoVo> deviceBaseInfoVos = deviceManagerService.parseDeviceBaseInfoToVo(deviceBaseInfos);
+        liveCamVoList = deviceManagerService.getLiveCamDetailInfo(liveCamVoList);
+
+        List<JSONObject> resultList = deviceManagerService.packageLiveCamDetailInfoVo(liveCamVoList, deviceBaseInfoVos);
+
+        return GBResult.ok(resultList);
+    }
+
+    /**
+     * 注册摄像头/修改摄像头信息
+     * @param cameraInfoVo
+     * @return
+     */
+    @PostMapping(value = "registerCamera")
+    public GBResult registerCamera(@RequestBody CameraInfoVo cameraInfoVo) {
+        Integer id = cameraInfoVo.getDeviceId();
+        DeviceBaseInfo data = deviceBaseInfoService.getBaseMapper().selectById(id);
+        DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(cameraInfoVo);
+        if (null != data) {
+            deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
+        } else {
+            deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
+        }
+
+        return GBResult.ok();
     }
 
     @GetMapping("test")

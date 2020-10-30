@@ -1,4 +1,4 @@
-package com.yangjie.JGB28181.entity;
+package com.yangjie.JGB28181.entity.searchCondition;
 
 import lombok.Data;
 

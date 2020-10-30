@@ -80,6 +80,8 @@ public class ActionController implements OnProcessListener {
 
 	public static Map<String, TCPHandler> tcpHandlerMap = new HashMap<>(20);
 
+	public static Map<Integer, PushStreamDevice> streamingDeviceMap = new HashMap<>(20);
+
 
 
 	/**
@@ -91,8 +93,9 @@ public class ActionController implements OnProcessListener {
 	 */
 	@RequestMapping("play")
 	public GBResult play(
-			@RequestParam("deviceId")String deviceId,
-			@RequestParam("channelId")String channelId,
+			@RequestParam(value = "id", required = false)Integer id,
+			@RequestParam(value = "deviceId", required = false)String deviceId,
+			@RequestParam(value = "channelId", required = false)String channelId,
 			@RequestParam(required = false,name = "protocol",defaultValue = "TCP")String
 			mediaProtocol){
 		GBResult result = null;
@@ -119,7 +122,7 @@ public class ActionController implements OnProcessListener {
 			boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
 			//3.下发指令
 			String callId = IDUtils.id();
-			callId = "abc";
+//			callId = "abc";
 			//getPort可能耗时，在外面调用。
 			int port = mSipLayer.getPort(isTcp);
 			String ssrc = mSipLayer.getSsrc(true);
@@ -145,6 +148,10 @@ public class ActionController implements OnProcessListener {
 
 				observer.setOnProcessListener(this);
 				mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
+				// 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
+				if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
+					streamingDeviceMap.put(id, pushStreamDevice);
+				}
 				result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
 			}
 			else {

@@ -24,4 +24,28 @@ public class LiveCamInfoVo {
     private String netStatus;
     // 最后一次更新时间
     private String lastUpdateTime;
+    /**
+     * 是否在录像
+     */
+    private Integer recording;
+    /**
+     * 是否在推流
+     */
+    private Integer streaming;
+    /**
+     * 截图文件数量
+     */
+    private Integer shortcutNum;
+    /**
+     * 本地文件（录像+截图）总大小
+     */
+    private Long fileSize;
+    /**
+     * 是否接入AI
+     */
+    private Integer AIApplied;
+    /**
+     * 接入级联平台的数量
+     */
+    private Integer cascadeNum;
 }

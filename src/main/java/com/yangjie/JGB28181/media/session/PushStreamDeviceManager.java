@@ -106,4 +106,7 @@ public class PushStreamDeviceManager {
 	public PushStreamDevice removeByChannelId(String channelId){
 		return channelId != null ? remove(channelIdMap.remove(channelId)):null;
 	}
+	public boolean containKey(String key) {
+		return mainMap.containsKey(key);
+	}
 }

@@ -12,6 +12,7 @@ import com.yangjie.JGB28181.entity.enumEntity.NetTypeEnum;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
+import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 public class UpdateDeviceJob {
@@ -52,7 +54,8 @@ public class UpdateDeviceJob {
         this.removeDuplicateDevice(deviceSet, GBDeviceSet, onvifDuplicateSet, onvifNoDuplicateSet);
 
         // 4. 把去重后的onvif设备和国标设备放入到数据结构中
-        List<LiveCamInfoVo> unregisteredDataList = packageVoList(onvifDuplicateSet, onvifNoDuplicateSet, GBDeviceSet);
+        Map<String, Integer> liveCamIpCidMap = DeviceManagerController.liveCamVoList.stream().collect(Collectors.toMap(LiveCamInfoVo::getIp, LiveCamInfoVo::getCid));
+        List<LiveCamInfoVo> unregisteredDataList = packageVoList(onvifDuplicateSet, onvifNoDuplicateSet, GBDeviceSet, liveCamIpCidMap);
 
         // 5. 从数据库中获取已注册的摄像头
         List<CameraInfo> cameraInfoList = cameraInfoService.getAllData();
@@ -161,15 +164,15 @@ public class UpdateDeviceJob {
      * @return
      */
     private List<LiveCamInfoVo> packageVoList(Set<String> onvifDuplicateSet, Set<String> onvifNoDuplicateSet,
-                                              Set<Device> GBDeviceSet) {
+                                              Set<Device> GBDeviceSet, Map<String, Integer> liveCamIpCidMap) {
         List<LiveCamInfoVo> dataList = new ArrayList<>();
         String updateTime = DateUtils.getFormatDateTime(new Date());
         Random random = new Random();
         // 把国标设备放入到结果list中
-        this.packageGBDeviceToLiveCamVo(GBDeviceSet, dataList, onvifDuplicateSet, random, updateTime);
+        this.packageGBDeviceToLiveCamVo(GBDeviceSet, dataList, onvifDuplicateSet, liveCamIpCidMap, random, updateTime);
 
         // 把onvif设备放入到结果list中
-        this.packageOnvifDeviceToLiveCamVo(onvifNoDuplicateSet, dataList, random, updateTime);
+        this.packageOnvifDeviceToLiveCamVo(onvifNoDuplicateSet, dataList, liveCamIpCidMap, random, updateTime);
         return dataList;
     }
 
@@ -182,7 +185,7 @@ public class UpdateDeviceJob {
      * @param updateTime
      */
     private void packageGBDeviceToLiveCamVo(Set<Device> GBDeviceSet, List<LiveCamInfoVo> dataList, Set<String> onvifDuplicateSet,
-                                            Random random, String updateTime) {
+                                            Map<String, Integer> liveCamIpCidMap, Random random, String updateTime) {
         for (Device GBDevice : GBDeviceSet) {
             String wanIp = GBDevice.getHost().getWanIp();
             String deviceType = GBDevice.getDeviceType();
@@ -191,6 +194,12 @@ public class UpdateDeviceJob {
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
+            // 如果数据已经存在，保持cid不变
+            if (liveCamIpCidMap.containsKey(wanIp)) {
+                data.setCid(liveCamIpCidMap.get(wanIp));
+            } else {
+                data.setCid(cid);
+            }
             data.setCid(cid);
             data.setDeviceId(cid);
             data.setIp(wanIp);
@@ -227,7 +236,8 @@ public class UpdateDeviceJob {
      * @param random
      * @param updateTime
      */
-    private void packageOnvifDeviceToLiveCamVo(Set<String> onvifNoDuplicateSet, List<LiveCamInfoVo> dataList, Random random, String updateTime) {
+    private void packageOnvifDeviceToLiveCamVo(Set<String> onvifNoDuplicateSet, List<LiveCamInfoVo> dataList,
+                                               Map<String, Integer> liveCamIpCidMap, Random random, String updateTime) {
         for (String onvifNoDuplicateUrl : onvifNoDuplicateSet) {
             Pattern pattern = Pattern.compile(BaseConstants.IPV4_REGEX);
             Matcher matcher = pattern.matcher(onvifNoDuplicateUrl);
@@ -237,6 +247,12 @@ public class UpdateDeviceJob {
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
+            // 如果数据已经存在，保持cid不变
+            if (liveCamIpCidMap.containsKey(ip)) {
+                data.setCid(liveCamIpCidMap.get(ip));
+            } else {
+                data.setCid(cid);
+            }
             data.setCid(cid);
             data.setDeviceId(cid);
             data.setIp(ip);
