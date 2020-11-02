@@ -1,8 +1,11 @@
 package com.yangjie.JGB28181.message;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.text.ParseException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -27,10 +30,12 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
+import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
@@ -122,6 +127,8 @@ public class SipLayer implements SipListener{
 
 	private ServerInfoBo connectServerInfo = new ServerInfoBo();
 
+	private static Map<String, String> deviceCatalogMap = new HashMap<>(20);
+
 	public SipLayer(String sipId,String sipRealm,String password,String localIp,int localPort,String streamMediaIp){
 		this.mSipId = sipId;
 		this.mLocalIp= localIp;
@@ -210,6 +217,7 @@ public class SipLayer implements SipListener{
 		SAXReader reader = new SAXReader();
 		//reader.setEncoding("GB2312");
 		Document xml = reader.read(new ByteArrayInputStream(request.getRawContent()));
+
 		Element rootElement = xml.getRootElement();
 		String name = rootElement.getQName().getName();
 		String cmd = rootElement.element("CmdType").getStringValue();
@@ -233,6 +241,14 @@ public class SipLayer implements SipListener{
 		
 		//目录响应，保存到redis
 		else if(MESSAGE_CATALOG.equals(cmd) && QNAME_RESPONSE.equals(name)){
+			// 获取catalog中的item信息，保存到map中
+			String str = new String(request.getRawContent(), "utf8");
+			Pattern pattern = Pattern.compile(BaseConstants.CATALOG_ITEM_REGEX);
+			Matcher matcher = pattern.matcher(str);
+			if (matcher.find()) {
+				String deviceItemContent = matcher.group();
+				deviceCatalogMap.put(deviceId, deviceItemContent);
+			}
 
 			Element deviceListElement = rootElement.element(ELEMENT_DEVICE_LIST);
 			if(deviceListElement == null){
@@ -275,6 +291,8 @@ public class SipLayer implements SipListener{
 				//更新Redis
 				RedisUtil.set(deviceId, JSONObject.toJSONString(device));
 			}
+		} else if (MESSAGE_CATALOG.equals(cmd) && QNAME_QUERY.equals(name)) {
+
 		}
 		if(response == null){
 			response = mMessageFactory.createResponse(Response.OK,request);

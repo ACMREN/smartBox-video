@@ -2,7 +2,6 @@ package com.yangjie.JGB28181.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.result.GBResult;
-import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
@@ -11,7 +10,6 @@ import com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
-import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +100,7 @@ public class DeviceManagerController {
      */
     @GetMapping(value = "getGBInfo")
     public GBResult getGBInfo() throws UnknownHostException {
+        // 如果信令服务器的设置为空，则设置配置中的默认配置
         if (null == serverInfoBo) {
             serverInfoBo = new ServerInfoBo();
             serverInfoBo.setId(sipId);
@@ -140,7 +139,7 @@ public class DeviceManagerController {
      * @return
      */
     @PostMapping(value = "setGBInfo")
-    public GBResult setGBInfo(ServerInfoBo serverInfoBo) {
+    public GBResult setGBInfo(@RequestBody ServerInfoBo serverInfoBo) {
         this.host = serverInfoBo.getHost();
         this.listenPort = serverInfoBo.getPort();
         this.password = serverInfoBo.getPw();
@@ -161,7 +160,7 @@ public class DeviceManagerController {
      * @return
      */
     @PostMapping(value = "getLiveCamList")
-    public GBResult getLiveCamList(SearchLiveCamCondition searchLiveCamCondition) {
+    public GBResult getLiveCamList(@RequestBody SearchLiveCamCondition searchLiveCamCondition) {
         List<LiveCamInfoVo> resultList = liveCamVoList;
         // 1. 按照搜索条件进行过滤
         if (!StringUtils.isEmpty(searchLiveCamCondition.getLinkType())) {
@@ -305,8 +304,17 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
-    @GetMapping("test")
-    public GBResult testSearch() {
+    @GetMapping(value = "removeDevice")
+    public GBResult removeDevice(@ModelAttribute DeviceBaseCondition deviceBaseCondition) {
+        List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+        deviceBaseInfoService.getBaseMapper().deleteBatchIds(deviceIds);
+
+        return GBResult.ok();
+    }
+
+    @PostMapping("test")
+    public GBResult testSearch(@RequestBody SearchLiveCamCondition condition) {
+        System.out.println(condition);
         return GBResult.ok();
     }
 

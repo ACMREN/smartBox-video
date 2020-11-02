@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
-import org.bytedeco.javacpp.avcodec;
-import org.bytedeco.javacpp.avcodec.AVPacket;
+import org.bytedeco.ffmpeg.avcodec.AVPacket;
+import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class RtmpPusher extends Observer{
 	private String deviceId;
 
 	FFmpegFrameGrabber grabber = null;
-	CustomFFmpegFrameRecorder recorder = null;
+	FFmpegFrameGrabber recorder = null;
 
 	public String getDeviceId() {
 		return deviceId;
@@ -95,7 +95,7 @@ public class RtmpPusher extends Observer{
 		try{
 			//pis = new PipedInputStream(pos,1024*1024);
 			pis = new PipedInputStream(pos, 1024);
-			grabber = new FFmpegFrameGrabber(pis,1024);
+			grabber = new FFmpegFrameGrabber(pis,0);
 			//阻塞式，直到通道有数据
 			grabber.setOption("stimeout", "200000");
 			grabber.start();
@@ -105,6 +105,23 @@ public class RtmpPusher extends Observer{
 			recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 			recorder.setFormat("flv");
 			recorder.setFrameRate(25);
+
+//			recorder = new FFmpegFrameRecorder(address, 1280, 720, 0);
+//			recorder.setFormat("hls");
+//			recorder.setOption("loglevel", "quiet");
+//			recorder.setOption("vcodec", "libx264");
+//			recorder.setOption("vprofile", "baseline");
+//			recorder.setOption("acodec", "aac");
+//			recorder.setOption("ar", "44100");
+//			recorder.setOption("strict", "2");
+//			recorder.setOption("ac", "1");
+//			recorder.setOption("f", "flv");
+//			recorder.setOption("s", "1280x720");
+//			recorder.setOption("q", "10");
+//			recorder.setOption("hls_time", "10");
+//			recorder.setOption("hls_wrap", "5");
+
+
 			recorder.start(grabber.getFormatContext());
 			AVPacket avPacket;
 
@@ -118,9 +135,10 @@ public class RtmpPusher extends Observer{
 				if (avPacket != null && avPacket.size() >0 && avPacket.data() != null) {
 					pts = mPtsQueue.pop();
 					//pts+=40;
-//					vmFree = rt.freeMemory() / byteToMb;
-//					System.out.println("JVM内存的空闲空间为：" + vmFree + " MB");
+					vmFree = rt.freeMemory() / byteToMb;
+					System.out.println("JVM内存的空闲空间为：" + vmFree + " MB");
 					recorder.recordPacket(avPacket,pts,pts);
+//					recorder.recordPacket(avPacket);
 				}
 			}
 

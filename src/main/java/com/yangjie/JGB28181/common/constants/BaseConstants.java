@@ -12,4 +12,6 @@ public interface BaseConstants {
 
     String IPV4_REGEX = "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+";
 
+    String CATALOG_ITEM_REGEX = "(<Item[\\s\\S]+)?</Item>";
+
 }

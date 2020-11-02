@@ -7,11 +7,11 @@ CREATE TABLE `camera_info`(
 	link_type TINYINT(2) DEFAULT 0 COMMENT '注册类型：0-链接，1-国标，2-平台',
 	net_type TINYINT(2) DEFAULT 0 COMMENT '网络类型：0-局域网，1-互联网',
 	PRIMARY KEY (id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='摄像头注册表';
 
 CREATE TABLE `device_base_info` (
     id INT(10) AUTO_INCREMENT COMMENT '自增id',
-    rtsp_link VARCHAR(200) DEFAULT '' COMMENT 'rtsp链接',d
+    rtsp_link VARCHAR(200) DEFAULT '' COMMENT 'rtsp链接',
     project VARCHAR(20) DEFAULT '' COMMENT '项目名称',
     device_name VARCHAR(20) DEFAULT '' COMMENT '设备名称',
     device_type TINYINT(2) DEFAULT 0 COMMENT '设备类型：1-枪机，2-球机，3-半球机',
@@ -22,4 +22,4 @@ CREATE TABLE `device_base_info` (
     reg_date DATE COMMENT '注册日期',
     specification VARCHAR(100) DEFAULT '' COMMENT '品牌型号',
     PRIMARY KEY (id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='设备基础信息表';
