@@ -3,6 +3,7 @@ package com.yangjie.JGB28181.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
+import com.yangjie.JGB28181.entity.PageListVo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
@@ -222,12 +223,16 @@ public class DeviceManagerController {
         // 3. 对最终结果进行分页
         Integer pageNo = searchLiveCamCondition.getPageNo();
         Integer pageSize = searchLiveCamCondition.getPageSize();
+        PageListVo pageResult = new PageListVo();
         if (null != pageNo && null != pageSize) {
+            Integer total = resultList.size();
             Integer skipNum = (pageNo - 1) * pageSize;
             resultList = resultList.stream().skip(skipNum).limit(pageSize).collect(Collectors.toList());
+
+            pageResult = new PageListVo(resultList, pageNo, pageSize, total);
         }
 
-        return GBResult.ok(resultList);
+        return GBResult.ok(pageResult);
     }
 
     /**

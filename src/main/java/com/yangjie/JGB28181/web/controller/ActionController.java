@@ -145,7 +145,7 @@ public class ActionController implements OnProcessListener {
 
 			//4.1响应成功，创建推流session
 			if(response != null ){
-				String address = pushHlsAddress.concat(streamName);
+				String address = pushRtmpAddress.concat(streamName);
 				Server server = isTcp ? new TCPServer() : new UDPServer();
 				Observer observer = new RtmpPusher(address, callId);
 				((RtmpPusher) observer).setDeviceId(streamName);
