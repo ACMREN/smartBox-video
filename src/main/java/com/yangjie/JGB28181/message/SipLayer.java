@@ -399,7 +399,7 @@ public class SipLayer implements SipListener{
 		if(isRegisterSuceess && device != null){
 			String callId = IDUtils.id();
 			String fromTag = IDUtils.id();
-			RedisUtil.set(device.getDeviceId(), expiredTime, JSONObject.toJSONString(device));
+			RedisUtil.set(SipLayer.SUB_DEVICE_PREFIX + device.getDeviceId(), expiredTime, JSONObject.toJSONString(device));
 			sendCatalog(device, callId, fromTag, mCseq, String.valueOf(mSN));
 		}
 	}
