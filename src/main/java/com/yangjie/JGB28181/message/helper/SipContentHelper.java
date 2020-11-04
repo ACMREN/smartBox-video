@@ -1,6 +1,9 @@
  package com.yangjie.JGB28181.message.helper;
 
-public class SipContentHelper {
+ import java.util.Map;
+ import java.util.Set;
+
+ public class SipContentHelper {
 
 	public static String generateCatalogContent(String deviceId,String sn){
         StringBuffer content = new StringBuffer(200);
@@ -43,6 +46,39 @@ public class SipContentHelper {
         content.append("<Info>\r\n");
         content.append("</Info>\r\n");
         content.append("</Notify>");
+        return content.toString();
+    }
+
+    public static String generateResponseCatalogContent(String deviceId, String sn, Set<Map.Entry<String, String>> subDeviceCatalogSet) {
+	    int deviceNum = subDeviceCatalogSet.size() + 1;
+	    StringBuilder content = new StringBuilder();
+        content.append("<?xml version=\"1.0\" encoding=\"GB2312\"?>\r\n");
+        content.append("<Response>\r\n");
+        content.append("<CmdType>Catalog</CmdType>\r\n");
+        content.append("<SN>" + sn + "</SN>\r\n");
+        content.append("<DeviceID>" + deviceId + "</DeviceID>\r\n");
+        content.append("<SumNum>" + deviceNum + "</SumNum>\r\n");
+        content.append("<DeviceList Num=\"" + deviceNum + "\">\r\n");
+        content.append("<Item>\r\n");
+        content.append("<DeviceID>" + deviceId + "</DeviceID>\r\n");
+        content.append("<Name>Box 01</Name>\r\n");
+        content.append("<Manufacturer>SmartCity</Manufacturer>\r\n");
+        content.append("<Model>Edge Box</Model>\r\n");
+        content.append("<Owner>Owner</Owner>\r\n");
+        content.append("<CivilCode>CivilCode</CivilCode>\r\n");
+        content.append("<Address>Address</Address>\r\n");
+        content.append("<Parental>0</Parental>\r\n");
+        content.append("<ParentID>" + deviceId + "</ParentID>\r\n");
+        content.append("<SafetyWay>0</SafetyWay>\r\n");
+        content.append("<RegisterWay>1</RegisterWay>\r\n");
+        content.append("<Secrecy>0</Secrecy>\r\n");
+        content.append("<Status>ON</Status>\r\n");
+        content.append("</Item>\r\n");
+        for (Map.Entry<String, String> subDeviceCatalog : subDeviceCatalogSet) {
+            content.append(subDeviceCatalog.getValue()).append("\r\n");
+        }
+        content.append("</DeviceList>\r\n");
+        content.append("</Response>\r\n");
         return content.toString();
     }
 }

@@ -221,6 +221,7 @@ public class SipLayer implements SipListener{
 		Element rootElement = xml.getRootElement();
 		String name = rootElement.getQName().getName();
 		String cmd = rootElement.element("CmdType").getStringValue();
+		String sn = rootElement.element("SN").getStringValue();
 		Element deviceIdElement = rootElement.element(ELEMENT_DEVICE_ID);
 		if(deviceIdElement == null){
 			return;
@@ -241,14 +242,6 @@ public class SipLayer implements SipListener{
 		
 		//目录响应，保存到redis
 		else if(MESSAGE_CATALOG.equals(cmd) && QNAME_RESPONSE.equals(name)){
-			// 获取catalog中的item信息，保存到map中
-			String str = new String(request.getRawContent(), "utf8");
-			Pattern pattern = Pattern.compile(BaseConstants.CATALOG_ITEM_REGEX);
-			Matcher matcher = pattern.matcher(str);
-			if (matcher.find()) {
-				String deviceItemContent = matcher.group();
-				deviceCatalogMap.put(deviceId, deviceItemContent);
-			}
 
 			Element deviceListElement = rootElement.element(ELEMENT_DEVICE_LIST);
 			if(deviceListElement == null){
@@ -286,13 +279,23 @@ public class SipLayer implements SipListener{
 					deviceChannel.setDeviceId(channelDeviceId);
 					deviceChannel.setStatus(status.equals("ON")?DeviceConstants.ON_LINE:DeviceConstants.OFF_LINE);
 
+					// 把下属设备的item属性放入map中
+					String itemContent = itemDevice.asXML();
+					String subDeviceCatalog = deviceCatalogMap.get(channelDeviceId);
+					if (StringUtils.isEmpty(subDeviceCatalog)) {
+						deviceCatalogMap.put(channelDeviceId, itemContent);
+					}
+
 					channelMap.put(channelDeviceId, deviceChannel);
 				}
 				//更新Redis
 				RedisUtil.set(deviceId, JSONObject.toJSONString(device));
 			}
 		} else if (MESSAGE_CATALOG.equals(cmd) && QNAME_QUERY.equals(name)) {
-
+			String callId = IDUtils.id();
+			String fromTag = IDUtils.id();
+			sendResponseCatalog(connectServerInfo.getId(), connectServerInfo.getDomain(), connectServerInfo.getHost(),
+					connectServerInfo.getPort(), connectServerInfo.getPw(), callId, fromTag, sn, 1);
 		}
 		if(response == null){
 			response = mMessageFactory.createResponse(Response.OK,request);
@@ -457,6 +460,20 @@ public class SipLayer implements SipListener{
 		connectServerInfo.setId(serverId);
 		connectServerInfo.setDomain(serverDomain);
 		connectServerInfo.setPw(password);
+
+		sendRequest(request);
+	}
+
+	public void sendResponseCatalog(String serverId, String serverDomain, String serverIp, String serverPort, String password,
+									String callId, String fromTag, String sn, long cseq) throws ParseException, InvalidArgumentException, SipException {
+		Set<Map.Entry<String, String>> subDeviceCatalogSet = deviceCatalogMap.entrySet();
+		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
+		String serverAddress = serverIp + ":" + serverPort;
+		Request request = createRequest(serverId, serverAddress, clientInfo.getHost(), Integer.valueOf(clientInfo.getPort()), "UDP",
+				clientInfo.getId(), clientInfo.getDomain(), fromTag, serverId, serverDomain, null, callId, cseq, Request.MESSAGE);
+		String responseCatalogContent = SipContentHelper.generateResponseCatalogContent(clientInfo.getId(), sn, subDeviceCatalogSet);
+		ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "MANSCDP+xml");
+		request.setContent(responseCatalogContent, contentTypeHeader);
 
 		sendRequest(request);
 	}
