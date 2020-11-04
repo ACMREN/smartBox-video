@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yangjie.JGB28181.message.SipLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,10 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.yangjie.JGB28181.message.config.ConfigProperties;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -107,8 +105,10 @@ public class RedisUtil {
 			boolean isFinished = false;
 			String cursor = "0";
 			Map<String, String> resultMap = new HashMap();
+			ScanParams params = new ScanParams();
+			params.match(SipLayer.CLIENT_DEVICE_PREFIX);
 			while (!isFinished) {
-				ScanResult<String> scanResult = jedis.scan(cursor);
+				ScanResult<String> scanResult = jedis.scan(cursor, params);
 				cursor = scanResult.getCursor();
 				List<String> result = scanResult.getResult();
 				for (String key : result) {
