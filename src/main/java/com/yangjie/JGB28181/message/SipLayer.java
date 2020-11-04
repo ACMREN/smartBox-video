@@ -485,9 +485,10 @@ public class SipLayer implements SipListener{
 		// 把该设备的下属设备catalog信息拿出来
 		String deviceStr = RedisUtil.get(CLIENT_DEVICE_PREFIX + clientInfo.getId());
 		Set<String> subDeviceCatalogSet = new HashSet<>();
-		Map<String, Device> subDeviceMap = JSONObject.parseObject(deviceStr, HashMap.class);
-		for (Map.Entry<String, Device> item : subDeviceMap.entrySet()) {
-			Map<String, String> channelCatalogMap = item.getValue().getChannelCatalogMap();
+		Map<String, JSONObject> subDeviceMap = JSONObject.parseObject(deviceStr, HashMap.class);
+		for (Map.Entry<String, JSONObject> item : subDeviceMap.entrySet()) {
+			Device subDevice = item.getValue().toJavaObject(Device.class);
+			Map<String, String> channelCatalogMap = subDevice.getChannelCatalogMap();
 			for (String subDeviceCatalog : channelCatalogMap.values()) {
 				subDeviceCatalogSet.add(subDeviceCatalog);
 			}
