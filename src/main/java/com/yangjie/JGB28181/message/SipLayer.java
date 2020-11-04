@@ -240,6 +240,7 @@ public class SipLayer implements SipListener{
 				RedisUtil.expire(SUB_DEVICE_PREFIX + deviceId, expiredTime);
 			}else {
 				response = mMessageFactory.createResponse(Response.BAD_REQUEST,request);
+
 			}
 		}
 		
@@ -252,7 +253,7 @@ public class SipLayer implements SipListener{
 			}
 			Iterator<Element> deviceListIterator = deviceListElement.elementIterator();
 			if(deviceListIterator != null){
-				String deviceStr = RedisUtil.get(deviceId);
+				String deviceStr = RedisUtil.get(SUB_DEVICE_PREFIX + deviceId);
 				if(StringUtils.isEmpty(deviceStr)){
 					return ;
 				}
