@@ -299,6 +299,7 @@ public class SipLayer implements SipListener{
 
 					channelMap.put(channelDeviceId, deviceChannel);
 				}
+				subDeviceMap.put(deviceId, device);
 
 
 				//更新Redis
@@ -482,7 +483,7 @@ public class SipLayer implements SipListener{
 									String callId, String fromTag, String sn, long cseq) throws ParseException, InvalidArgumentException, SipException {
 		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
 		// 把该设备的下属设备catalog信息拿出来
-		String deviceStr = RedisUtil.get(clientInfo.getId());
+		String deviceStr = RedisUtil.get(CLIENT_DEVICE_PREFIX + clientInfo.getId());
 		Set<String> subDeviceCatalogSet = new HashSet<>();
 		Map<String, Device> subDeviceMap = JSONObject.parseObject(deviceStr, HashMap.class);
 		for (Map.Entry<String, Device> item : subDeviceMap.entrySet()) {
