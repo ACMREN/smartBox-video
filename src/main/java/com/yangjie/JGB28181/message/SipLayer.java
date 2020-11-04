@@ -271,6 +271,7 @@ public class SipLayer implements SipListener{
 				Map<String, String> channelCatalogMap = device.getChannelCatalogMap();
 				if (null == channelCatalogMap) {
 					channelCatalogMap = new HashMap<>();
+					device.setChannelCatalogMap(channelCatalogMap);
 				}
 				//遍历DeviceList
 				while (deviceListIterator.hasNext()) {
