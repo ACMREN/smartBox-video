@@ -114,7 +114,7 @@ public class ActionController implements OnProcessListener {
 		try{
 			int pushPort = 1935;
 			//1.从redis查找设备，如果不存在，返回离线
-			String deviceStr = RedisUtil.get(deviceId);
+			String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + deviceId);
 			if(StringUtils.isEmpty(deviceStr)){
 				return GBResult.build(ResultConstants.DEVICE_OFF_LINE_CODE, ResultConstants.DEVICE_OFF_LINE);
 			}

@@ -105,7 +105,8 @@ public class SipLayer implements SipListener{
 	private static final String ELEMENT_NAME = "Name";
 	private static final String ELEMENT_STATUS = "Status";
 
-	private static final String CLIENT_DEVICE_PREFIX = "client_";
+	public static final String CLIENT_DEVICE_PREFIX = "client_";
+	public static final String SUB_DEVICE_PREFIX = "sub_";
 
 	private static final int STREAM_MEDIA_START_PORT = 20000;
 	private static final int STREAM_MEDIA_END_PORT = 21000;
@@ -235,8 +236,8 @@ public class SipLayer implements SipListener{
 		//如果redis中设备在线，更新。
 		//不在线回复400
 		if(MESSAGE_KEEP_ALIVE.equals(cmd)){
-			if(RedisUtil.checkExist(deviceId)){
-				RedisUtil.expire(deviceId, expiredTime);
+			if(RedisUtil.checkExist(SUB_DEVICE_PREFIX + deviceId)){
+				RedisUtil.expire(SUB_DEVICE_PREFIX + deviceId, expiredTime);
 			}else {
 				response = mMessageFactory.createResponse(Response.BAD_REQUEST,request);
 			}
@@ -303,7 +304,7 @@ public class SipLayer implements SipListener{
 
 
 				//更新Redis
-				RedisUtil.set(deviceId, JSONObject.toJSONString(device));
+				RedisUtil.set(SUB_DEVICE_PREFIX + deviceId, JSONObject.toJSONString(device));
 				RedisUtil.set(CLIENT_DEVICE_PREFIX + clientId, JSONObject.toJSONString(subDeviceMap));
 			}
 		} else if (MESSAGE_CATALOG.equals(cmd) && QNAME_QUERY.equals(name)) {
