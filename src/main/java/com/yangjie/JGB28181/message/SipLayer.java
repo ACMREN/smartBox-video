@@ -105,6 +105,8 @@ public class SipLayer implements SipListener{
 	private static final String ELEMENT_NAME = "Name";
 	private static final String ELEMENT_STATUS = "Status";
 
+	private static final String CLIENT_DEVICE_PREFIX = "client_";
+
 	private static final int STREAM_MEDIA_START_PORT = 20000;
 	private static final int STREAM_MEDIA_END_PORT = 21000;
 	public static  int mStreamPort = STREAM_MEDIA_START_PORT;
@@ -259,6 +261,17 @@ public class SipLayer implements SipListener{
 					channelMap = new HashMap<String, DeviceChannel>(5);
 					device.setChannelMap(channelMap);
 				}
+
+				ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
+				String clientId = clientInfo.getId();
+				Map<String, Device> subDeviceMap = clientInfo.getSubDeviceMap();
+				if (null == subDeviceMap) {
+					subDeviceMap = new HashMap<>();
+				}
+				Map<String, String> channelCatalogMap = device.getChannelCatalogMap();
+				if (null == channelCatalogMap) {
+					channelCatalogMap = new HashMap<>();
+				}
 				//遍历DeviceList
 				while (deviceListIterator.hasNext()) {
 					Element itemDevice = deviceListIterator.next();
@@ -281,15 +294,15 @@ public class SipLayer implements SipListener{
 
 					// 把下属设备的item属性放入map中
 					String itemContent = itemDevice.asXML();
-					String subDeviceCatalog = deviceCatalogMap.get(channelDeviceId);
-					if (StringUtils.isEmpty(subDeviceCatalog)) {
-						deviceChannel.setCatalogInfo(itemContent);
-					}
+					channelCatalogMap.put(channelDeviceId, itemContent);
 
 					channelMap.put(channelDeviceId, deviceChannel);
 				}
+
+
 				//更新Redis
 				RedisUtil.set(deviceId, JSONObject.toJSONString(device));
+				RedisUtil.set(CLIENT_DEVICE_PREFIX + clientId, JSONObject.toJSONString(subDeviceMap));
 			}
 		} else if (MESSAGE_CATALOG.equals(cmd) && QNAME_QUERY.equals(name)) {
 			String callId = IDUtils.id();
@@ -469,12 +482,13 @@ public class SipLayer implements SipListener{
 		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
 		// 把该设备的下属设备catalog信息拿出来
 		String deviceStr = RedisUtil.get(clientInfo.getId());
-		Device clientDevice = JSONObject.parseObject(deviceStr, Device.class);
-		Map<String, DeviceChannel> channelMap = clientDevice.getChannelMap();
 		Set<String> subDeviceCatalogSet = new HashSet<>();
-		for (Map.Entry<String, DeviceChannel> item : channelMap.entrySet()) {
-			String catalogInfo = item.getValue().getCatalogInfo();
-			subDeviceCatalogSet.add(catalogInfo);
+		Map<String, Device> subDeviceMap = JSONObject.parseObject(deviceStr, HashMap.class);
+		for (Map.Entry<String, Device> item : subDeviceMap.entrySet()) {
+			Map<String, String> channelCatalogMap = item.getValue().getChannelCatalogMap();
+			for (String subDeviceCatalog : channelCatalogMap.values()) {
+				subDeviceCatalogSet.add(subDeviceCatalog);
+			}
 		}
 
 		String serverAddress = serverIp + ":" + serverPort;

@@ -11,11 +11,6 @@ public class DeviceChannel {
 	 * 通道名
 	 */
 	private String name;
-
-	/**
-	 * 通道catalog信息
-	 */
-	private String catalogInfo;
 	
 	/**
 	 * 在线/离线
@@ -50,13 +45,5 @@ public class DeviceChannel {
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public String getCatalogInfo() {
-		return catalogInfo;
-	}
-
-	public void setCatalogInfo(String catalogInfo) {
-		this.catalogInfo = catalogInfo;
 	}
 }

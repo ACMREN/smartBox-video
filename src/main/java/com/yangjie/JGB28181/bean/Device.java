@@ -1,8 +1,11 @@
 package com.yangjie.JGB28181.bean;
 
+import lombok.Data;
+
+import java.util.List;
 import java.util.Map;
 
-
+@Data
 public class Device {
 
 	/**
@@ -35,6 +38,11 @@ public class Device {
 	 * 通道列表
 	 */
 	private Map<String,DeviceChannel> channelMap;
+
+	/**
+	 * 通道catalog信息列表
+	 */
+	private Map<String, String> channelCatalogMap;
 
 
 	public String getDeviceId() {
