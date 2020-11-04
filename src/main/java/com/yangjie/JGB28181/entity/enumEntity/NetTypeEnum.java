@@ -29,4 +29,14 @@ public enum NetTypeEnum {
         }
         return null;
     }
+
+    public static NetTypeEnum getDataByName(String name) {
+        for (NetTypeEnum item : NetTypeEnum.values()) {
+            String itemName = item.getName();
+            if (name.equals(itemName)) {
+                return item;
+            }
+        }
+        return null;
+    }
 }

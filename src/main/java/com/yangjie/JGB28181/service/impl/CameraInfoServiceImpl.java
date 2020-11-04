@@ -1,5 +1,6 @@
 package com.yangjie.JGB28181.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.mapper.CameraInfoMapper;
 import com.yangjie.JGB28181.service.CameraInfoService;
@@ -23,5 +24,11 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
     public List<CameraInfo> getAllData() {
         List<CameraInfo> cameraInfos = super.getBaseMapper().selectList(null);
         return cameraInfos;
+    }
+
+    @Override
+    public CameraInfo getDataByDeviceBaseId(Integer deviceBaseId) {
+        CameraInfo data = super.getBaseMapper().selectOne(new QueryWrapper<CameraInfo>().eq("device_base_id", deviceBaseId));
+        return data;
     }
 }

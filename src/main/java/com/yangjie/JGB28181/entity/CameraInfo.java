@@ -3,6 +3,11 @@ package com.yangjie.JGB28181.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.yangjie.JGB28181.entity.enumEntity.LinkStatusEnum;
+import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
+import com.yangjie.JGB28181.entity.enumEntity.NetTypeEnum;
+import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,6 +30,16 @@ public class CameraInfo implements Serializable {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
+    /**
+     * rtsp链接
+     */
+    private String rtspLink;
+
+    /**
+     * 基础设备id
+     */
+    private Integer deviceBaseId;
 
     /**
      * ip地址
@@ -56,5 +71,17 @@ public class CameraInfo implements Serializable {
      */
     private Integer netType;
 
+    public CameraInfo(CameraInfoVo cameraInfoVo) {
+        this.rtspLink = cameraInfoVo.getRtspLink();
+        this.deviceBaseId = cameraInfoVo.getDeviceBaseId();
+        this.ip = cameraInfoVo.getIp();
+        this.deviceName = cameraInfoVo.getDeviceName();
+        this.project = cameraInfoVo.getProject();
+        this.linkStatus = LinkStatusEnum.REGISTERED.getCode();
+        this.linkType = LinkTypeEnum.getDataByName(cameraInfoVo.getLinkType()).getCode();
+        this.netType = NetTypeEnum.getDataByName(cameraInfoVo.getNetType()).getCode();
+    }
 
+    public CameraInfo() {
+    }
 }

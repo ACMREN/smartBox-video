@@ -200,7 +200,6 @@ public class UpdateDeviceJob {
             } else {
                 data.setCid(cid);
             }
-            data.setCid(cid);
             data.setDeviceId(cid);
             data.setIp(wanIp);
             data.setDeviceName("");
@@ -253,7 +252,6 @@ public class UpdateDeviceJob {
             } else {
                 data.setCid(cid);
             }
-            data.setCid(cid);
             data.setDeviceId(cid);
             data.setIp(ip);
             data.setDeviceName("");

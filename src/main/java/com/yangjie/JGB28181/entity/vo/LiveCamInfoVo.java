@@ -8,6 +8,8 @@ public class LiveCamInfoVo {
     private Integer cid;
     // 设备id（表主键）
     private Integer deviceId;
+    // 基础设备id
+    private Integer baseDeviceId;
     // 设备的ip地址
     private String ip;
     // 设备名称

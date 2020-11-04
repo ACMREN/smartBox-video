@@ -30,4 +30,14 @@ public enum LinkTypeEnum {
         }
         return null;
     }
+
+    public static LinkTypeEnum getDataByName(String name) {
+        for (LinkTypeEnum item : LinkTypeEnum.values()) {
+            String itemName = item.getName();
+            if (name.equals(itemName)) {
+                return item;
+            }
+        }
+        return null;
+    }
 }

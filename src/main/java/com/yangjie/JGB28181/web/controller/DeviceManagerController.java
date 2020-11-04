@@ -2,8 +2,10 @@ package com.yangjie.JGB28181.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.PageListVo;
+import com.yangjie.JGB28181.entity.TreeInfo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
@@ -11,8 +13,10 @@ import com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
+import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
+import com.yangjie.JGB28181.service.TreeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -56,7 +60,13 @@ public class DeviceManagerController {
     private DeviceBaseInfoService deviceBaseInfoService;
 
     @Autowired
+    private CameraInfoService cameraInfoService;
+
+    @Autowired
     private IDeviceManagerService deviceManagerService;
+
+    @Autowired
+    private TreeInfoService treeInfoService;
 
     public static ServerInfoBo serverInfoBo = new ServerInfoBo();
 
@@ -297,12 +307,23 @@ public class DeviceManagerController {
         Map<Integer, DeviceBaseInfo> deviceBaseInfoIdMap = deviceBaseInfos.stream().collect(Collectors.toMap(DeviceBaseInfo::getId, Function.identity()));
 
         for (CameraInfoVo item : cameraInfoVos) {
-            Integer cameraDeviceId = item.getDeviceId();
+            // 先更新基础设备表
+            Integer deviceBaseId = item.getDeviceBaseId();
             DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(item);
-            if (deviceBaseInfoIdMap.containsKey(cameraDeviceId)) {
+            if (deviceBaseInfoIdMap.containsKey(deviceBaseId)) {
                 deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
             } else {
                 deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
+            }
+
+            // 再更新摄像头设备表
+            CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
+            if (null != cameraInfo) {
+                cameraInfo.setRtspLink(item.getRtspLink());
+                cameraInfoService.updateById(cameraInfo);
+            } else {
+                cameraInfo = new CameraInfo(item);
+                cameraInfoService.getBaseMapper().insert(cameraInfo);
             }
         }
 
@@ -315,6 +336,18 @@ public class DeviceManagerController {
         deviceBaseInfoService.getBaseMapper().deleteBatchIds(deviceIds);
 
         return GBResult.ok();
+    }
+
+    /**
+     * 获取树状图
+     * @return
+     */
+    @PostMapping(value = "getCameraTree")
+    public GBResult getCameraTree(Integer userId, String treeType) {
+        // 根据userId和treeType去获取树状图信息
+        List<TreeInfo> dataList = treeInfoService.getDataByUserAndType(userId, 1);
+
+        return GBResult.ok(dataList);
     }
 
     @PostMapping("test")

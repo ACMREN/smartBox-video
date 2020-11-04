@@ -36,11 +36,6 @@ public class DeviceBaseInfo implements Serializable {
     private Integer id;
 
     /**
-     * rtsp链接
-     */
-    private String rtspLink;
-
-    /**
      * 项目名称
      */
     private String project;
@@ -100,8 +95,7 @@ public class DeviceBaseInfo implements Serializable {
     }
 
     public DeviceBaseInfo (CameraInfoVo cameraInfoVo) {
-        this.id = cameraInfoVo.getDeviceId();
-        this.rtspLink = cameraInfoVo.getRtspLink();
+        this.id = cameraInfoVo.getDeviceBaseId();
         this.project = cameraInfoVo.getProject();
         this.address = cameraInfoVo.getAddress();
         this.deviceLink = DeviceLinkEnum.getDataByName(cameraInfoVo.getDeviceLink()).getCode();

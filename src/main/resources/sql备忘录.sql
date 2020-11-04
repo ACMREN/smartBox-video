@@ -1,5 +1,7 @@
 CREATE TABLE `camera_info`(
 	id INT(10) AUTO_INCREMENT COMMENT '自增id',
+	device_base_id INT(10) NOT NULL COMMENT '基础设备id',
+	rtsp_link VARCHAR(200) DEFAULT '' COMMENT 'rtsp链接',
 	ip VARCHAR(20) DEFAULT '' COMMENT 'ip地址',
 	device_name VARCHAR(20) DEFAULT '' COMMENT '设备名称',
 	project VARCHAR(20) DEFAULT '' COMMENT '项目名称',
@@ -11,7 +13,6 @@ CREATE TABLE `camera_info`(
 
 CREATE TABLE `device_base_info` (
     id INT(10) AUTO_INCREMENT COMMENT '自增id',
-    rtsp_link VARCHAR(200) DEFAULT '' COMMENT 'rtsp链接',
     project VARCHAR(20) DEFAULT '' COMMENT '项目名称',
     device_name VARCHAR(20) DEFAULT '' COMMENT '设备名称',
     device_type TINYINT(2) DEFAULT 0 COMMENT '设备类型：1-枪机，2-球机，3-半球机',
@@ -23,3 +24,11 @@ CREATE TABLE `device_base_info` (
     specification VARCHAR(100) DEFAULT '' COMMENT '品牌型号',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='设备基础信息表';
+
+CREATE TABLE `tree_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    user_id INT(10) NOT NULL COMMENT '用户id',
+    tree_info TEXT COMMENT '树状图信息',
+    tree_type TINYINT(2) DEFAULT 0 COMMENT '树状图类型：0-摄像头',
+    PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='树状图表';

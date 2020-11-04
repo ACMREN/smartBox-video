@@ -17,4 +17,6 @@ public interface CameraInfoService extends IService<CameraInfo> {
 
     List<CameraInfo> getAllData();
 
+    CameraInfo getDataByDeviceBaseId(Integer deviceBaseId);
+
 }
