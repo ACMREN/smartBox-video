@@ -283,7 +283,7 @@ public class SipLayer implements SipListener{
 					String itemContent = itemDevice.asXML();
 					String subDeviceCatalog = deviceCatalogMap.get(channelDeviceId);
 					if (StringUtils.isEmpty(subDeviceCatalog)) {
-						deviceCatalogMap.put(channelDeviceId, itemContent);
+						deviceChannel.setCatalogInfo(itemContent);
 					}
 
 					channelMap.put(channelDeviceId, deviceChannel);
@@ -466,8 +466,17 @@ public class SipLayer implements SipListener{
 
 	public void sendResponseCatalog(String serverId, String serverDomain, String serverIp, String serverPort, String password,
 									String callId, String fromTag, String sn, long cseq) throws ParseException, InvalidArgumentException, SipException {
-		Set<Map.Entry<String, String>> subDeviceCatalogSet = deviceCatalogMap.entrySet();
 		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
+		// 把该设备的下属设备catalog信息拿出来
+		String deviceStr = RedisUtil.get(clientInfo.getId());
+		Device clientDevice = JSONObject.parseObject(deviceStr, Device.class);
+		Map<String, DeviceChannel> channelMap = clientDevice.getChannelMap();
+		Set<String> subDeviceCatalogSet = new HashSet<>();
+		for (Map.Entry<String, DeviceChannel> item : channelMap.entrySet()) {
+			String catalogInfo = item.getValue().getCatalogInfo();
+			subDeviceCatalogSet.add(catalogInfo);
+		}
+
 		String serverAddress = serverIp + ":" + serverPort;
 		Request request = createRequest(serverId, serverAddress, clientInfo.getHost(), Integer.valueOf(clientInfo.getPort()), "UDP",
 				clientInfo.getId(), clientInfo.getDomain(), fromTag, serverId, serverDomain, null, callId, cseq, Request.MESSAGE);

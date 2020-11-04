@@ -49,7 +49,7 @@
         return content.toString();
     }
 
-    public static String generateResponseCatalogContent(String deviceId, String sn, Set<Map.Entry<String, String>> subDeviceCatalogSet) {
+    public static String generateResponseCatalogContent(String deviceId, String sn, Set<String> subDeviceCatalogSet) {
 	    int deviceNum = subDeviceCatalogSet.size() + 1;
 	    StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"GB2312\"?>\r\n");
@@ -74,8 +74,8 @@
         content.append("<Secrecy>0</Secrecy>\r\n");
         content.append("<Status>ON</Status>\r\n");
         content.append("</Item>\r\n");
-        for (Map.Entry<String, String> subDeviceCatalog : subDeviceCatalogSet) {
-            content.append(subDeviceCatalog.getValue()).append("\r\n");
+        for (String catalogInfo : subDeviceCatalogSet) {
+            content.append(catalogInfo).append("\r\n");
         }
         content.append("</DeviceList>\r\n");
         content.append("</Response>\r\n");
