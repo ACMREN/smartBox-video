@@ -8,6 +8,7 @@ import com.yangjie.JGB28181.entity.PageListVo;
 import com.yangjie.JGB28181.entity.TreeInfo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
+import com.yangjie.JGB28181.entity.enumEntity.TreeTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
 import com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
@@ -302,30 +303,7 @@ public class DeviceManagerController {
      */
     @PostMapping(value = "registerCamera")
     public GBResult registerCamera(@RequestBody List<CameraInfoVo> cameraInfoVos) {
-        List<Integer> cameraDeviceIds = cameraInfoVos.stream().map(CameraInfoVo::getDeviceId).collect(Collectors.toList());
-        List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(cameraDeviceIds);
-        Map<Integer, DeviceBaseInfo> deviceBaseInfoIdMap = deviceBaseInfos.stream().collect(Collectors.toMap(DeviceBaseInfo::getId, Function.identity()));
-
-        for (CameraInfoVo item : cameraInfoVos) {
-            // 先更新基础设备表
-            Integer deviceBaseId = item.getDeviceBaseId();
-            DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(item);
-            if (deviceBaseInfoIdMap.containsKey(deviceBaseId)) {
-                deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
-            } else {
-                deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
-            }
-
-            // 再更新摄像头设备表
-            CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
-            if (null != cameraInfo) {
-                cameraInfo.setRtspLink(item.getRtspLink());
-                cameraInfoService.updateById(cameraInfo);
-            } else {
-                cameraInfo = new CameraInfo(item);
-                cameraInfoService.getBaseMapper().insert(cameraInfo);
-            }
-        }
+        deviceManagerService.registerCameraInfo(cameraInfoVos);
 
         return GBResult.ok();
     }
@@ -345,9 +323,35 @@ public class DeviceManagerController {
     @PostMapping(value = "getCameraTree")
     public GBResult getCameraTree(Integer userId, String treeType) {
         // 根据userId和treeType去获取树状图信息
-        List<TreeInfo> dataList = treeInfoService.getDataByUserAndType(userId, 1);
+        int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
+        TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
 
-        return GBResult.ok(dataList);
+        return GBResult.ok(data);
+    }
+
+    /**
+     * 新增/更新树状图
+     * @param userId
+     * @param treeInfo
+     * @param treeType
+     * @return
+     */
+    @PostMapping(value = "setCameraTree")
+    public GBResult setCameraTree(Integer userId, String treeInfo, String treeType) {
+        int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
+        TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
+        if (null == data) {
+            data = new TreeInfo();
+            data.setUserId(userId);
+            data.setTreeInfo(treeInfo);
+            data.setTreeType(treeTypeCode);
+            treeInfoService.getBaseMapper().insert(data);
+        } else {
+            data.setTreeInfo(treeInfo);
+            treeInfoService.updateById(data);
+        }
+
+        return GBResult.ok();
     }
 
     @PostMapping("test")

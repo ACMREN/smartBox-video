@@ -21,8 +21,8 @@ import java.util.List;
 public class TreeInfoServiceImpl extends ServiceImpl<TreeInfoMapper, TreeInfo> implements TreeInfoService {
 
     @Override
-    public List<TreeInfo> getDataByUserAndType(Integer userId, Integer type) {
-        List<TreeInfo> dataList = list(new QueryWrapper<TreeInfo>().eq("user_id", userId).eq("tree_type", type));
-        return dataList;
+    public TreeInfo getDataByUserAndType(Integer userId, Integer type) {
+        TreeInfo data = super.getBaseMapper().selectOne(new QueryWrapper<TreeInfo>().eq("user_id", userId).eq("tree_type", type));
+        return data;
     }
 }

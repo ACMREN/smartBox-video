@@ -6,11 +6,14 @@ import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.DateUtils;
 import com.yangjie.JGB28181.common.utils.RedisUtil;
+import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.enumEntity.DeviceLinkEnum;
 import com.yangjie.JGB28181.entity.enumEntity.DeviceTypeEnum;
+import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
+import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.web.controller.ActionController;
@@ -20,16 +23,22 @@ import org.apache.cxf.ws.discovery.wsdl.ProbeMatchesType;
 import org.apache.cxf.ws.discovery.wsdl.ProbeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.xml.namespace.QName;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
     @Autowired
     private DeviceBaseInfoService deviceBaseInfoService;
+
+    @Autowired
+    CameraInfoService cameraInfoService;
 
     @Override
     public GBResult getLiveCamList() {
@@ -74,6 +83,36 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             return deviceSet;
         }
         return new HashSet<>();
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class)
+    @Override
+    public void registerCameraInfo(List<CameraInfoVo> cameraInfoVos) {
+        List<Integer> cameraDeviceIds = cameraInfoVos.stream().map(CameraInfoVo::getDeviceId).collect(Collectors.toList());
+        List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(cameraDeviceIds);
+        Map<Integer, DeviceBaseInfo> deviceBaseInfoIdMap = deviceBaseInfos.stream().collect(Collectors.toMap(DeviceBaseInfo::getId, Function.identity()));
+
+        for (CameraInfoVo item : cameraInfoVos) {
+            // 先更新基础设备表
+            Integer deviceBaseId = item.getDeviceBaseId();
+            DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(item);
+            if (deviceBaseInfoIdMap.containsKey(deviceBaseId)) {
+                deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
+            } else {
+                deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
+                item.setDeviceId(deviceBaseInfo.getId());
+            }
+
+            // 再更新摄像头设备表
+            CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
+            if (null != cameraInfo) {
+                cameraInfo.setRtspLink(item.getRtspLink());
+                cameraInfoService.updateById(cameraInfo);
+            } else {
+                cameraInfo = new CameraInfo(item);
+                cameraInfoService.getBaseMapper().insert(cameraInfo);
+            }
+        }
     }
 
     @Override

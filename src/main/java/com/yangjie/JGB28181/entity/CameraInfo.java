@@ -72,8 +72,8 @@ public class CameraInfo implements Serializable {
     private Integer netType;
 
     public CameraInfo(CameraInfoVo cameraInfoVo) {
+        this.deviceBaseId = cameraInfoVo.getDeviceId();
         this.rtspLink = cameraInfoVo.getRtspLink();
-        this.deviceBaseId = cameraInfoVo.getDeviceBaseId();
         this.ip = cameraInfoVo.getIp();
         this.deviceName = cameraInfoVo.getDeviceName();
         this.project = cameraInfoVo.getProject();

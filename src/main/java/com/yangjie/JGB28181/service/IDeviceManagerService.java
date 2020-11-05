@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
+import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 
@@ -25,6 +26,8 @@ public interface IDeviceManagerService {
      * @return
      */
     Set<Device> getAllGBDevice();
+
+    void registerCameraInfo(List<CameraInfoVo> cameraInfoVos);
 
     /**
      * 将数据库中设备基本数据转为VO

@@ -15,6 +15,6 @@ import java.util.List;
  */
 public interface TreeInfoService extends IService<TreeInfo> {
 
-    List<TreeInfo> getDataByUserAndType(Integer userId, Integer type);
+    TreeInfo getDataByUserAndType(Integer userId, Integer type);
 
 }
