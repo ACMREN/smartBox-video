@@ -31,10 +31,16 @@ public class TreeInfo implements Serializable {
      */
     private Integer userId;
 
+
     /**
      * 树状图信息
      */
     private String treeInfo;
+
+    /**
+     * 轮询列表信息
+     */
+    private String pollingList;
 
     /**
      * 树状图类型：0-摄像头

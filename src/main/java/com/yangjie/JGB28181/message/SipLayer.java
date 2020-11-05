@@ -240,7 +240,6 @@ public class SipLayer implements SipListener{
 				RedisUtil.expire(SUB_DEVICE_PREFIX + deviceId, expiredTime);
 			}else {
 				response = mMessageFactory.createResponse(Response.BAD_REQUEST,request);
-
 			}
 		}
 		
@@ -660,7 +659,7 @@ public class SipLayer implements SipListener{
 				}
 			} else if (Request.REGISTER.equals(method)) {
 				int statusCode = response.getStatusCode();
-				// 如果是
+				// 如果是未认证的状态
 				if (statusCode == Response.UNAUTHORIZED) {
 					String clientId = DeviceManagerController.serverInfoBo.getId();
 					String clientDomain = DeviceManagerController.serverInfoBo.getDomain();
@@ -695,6 +694,15 @@ public class SipLayer implements SipListener{
 							}
 						}
 					});
+				}
+			} else if (Request.MESSAGE.equals(method)) {
+				int statusCode = response.getStatusCode();
+				// 如果注册状态已经离线，则进行重新注册
+				if (statusCode == Response.BAD_REQUEST) {
+					String callId = IDUtils.id();
+					String fromTag = IDUtils.id();
+					sendRegister(connectServerInfo.getId(), connectServerInfo.getDomain(), connectServerInfo.getHost(), connectServerInfo.getPort(),
+							connectServerInfo.getPw(), callId, fromTag, null, null, null, mCseq);
 				}
 			}
 

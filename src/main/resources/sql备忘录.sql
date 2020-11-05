@@ -29,6 +29,7 @@ CREATE TABLE `tree_info` (
     id INT(10) AUTO_INCREMENT COMMENT '自增id',
     user_id INT(10) NOT NULL COMMENT '用户id',
     tree_info TEXT COMMENT '树状图信息',
+    polling_list TEXT COMMENT '轮询列表信息',
     tree_type TINYINT(2) DEFAULT 0 COMMENT '树状图类型：0-摄像头',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='树状图表';

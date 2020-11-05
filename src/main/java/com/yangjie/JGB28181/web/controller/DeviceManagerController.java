@@ -354,6 +354,45 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
+    /**
+     * 获取轮询列表信息
+     * @param userId
+     * @param treeType
+     * @return
+     */
+    @PostMapping(value = "getPollingList")
+    public GBResult getPollingList(Integer userId, String treeType) {
+        int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
+        TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
+
+        return GBResult.ok(data);
+    }
+
+    /**
+     * 更新轮询列表信息
+     * @param userId
+     * @param pollingList
+     * @param treeType
+     * @return
+     */
+    @PostMapping(value = "setPollingList")
+    public GBResult setPollingList(Integer userId, String pollingList, String treeType) {
+        int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
+        TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
+        if (null == data) {
+            data = new TreeInfo();
+            data.setUserId(userId);
+            data.setPollingList(pollingList);
+            data.setTreeType(treeTypeCode);
+            treeInfoService.getBaseMapper().insert(data);
+        } else {
+            data.setPollingList(pollingList);
+            treeInfoService.updateById(data);
+        }
+
+        return GBResult.ok();
+    }
+
     @PostMapping("test")
     public GBResult testSearch(@RequestBody SearchLiveCamCondition condition) {
         System.out.println(condition);
