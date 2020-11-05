@@ -54,8 +54,7 @@ public class UpdateDeviceJob {
         this.removeDuplicateDevice(deviceSet, GBDeviceSet, onvifDuplicateSet, onvifNoDuplicateSet);
 
         // 4. 把去重后的onvif设备和国标设备放入到数据结构中
-        Map<String, Integer> liveCamIpCidMap = DeviceManagerController.liveCamVoList.stream().collect(Collectors.toMap(LiveCamInfoVo::getIp, LiveCamInfoVo::getCid));
-        List<LiveCamInfoVo> unregisteredDataList = packageVoList(onvifDuplicateSet, onvifNoDuplicateSet, GBDeviceSet, liveCamIpCidMap);
+        List<LiveCamInfoVo> unregisteredDataList = packageVoList(onvifDuplicateSet, onvifNoDuplicateSet, GBDeviceSet);
 
         // 5. 从数据库中获取已注册的摄像头
         List<CameraInfo> cameraInfoList = cameraInfoService.getAllData();
@@ -164,15 +163,15 @@ public class UpdateDeviceJob {
      * @return
      */
     private List<LiveCamInfoVo> packageVoList(Set<String> onvifDuplicateSet, Set<String> onvifNoDuplicateSet,
-                                              Set<Device> GBDeviceSet, Map<String, Integer> liveCamIpCidMap) {
+                                              Set<Device> GBDeviceSet) {
         List<LiveCamInfoVo> dataList = new ArrayList<>();
         String updateTime = DateUtils.getFormatDateTime(new Date());
         Random random = new Random();
         // 把国标设备放入到结果list中
-        this.packageGBDeviceToLiveCamVo(GBDeviceSet, dataList, onvifDuplicateSet, liveCamIpCidMap, random, updateTime);
+        this.packageGBDeviceToLiveCamVo(GBDeviceSet, dataList, onvifDuplicateSet, random, updateTime);
 
         // 把onvif设备放入到结果list中
-        this.packageOnvifDeviceToLiveCamVo(onvifNoDuplicateSet, dataList, liveCamIpCidMap, random, updateTime);
+        this.packageOnvifDeviceToLiveCamVo(onvifNoDuplicateSet, dataList, random, updateTime);
         return dataList;
     }
 
@@ -185,7 +184,7 @@ public class UpdateDeviceJob {
      * @param updateTime
      */
     private void packageGBDeviceToLiveCamVo(Set<Device> GBDeviceSet, List<LiveCamInfoVo> dataList, Set<String> onvifDuplicateSet,
-                                            Map<String, Integer> liveCamIpCidMap, Random random, String updateTime) {
+                                            Random random, String updateTime) {
         for (Device GBDevice : GBDeviceSet) {
             String wanIp = GBDevice.getHost().getWanIp();
             String deviceType = GBDevice.getDeviceType();
@@ -194,12 +193,7 @@ public class UpdateDeviceJob {
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
-            // 如果数据已经存在，保持cid不变
-            if (liveCamIpCidMap.containsKey(wanIp)) {
-                data.setCid(liveCamIpCidMap.get(wanIp));
-            } else {
-                data.setCid(cid);
-            }
+            data.setPushStreamDeviceId(GBDevice.getDeviceId());
             data.setDeviceId(cid);
             data.setIp(wanIp);
             data.setDeviceName("");
@@ -236,7 +230,7 @@ public class UpdateDeviceJob {
      * @param updateTime
      */
     private void packageOnvifDeviceToLiveCamVo(Set<String> onvifNoDuplicateSet, List<LiveCamInfoVo> dataList,
-                                               Map<String, Integer> liveCamIpCidMap, Random random, String updateTime) {
+                                               Random random, String updateTime) {
         for (String onvifNoDuplicateUrl : onvifNoDuplicateSet) {
             Pattern pattern = Pattern.compile(BaseConstants.IPV4_REGEX);
             Matcher matcher = pattern.matcher(onvifNoDuplicateUrl);
@@ -246,18 +240,12 @@ public class UpdateDeviceJob {
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
-            // 如果数据已经存在，保持cid不变
-            if (liveCamIpCidMap.containsKey(ip)) {
-                data.setCid(liveCamIpCidMap.get(ip));
-            } else {
-                data.setCid(cid);
-            }
             data.setDeviceId(cid);
             data.setIp(ip);
             data.setDeviceName("");
             data.setProject("");
             data.setLinkStatus(LinkStatusEnum.UNREGISTERED.getName());
-            data.setLinkType(LinkTypeEnum.ONVIF.getName());
+            data.setLinkType(LinkTypeEnum.RTSP.getName());
             data.setNetStatus(NetStatusEnum.ONLINE.getName());
             data.setLastUpdateTime(updateTime);
             data.setNetType(NetTypeEnum.WAN.getName());

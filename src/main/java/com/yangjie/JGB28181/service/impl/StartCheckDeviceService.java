@@ -259,7 +259,7 @@ public class StartCheckDeviceService implements CommandLineRunner {
             data.setDeviceName("");
             data.setProject("");
             data.setLinkStatus(LinkStatusEnum.UNREGISTERED.getName());
-            data.setLinkType(LinkTypeEnum.ONVIF.getName());
+            data.setLinkType(LinkTypeEnum.RTSP.getName());
             data.setNetStatus(NetStatusEnum.ONLINE.getName());
             data.setLastUpdateTime(updateTime);
             data.setNetType(NetTypeEnum.WAN.getName());

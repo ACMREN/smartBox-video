@@ -1,7 +1,7 @@
 package com.yangjie.JGB28181.entity.enumEntity;
 
 public enum LinkTypeEnum {
-    ONVIF(0, "onvif"),
+    RTSP(0, "rtsp"),
     GB28181(1, "gb28181"),
     PLATFORM(2, "platform");
 

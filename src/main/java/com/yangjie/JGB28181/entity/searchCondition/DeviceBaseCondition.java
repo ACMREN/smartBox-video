@@ -7,4 +7,6 @@ import java.util.List;
 @Data
 public class DeviceBaseCondition {
     private List<Integer> deviceId;
+    // 推流方式
+    private String type;
 }

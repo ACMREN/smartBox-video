@@ -1,8 +1,7 @@
 package com.yangjie.JGB28181.common.result;
 
 
-import static com.yangjie.JGB28181.common.constants.ResultConstants.SUCCESS;
-import static com.yangjie.JGB28181.common.constants.ResultConstants.SUCCESS_CODE;
+import static com.yangjie.JGB28181.common.constants.ResultConstants.*;
 
 public class GBResult {
 	private static final long serialVersionUID = 1L;
@@ -20,6 +19,10 @@ public class GBResult {
 
 	public static GBResult ok() {
 		return new GBResult(SUCCESS_CODE, SUCCESS);
+	}
+
+	public static GBResult fail() {
+		return new GBResult(SYSTEM_ERROR_CODE, SYSTEM_ERROR);
 	}
 
 	public GBResult() {

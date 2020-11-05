@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.bean.PushStreamDevice;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.common.result.MediaData;
 import com.yangjie.JGB28181.common.utils.IDUtils;
 import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.service.IPushStreamService;
@@ -30,12 +31,49 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         this.cleanUpTempTsFile(deviceId, channelId);
 
         // 2. 开始推流hls
-        String callId = this.pushRtmpToHls(deviceId, channelId);
+        MediaData mediaData = this.pushRtmpToHls(deviceId, channelId);
 
-        return GBResult.build(200, "success", callId);
+        return GBResult.ok(mediaData);
     }
 
-    public static String pushRtmpToHls(String deviceId, String channelId) {
+    @Override
+    public GBResult rtspPushStream(String deviceId, String channelId, String rtspLink) {
+        // 1. 开启清理过期的TS索引文件的定时器
+        this.cleanUpTempTsFile(deviceId, channelId);
+
+        // 2. 开始推流hls
+        MediaData mediaData = this.pushRtspToHls(deviceId, channelId, rtspLink);
+
+        return GBResult.ok(mediaData);
+    }
+
+    public static MediaData pushRtspToHls(String deviceId, String channelId, String rtspLink) {
+        // 1. 生成hls推流的参数
+        String callId = IDUtils.id();
+        String playFileName = "rtsp_" + deviceId + "_" + channelId;
+        String all = "ffmpeg -rtsp_transport tcp -re -i " + rtspLink + " -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 -hls_time 10 -hls_wrap 5 rtmp://127.0.0.1:1935/hls/" + playFileName;
+        // 2. 把hls推流信息放到静态map中
+        JSONObject hlsInfoJson = new JSONObject();
+        hlsInfoJson.put("deviceId", deviceId);
+        hlsInfoJson.put("channelId", channelId);
+        hlsInfoMap.put(callId, hlsInfoJson);
+
+        // 3. 启动推流
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process process = runtime.exec(all);
+            // 1. 保存hls推流信息
+            hlsProcessMap.put(callId, process);
+            deviceInfoMap.put(deviceId, process.isAlive());
+
+            return new MediaData(BaseConstants.hlsBaseUrl + playFileName, callId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static MediaData pushRtmpToHls(String deviceId, String channelId) {
         // 1. 生成rtmpurl并将rtmp转码成hls进行推流
         String callId = IDUtils.id();
         String playFileName = StreamNameUtils.play(deviceId, channelId);
@@ -67,7 +105,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
             subCallIdJson.put("hls", callId);
             ActionController.streamRelationMap.put(parentCallId, subCallIdJson);
 
-            return callId;
+            return new MediaData(BaseConstants.hlsBaseUrl + playFileName, callId);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -79,7 +117,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
      * 定时清理过期的ts文件
      */
     public void cleanUpTempTsFile(String deviceId, String channelId) {
-        String playFileName = StreamNameUtils.play(deviceId, channelId);
+        String playFileName = StreamNameUtils.rtspPlay(deviceId, channelId);
         ActionController.scheduledExecutorService.scheduleAtFixedRate(() -> {
             String filePath = BaseConstants.hlsStreamPath + playFileName + "/";
             System.out.println("====================start file clean up==================");

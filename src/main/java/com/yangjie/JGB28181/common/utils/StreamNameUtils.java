@@ -26,4 +26,7 @@ public class StreamNameUtils {
 	public static String talk(String deviceId,String channelId){
 		return prefix(deviceId,channelId).append("_Talk").toString();
 	}
+	public static String rtspPlay(String deviceId, String channelId) {
+		return "rtsp_" + deviceId + "_" + channelId;
+	}
 }
