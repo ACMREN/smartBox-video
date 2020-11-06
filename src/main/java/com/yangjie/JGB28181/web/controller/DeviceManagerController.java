@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
@@ -251,8 +252,8 @@ public class DeviceManagerController {
      * @param deviceBaseCondition
      * @return
      */
-    @GetMapping(value = "getDeviceInfo")
-    public GBResult getDeviceInfo(@ModelAttribute DeviceBaseCondition deviceBaseCondition) {
+    @PostMapping(value = "getDeviceInfo")
+    public GBResult getDeviceInfo(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
         List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceIds);
         List<DeviceBaseInfoVo> deviceBaseInfoVos = deviceManagerService.parseDeviceBaseInfoToVo(deviceBaseInfos);
@@ -308,10 +309,13 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
-    @PostMapping(value = "removeDevice")
-    public GBResult removeDevice(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+    @PostMapping(value = "removeCamera")
+    public GBResult removeCamera(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
         deviceBaseInfoService.getBaseMapper().deleteBatchIds(deviceIds);
+        cameraInfoService.getBaseMapper().delete(new QueryWrapper<CameraInfo>().in("device_base_id", deviceIds));
+
+        deviceManagerService.removeLiveCamInfoVo(deviceIds);
 
         return GBResult.ok();
     }

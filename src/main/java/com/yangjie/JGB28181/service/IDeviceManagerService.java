@@ -52,6 +52,17 @@ public interface IDeviceManagerService {
     List<JSONObject> packageLiveCamDetailInfoVo(List<LiveCamInfoVo> liveCamInfoVos, List<DeviceBaseInfoVo> deviceBaseInfoVos);
 
     /**
+     * 更新设备列表
+     */
+    void updateDevice();
+
+    /**
+     * 实时删除liveCamInfoVo中的数据库数据
+     * @param deviceIds
+     */
+    void removeLiveCamInfoVo(List<Integer> deviceIds);
+
+    /**
      * 判断摄像头是否已经注册到数据库
      * @param id
      * @return
