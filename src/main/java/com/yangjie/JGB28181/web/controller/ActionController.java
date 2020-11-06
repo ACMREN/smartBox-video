@@ -75,9 +75,6 @@ public class ActionController implements OnProcessListener {
 	private IDeviceManagerService deviceManagerService;
 
 	@Autowired
-	private DeviceBaseInfoService deviceBaseInfoService;
-
-	@Autowired
 	private CameraInfoService cameraInfoService;
 
 	private MessageManager mMessageManager = MessageManager.getInstance();
@@ -94,17 +91,19 @@ public class ActionController implements OnProcessListener {
 	@Value("${config.checkSsrc}")
 	private boolean checkSsrc;
 
+	// 定时器执行线程池
 	public static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
 
 	public static ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 3000, TimeUnit.MILLISECONDS, new BlockingArrayQueue<>(10));
 
+	// 保存国标rtmp转hls或flv的关系流
 	public static Map<String, JSONObject> streamRelationMap = new HashMap<>(20);
 
-	public static Map<String, TCPHandler> tcpHandlerMap = new HashMap<>(20);
-
+	// 判断设备是否正在推流
 	public static Map<Integer, PushStreamDevice> streamingDeviceMap = new HashMap<>(20);
 
-	public static Map<Integer, String> baseDeviceIdCallIdMap = new HashMap<>(20);
+	// 保存设备基础id与推流id的关系
+	public static Map<Integer, JSONObject> baseDeviceIdCallIdMap = new HashMap<>(20);
 
 	// 存放任务 线程
 	public static Map<String, CameraThread.MyRunnable> jobMap = new HashMap<String, CameraThread.MyRunnable>();
@@ -130,60 +129,82 @@ public class ActionController implements OnProcessListener {
 				data.put("deviceId", deviceId);
 				data.put("source", address);
 				resultList.add(data);
-				baseDeviceIdCallIdMap.put(deviceId, callId);
+
+				JSONObject streamJson = new JSONObject();
+				streamJson.put("callId", callId);
+				streamJson.put("type", BaseConstants.PUSH_STREAM_RTMP);
+				baseDeviceIdCallIdMap.put(deviceId, streamJson);
 			}
 		} else if (BaseConstants.PUSH_STREAM_HLS.equals(pushStreamType)) {
 			for (Integer deviceId : deviceIds) {
 				CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
-				if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
-					// 先进行rtmp的推流
-					String cameraInfoIp = cameraInfo.getIp();
-					GBResult rtmpResult = this.GBPlayRtmp(cameraInfoIp);
-					int code = rtmpResult.getCode();
-					if (code == 200) {
-						JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraInfoIp);
-						if (null == dataJson) {
-							String deviceStr = dataJson.getString("deviceStr");
-							String pushStreamDeviceId = dataJson.getString("pushStreamDeviceId");
-							String channelId = null;
-							if (!StringUtils.isEmpty(deviceStr)) {
-								Device device = JSONObject.parseObject(deviceStr, Device.class);
-								Map<String, DeviceChannel> channelMap = device.getChannelMap();
-								for (String key : channelMap.keySet()) {
-									DeviceChannel deviceChannel = channelMap.get(key);
-									if (null != deviceChannel) {
-										channelId = key;
-									}
-								}
-							}
-							// 再进行hls的推流
-							result = this.rtmpToHls(pushStreamDeviceId, channelId);
-							MediaData mediaData = (MediaData) result.getData();
-							JSONObject data = new JSONObject();
-							String address = mediaData.getAddress();
-							String callId = mediaData.getCallId();
-							data.put("deviceId", deviceId);
-							data.put("source", address);
-							resultList.add(data);
-							baseDeviceIdCallIdMap.put(deviceId, callId);
-						}
-					}
-				} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
-					String rtspLink = cameraInfo.getRtspLink();
-					// 直接进行rtsp转hls推流
-					result = this.rtspToHls(rtspLink, deviceId.toString());
-					MediaData mediaData = (MediaData) result.getData();
-					JSONObject data = new JSONObject();
-					String address = mediaData.getAddress();
-					String callId = mediaData.getCallId();
-					data.put("deviceId", deviceId);
-					data.put("source", address);
-					resultList.add(data);
-					baseDeviceIdCallIdMap.put(deviceId, callId);
-				}
+				result = this.playHls(cameraInfo, deviceId);
+				MediaData mediaData = (MediaData) result.getData();
+				JSONObject data = new JSONObject();
+				String address = mediaData.getAddress();
+				String callId = mediaData.getCallId();
+				data.put("deviceId", deviceId);
+				data.put("source", address);
+				resultList.add(data);
+
+				JSONObject streamJson = new JSONObject();
+				streamJson.put("callId", callId);
+				streamJson.put("type", BaseConstants.PUSH_STREAM_HLS);
+				baseDeviceIdCallIdMap.put(deviceId, streamJson);
 			}
 		}
 		return GBResult.ok(resultList);
+	}
+
+	/**
+	 * 播放hls视频
+	 * @param cameraInfo
+	 * @param deviceId
+	 * @return
+	 */
+	private GBResult playHls(CameraInfo cameraInfo, Integer deviceId) {
+		if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
+			// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
+			return this.GBPlayHls(cameraInfo);
+		} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
+			// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
+			String rtspLink = cameraInfo.getRtspLink();
+			// 直接进行rtsp转hls推流
+			return this.rtspToHls(rtspLink, deviceId.toString());
+		}
+		return null;
+	}
+
+	/**
+	 * 国标播放hls视频
+	 * @param cameraInfo
+	 * @return
+	 */
+	private GBResult GBPlayHls(CameraInfo cameraInfo) {
+		// 先进行rtmp的推流
+		String cameraInfoIp = cameraInfo.getIp();
+		GBResult rtmpResult = this.GBPlayRtmp(cameraInfoIp);
+		int code = rtmpResult.getCode();
+		if (code != 200 ){
+			return rtmpResult;
+		}
+
+		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraInfoIp);
+		String deviceStr = dataJson.getString("deviceStr");
+		String pushStreamDeviceId = dataJson.getString("pushStreamDeviceId");
+		String channelId = null;
+		if (!StringUtils.isEmpty(deviceStr)) {
+			Device device = JSONObject.parseObject(deviceStr, Device.class);
+			Map<String, DeviceChannel> channelMap = device.getChannelMap();
+			for (String key : channelMap.keySet()) {
+				DeviceChannel deviceChannel = channelMap.get(key);
+				if (null != deviceChannel) {
+					channelId = key;
+				}
+			}
+		}
+		// 再进行hls的推流
+		return this.rtmpToHls(pushStreamDeviceId, channelId);
 	}
 
 	/**
@@ -211,6 +232,11 @@ public class ActionController implements OnProcessListener {
 		return cameraPojo;
 	}
 
+	/**
+	 * 播放rtmp视频
+	 * @param deviceId
+	 * @return
+	 */
 	private GBResult playRtmp(Integer deviceId) {
 		CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
 		if (null != cameraInfo) {
@@ -230,7 +256,7 @@ public class ActionController implements OnProcessListener {
 	}
 
 	/**
-	 * 播放rtmp
+	 * 国标播放rtmp
 	 * @param cameraIp
 	 */
 	private GBResult GBPlayRtmp(String cameraIp) {
@@ -257,6 +283,11 @@ public class ActionController implements OnProcessListener {
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
 
+	/**
+	 * 根据ip进行国标设备的匹配
+	 * @param cameraIp
+	 * @return
+	 */
 	private JSONObject getLiveCamInfoVoByMatchIp(String cameraIp) {
 		List<LiveCamInfoVo> liveCamInfoVos = DeviceManagerController.liveCamVoList;
 		String deviceStr = null;
@@ -277,13 +308,27 @@ public class ActionController implements OnProcessListener {
 		return dataJson;
 	}
 
+	@PostMapping(value = "keepCameraStream")
+	public GBResult keepCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+		// 更新redis中推流key-value对象的时间，保证推流
+		for (Integer deviceId : deviceIds) {
+			JSONObject streamJson = ActionController.baseDeviceIdCallIdMap.get(deviceId);
+			String callId = streamJson.getString("callId");
+			RedisUtil.expire(callId, 30*1000);
+		}
+
+		return GBResult.ok();
+	}
+
 	@PostMapping(value = "closeCameraStream")
 	public GBResult closeCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
 		for (Integer deviceId : deviceIds) {
 			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
 			String linkType = LinkTypeEnum.getDataByCode(cameraInfo.getLinkType()).getName();
-			String callId = baseDeviceIdCallIdMap.get(deviceId);
+			JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceId);
+			String callId = streamJson.getString("callId");
 			if (LinkTypeEnum.GB28181.getName().equals(linkType)) {
 				this.bye(callId);
 			} else if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
@@ -396,6 +441,7 @@ public class ActionController implements OnProcessListener {
 
 				observer.setOnProcessListener(this);
 				mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
+				RedisUtil.set(callId, 30*1000, "keepStreaming");
 				// 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
 				if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
 					streamingDeviceMap.put(id, pushStreamDevice);
@@ -563,6 +609,7 @@ public class ActionController implements OnProcessListener {
 		CameraThread.MyRunnable job = new CameraThread.MyRunnable(cameraPojo);
 		CameraThread.MyRunnable.es.execute(job);
 		jobMap.put(token, job);
+		RedisUtil.set(token, 30*1000, "keepStreaming");
 
 		return cameraPojo;
 	}
@@ -631,32 +678,7 @@ public class ActionController implements OnProcessListener {
 	 */
 	@RequestMapping(value = "closeHls")
 	public GBResult closeHls(@RequestParam(value = "callId")String callId) {
-		Process hlsProcess = PushHlsStreamServiceImpl.hlsProcessMap.get(callId);
-		if (hlsProcess.isAlive()) {
-			hlsProcess.destroy();
-
-			// 删除文件夹及其内容
-			JSONObject hlsInfoJSon = PushHlsStreamServiceImpl.hlsInfoMap.get(callId);
-			String deviceId = hlsInfoJSon.getString("deviceId");
-			String channelId = hlsInfoJSon.getString("channelId");
-			String playFileName = StreamNameUtils.play(deviceId, channelId);
-			String filePath = BaseConstants.hlsStreamPath + playFileName;
-			File dir = new File(filePath);
-			if (!dir.isFile()) {
-				File[] files = dir.listFiles();
-				if (null != files) {
-					for (File file : files) {
-						file.delete();
-					}
-				}
-			}
-			dir.delete();
-
-			// 删除hls推流信息
-			PushHlsStreamServiceImpl.hlsProcessMap.remove(callId);
-			PushHlsStreamServiceImpl.hlsInfoMap.remove(callId);
-			PushHlsStreamServiceImpl.deviceInfoMap.remove(deviceId);
-		}
+		pushHlsStreamService.closeStream(callId);
 
 		return GBResult.ok();
 	}

@@ -6,6 +6,7 @@ import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.result.MediaData;
 import com.yangjie.JGB28181.common.utils.IDUtils;
+import com.yangjie.JGB28181.common.utils.RedisUtil;
 import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.service.IPushStreamService;
 import com.yangjie.JGB28181.web.controller.ActionController;
@@ -47,6 +48,38 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         return GBResult.ok(mediaData);
     }
 
+    @Override
+    public GBResult closeStream(String callId) {
+        Process hlsProcess = PushHlsStreamServiceImpl.hlsProcessMap.get(callId);
+        if (hlsProcess.isAlive()) {
+            hlsProcess.destroy();
+
+            // 删除文件夹及其内容
+            JSONObject hlsInfoJSon = PushHlsStreamServiceImpl.hlsInfoMap.get(callId);
+            String deviceId = hlsInfoJSon.getString("deviceId");
+            String channelId = hlsInfoJSon.getString("channelId");
+            String playFileName = StreamNameUtils.play(deviceId, channelId);
+            String filePath = BaseConstants.hlsStreamPath + playFileName;
+            File dir = new File(filePath);
+            if (!dir.isFile()) {
+                File[] files = dir.listFiles();
+                if (null != files) {
+                    for (File file : files) {
+                        file.delete();
+                    }
+                }
+            }
+            dir.delete();
+
+            // 删除hls推流信息
+            PushHlsStreamServiceImpl.hlsProcessMap.remove(callId);
+            PushHlsStreamServiceImpl.hlsInfoMap.remove(callId);
+            PushHlsStreamServiceImpl.deviceInfoMap.remove(deviceId);
+        }
+
+        return GBResult.ok();
+    }
+
     public static MediaData pushRtspToHls(String deviceId, String channelId, String rtspLink) {
         // 1. 生成hls推流的参数
         String callId = IDUtils.id();
@@ -63,6 +96,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         try {
             Process process = runtime.exec(all);
             // 1. 保存hls推流信息
+            RedisUtil.set(callId, 30*1000, "keepStreaming");
             hlsProcessMap.put(callId, process);
             deviceInfoMap.put(deviceId, process.isAlive());
 
@@ -92,6 +126,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
             Process process = runtime.exec(all);
 
             // 1. 保存hls推流信息
+            RedisUtil.set(callId, 30*1000, "keepStreaming");
             hlsProcessMap.put(callId, process);
             deviceInfoMap.put(deviceId, process.isAlive());
 

@@ -43,7 +43,6 @@ public class TCPServer extends Server implements OnChannelStatusListener{
 				//解决TCP粘包问题
 				ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024*1024,0,2));
 				TCPHandler tcpHandler = new TCPHandler(frameDeque,ssrc,checkSsrc, deviceId, TCPServer.this);
-				ActionController.tcpHandlerMap.put(callId, tcpHandler);
 				tcpHandler.setOnChannelStatusListener(TCPServer.this);
 				ch.pipeline().addLast(tcpHandler);
 			}

@@ -1,15 +1,24 @@
 package com.yangjie.JGB28181.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.thread.CameraThread;
+import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
+import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
+import com.yangjie.JGB28181.message.SipLayer;
+import com.yangjie.JGB28181.service.CameraInfoService;
+import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import javax.sip.SipException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -27,6 +36,15 @@ public class TimerUtil implements CommandLineRunner {
 
 	@Autowired
 	private Config config;// 配置文件bean
+
+	@Autowired
+	SipLayer sipLayer;
+
+	@Autowired
+	private CameraInfoService cameraInfoService;
+
+	@Autowired
+	private PushHlsStreamServiceImpl pushHlsStreamService;
 
 	public static Timer timer;
 
@@ -56,6 +74,7 @@ public class TimerUtil implements CommandLineRunner {
 								CacheUtil.STREAMMAP.remove(key);
 								ActionController.jobMap.remove(key);
 							}
+
 							// 如果推流停止了，则停止推流，要重新获取
 							Long heartbeats = heartbeatsMap.get(key);
 							Long lastHeartbeats = lastHeartbeatsMap.get(key);
@@ -63,16 +82,41 @@ public class TimerUtil implements CommandLineRunner {
 								logger.info("移除已经停止推流的直播，key：" + key);
 								CacheUtil.STREAMMAP.remove(key);
 								ActionController.jobMap.remove(key);
-
-								// 如果观看人数大于0
-								if (cameraPojo.getCount() > 0) {
-                                    openStream(cameraPojo.getIp(), cameraPojo.getUsername(), cameraPojo.getPassword(), cameraPojo.getChannel(), cameraPojo.getStream(), cameraPojo.getStartTime(),
-                                            cameraPojo.getEndTime(), cameraPojo.getOpenTime());
-                                }
+								openStream(cameraPojo.getIp(), cameraPojo.getUsername(), cameraPojo.getPassword(), cameraPojo.getChannel(), cameraPojo.getStream(), cameraPojo.getStartTime(),
+										cameraPojo.getEndTime(), cameraPojo.getOpenTime());
 							}
 							lastHeartbeatsMap.put(key, heartbeats);
 						} catch (Exception e) {
 							e.printStackTrace();
+						}
+					}
+				}
+
+				Map<Integer, JSONObject> baseDeviceIdCallIdMap = ActionController.baseDeviceIdCallIdMap;
+				for (Integer deviceBaseId : baseDeviceIdCallIdMap.keySet()) {
+					JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceBaseId);
+					String callId = streamJson.getString("callId");
+					String streamType = streamJson.getString("type");
+					String str = RedisUtil.get(callId);
+					CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
+					if (StringUtils.isEmpty(str)) {
+						Integer linkType = cameraInfo.getLinkType();
+						// 如果是rtmp推流，则有区分国标和rtsp链接
+						if (BaseConstants.PUSH_STREAM_RTMP.equals(streamType)) {
+							if (LinkTypeEnum.RTSP.getCode() == linkType.intValue()) {
+								ActionController.jobMap.get(callId).setInterrupted();
+							}
+							if (LinkTypeEnum.GB28181.getCode() == linkType.intValue()) {
+								try {
+									sipLayer.sendBye(callId);
+								} catch (SipException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+						// hls推流统一都是都是通过命令行执行，无需区分
+						if (BaseConstants.PUSH_STREAM_HLS.equals(streamType)) {
+							pushHlsStreamService.closeStream(callId);
 						}
 					}
 				}
