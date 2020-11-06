@@ -116,7 +116,7 @@ public class UpdateDeviceJob {
         for (CameraInfo item : cameraInfoList) {
             LiveCamInfoVo data = new LiveCamInfoVo();
             data.setCid(random.nextInt(10000));
-            data.setDeviceId(item.getId());
+            data.setDeviceId(item.getDeviceBaseId());
             data.setIp(item.getIp());
             data.setDeviceName(item.getDeviceName());
             data.setProject(item.getProject());

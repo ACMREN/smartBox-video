@@ -284,8 +284,8 @@ public class DeviceManagerController {
      * @param deviceBaseCondition
      * @return
      */
-    @GetMapping(value = "getDeviceDetail")
-    public GBResult getDeviceDetail(@ModelAttribute DeviceBaseCondition deviceBaseCondition) {
+    @PostMapping(value = "getDeviceDetail")
+    public GBResult getDeviceDetail(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
         List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceIds);
         List<DeviceBaseInfoVo> deviceBaseInfoVos = deviceManagerService.parseDeviceBaseInfoToVo(deviceBaseInfos);
@@ -308,8 +308,8 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
-    @GetMapping(value = "removeDevice")
-    public GBResult removeDevice(@ModelAttribute DeviceBaseCondition deviceBaseCondition) {
+    @PostMapping(value = "removeDevice")
+    public GBResult removeDevice(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
         deviceBaseInfoService.getBaseMapper().deleteBatchIds(deviceIds);
 
