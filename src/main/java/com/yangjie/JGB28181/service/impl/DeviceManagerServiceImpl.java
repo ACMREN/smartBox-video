@@ -49,6 +49,8 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     @Autowired
     CameraInfoService cameraInfoService;
 
+    private static Map<String, Integer> ipDeviceIdMap = new HashMap<>(20);
+
     @Override
     public GBResult getLiveCamList() {
         return null;
@@ -373,8 +375,15 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             if (DeviceConstants.DEVICE_TYPE_PLATFORM.equals(deviceType)) {
                 continue;
             }
-            LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
+            // 判断此ip是否曾经在此设备连接过
+            Integer lastCid = ipDeviceIdMap.get(wanIp);
+            if (null != lastCid) {
+                cid = lastCid;
+            } else {
+                ipDeviceIdMap.put(wanIp, cid);
+            }
+            LiveCamInfoVo data = new LiveCamInfoVo();
             data.setPushStreamDeviceId(GBDevice.getDeviceId());
             data.setDeviceId(cid);
             data.setIp(wanIp);
@@ -422,6 +431,13 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
             int cid = random.nextInt(10000);
+            // 判断此ip是否曾经在此设备连接过
+            Integer lastCid = ipDeviceIdMap.get(ip);
+            if (null != lastCid) {
+                cid = lastCid;
+            } else {
+                ipDeviceIdMap.put(ip, cid);
+            }
             data.setDeviceId(cid);
             data.setIp(ip);
             data.setDeviceName("");
