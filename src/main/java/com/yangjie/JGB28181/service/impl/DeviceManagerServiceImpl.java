@@ -30,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -190,7 +193,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     }
 
     @Override
-    public void updateDevice() {
+    public void updateDevice() throws IOException {
         logger.info("==============================更新设备开始======================");
 
         // 1. 根据onvif协议搜索内网摄像头
@@ -240,7 +243,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
      * @param unregisteredDataList
      * @return
      */
-    private Set<LiveCamInfoVo> removeDuplicateLiveCamData(List<LiveCamInfoVo> registeredDataList, List<LiveCamInfoVo> unregisteredDataList) {
+    private Set<LiveCamInfoVo> removeDuplicateLiveCamData(List<LiveCamInfoVo> registeredDataList, List<LiveCamInfoVo> unregisteredDataList) throws IOException {
         Set<LiveCamInfoVo> resultList = new HashSet<>();
         // 将未注册的设备放入到结果数据结构中
         for (LiveCamInfoVo item : unregisteredDataList) {
@@ -249,6 +252,8 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             for (LiveCamInfoVo item1 : registeredDataList) {
                 String registeredIp = item1.getIp();
                 if (unregisteredIp.equals(registeredIp)) {
+                    // 设置推流设备id
+                    item1.setPushStreamDeviceId(item.getPushStreamDeviceId());
                     // 把重复的已注册的设备设置为在线状态
                     item1.setNetStatus(NetStatusEnum.ONLINE.getName());
                     isDuplicate = true;
@@ -262,7 +267,17 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
         // 将已注册的设备放入到结果数据结构中
         for (LiveCamInfoVo item : registeredDataList) {
             if (!NetStatusEnum.ONLINE.getName().equals(item.getNetStatus())) {
-                item.setNetStatus(NetStatusEnum.OFFLINE.getName());
+                if (LinkTypeEnum.RTSP.getName().equals(item.getLinkType())) {
+                    String ip = item.getIp();
+                    boolean isReachable = Inet4Address.getByName(ip).isReachable(1000);
+                    if (isReachable) {
+                        item.setNetStatus(NetStatusEnum.ONLINE.getName());
+                    } else {
+                        item.setNetStatus(NetStatusEnum.OFFLINE.getName());
+                    }
+                } else {
+                    item.setNetStatus(NetStatusEnum.OFFLINE.getName());
+                }
             }
             item.setLastUpdateTime(DateUtils.getFormatDateTime(new Date()));
             resultList.add(item);

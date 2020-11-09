@@ -8,6 +8,7 @@ import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -54,7 +55,7 @@ public interface IDeviceManagerService {
     /**
      * 更新设备列表
      */
-    void updateDevice();
+    void updateDevice() throws IOException;
 
     /**
      * 实时删除liveCamInfoVo中的数据库数据

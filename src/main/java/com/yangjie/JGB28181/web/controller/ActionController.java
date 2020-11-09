@@ -278,7 +278,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(null, pushStreamDeviceId, channelId, null);
+			return this.play(null, pushStreamDeviceId, channelId, "TCP");
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
@@ -426,7 +426,7 @@ public class ActionController implements OnProcessListener {
 
 			//4.1响应成功，创建推流session
 			if(response != null ){
-				String address = pushRtmpAddress.concat(streamName);
+				String address = pushHlsAddress.concat(streamName);
 				Server server = isTcp ? new TCPServer() : new UDPServer();
 				Observer observer = new RtmpPusher(address, callId);
 				((RtmpPusher) observer).setDeviceId(streamName);
@@ -441,7 +441,8 @@ public class ActionController implements OnProcessListener {
 
 				observer.setOnProcessListener(this);
 				mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
-				RedisUtil.set(callId, 30*1000, "keepStreaming");
+				// 设置5分钟的过期时间
+				RedisUtil.set(callId, 300, "keepStreaming");
 				// 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
 				if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
 					streamingDeviceMap.put(id, pushStreamDevice);
@@ -609,7 +610,8 @@ public class ActionController implements OnProcessListener {
 		CameraThread.MyRunnable job = new CameraThread.MyRunnable(cameraPojo);
 		CameraThread.MyRunnable.es.execute(job);
 		jobMap.put(token, job);
-		RedisUtil.set(token, 30*1000, "keepStreaming");
+		// 设置5分钟的过期时间
+		RedisUtil.set(token, 300, "keepStreaming");
 
 		return cameraPojo;
 	}

@@ -96,7 +96,8 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         try {
             Process process = runtime.exec(all);
             // 1. 保存hls推流信息
-            RedisUtil.set(callId, 30*1000, "keepStreaming");
+            // 设置5分钟的过期时间
+            RedisUtil.set(callId, 300, "keepStreaming");
             hlsProcessMap.put(callId, process);
             deviceInfoMap.put(deviceId, process.isAlive());
 
@@ -126,7 +127,8 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
             Process process = runtime.exec(all);
 
             // 1. 保存hls推流信息
-            RedisUtil.set(callId, 30*1000, "keepStreaming");
+            // 设置5分钟的过期时间
+            RedisUtil.set(callId, 300, "keepStreaming");
             hlsProcessMap.put(callId, process);
             deviceInfoMap.put(deviceId, process.isAlive());
 

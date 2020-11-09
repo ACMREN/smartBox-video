@@ -398,8 +398,14 @@ public class DeviceManagerController {
     }
 
     @PostMapping("test")
-    public GBResult testSearch(@RequestBody SearchLiveCamCondition condition) {
-        System.out.println(condition);
+    public GBResult testSearch() {
+        return GBResult.ok(liveCamVoList);
+    }
+
+
+    @PostMapping("discoverDevice")
+    public GBResult discoverDevice() throws IOException {
+        deviceManagerService.updateDevice();
         return GBResult.ok();
     }
 

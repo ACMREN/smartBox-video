@@ -15,4 +15,9 @@ public class PushRtmpStreamServiceImpl implements IPushStreamService {
     public GBResult rtspPushStream(String deviceId, String channelId, String rtspLink) {
         return null;
     }
+
+    @Override
+    public GBResult closeStream(String callId) {
+        return null;
+    }
 }

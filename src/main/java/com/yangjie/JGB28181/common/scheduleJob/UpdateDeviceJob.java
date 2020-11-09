@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +40,7 @@ public class UpdateDeviceJob {
      * 每1分钟更新一次设备
      */
     @Scheduled(cron = "0 0/1 * * * ?")
-    public void updateDevice() {
+    public void updateDevice() throws IOException {
         deviceManagerService.updateDevice();
     }
 }

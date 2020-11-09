@@ -106,7 +106,7 @@ public class RedisUtil {
 			String cursor = "0";
 			Map<String, String> resultMap = new HashMap();
 			ScanParams params = new ScanParams();
-			params.match(SipLayer.CLIENT_DEVICE_PREFIX);
+			params.match(SipLayer.SUB_DEVICE_PREFIX + "*");
 			while (!isFinished) {
 				ScanResult<String> scanResult = jedis.scan(cursor, params);
 				cursor = scanResult.getCursor();

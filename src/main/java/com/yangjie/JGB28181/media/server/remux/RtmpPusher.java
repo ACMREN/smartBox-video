@@ -98,6 +98,7 @@ public class RtmpPusher extends Observer{
 			grabber = new FFmpegFrameGrabber(pis,0);
 			//阻塞式，直到通道有数据
 			grabber.setOption("stimeout", "200000");
+			grabber.setOption("-re", "");
 			grabber.start();
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
@@ -106,10 +107,8 @@ public class RtmpPusher extends Observer{
 			recorder.setFormat("flv");
 			recorder.setFrameRate(25);
 
-//			recorder = new FFmpegFrameRecorder(address, 1280, 720, 0);
-//			recorder.setFormat("hls");
+			// 推流hls的参数
 //			recorder.setOption("loglevel", "quiet");
-//			recorder.setOption("vcodec", "libx264");
 //			recorder.setOption("vprofile", "baseline");
 //			recorder.setOption("acodec", "aac");
 //			recorder.setOption("ar", "44100");
