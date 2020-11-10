@@ -119,7 +119,7 @@ public class ActionController implements OnProcessListener {
 	 * @return
 	 */
 	@PostMapping(value = "getCameraStream")
-	public GBResult getCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+	public GBResult getCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) throws InterruptedException {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
 		String pushStreamType = deviceBaseCondition.getType();
 		GBResult result = null;
@@ -184,7 +184,7 @@ public class ActionController implements OnProcessListener {
 	 * @param deviceId
 	 * @return
 	 */
-	private GBResult playHls(CameraInfo cameraInfo, Integer deviceId) {
+	private GBResult playHls(CameraInfo cameraInfo, Integer deviceId) throws InterruptedException {
 		if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
 			// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
 			return this.GBPlayHls(cameraInfo);
@@ -194,6 +194,8 @@ public class ActionController implements OnProcessListener {
 			// 直接进行rtsp转hls推流
 			return this.rtspToHls(rtspLink, deviceId.toString());
 		}
+		// 等待5秒返回，等待m3u8文件生成
+		Thread.sleep(5 * 1000);
 		return null;
 	}
 
@@ -363,7 +365,7 @@ public class ActionController implements OnProcessListener {
 				return GBResult.ok();
 			}
 			count--;
-			if (count >= 0) {
+			if (count > 0) {
 				callIdCountMap.put(callId, count);
 				return GBResult.ok();
 			}
@@ -393,7 +395,7 @@ public class ActionController implements OnProcessListener {
 					}
 				}
 				logger.info("=======================关闭推流，完成================");
-			}, 30 * 1000, TimeUnit.MILLISECONDS);
+			}, 2, TimeUnit.MINUTES);
 		}
 		return GBResult.ok();
 	}
