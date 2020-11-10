@@ -10,6 +10,8 @@ public class LiveCamInfoVo {
     private Integer deviceId;
     // 基础设备id
     private Integer baseDeviceId;
+    // rtsp链接
+    private String rtspLink;
     // 设备推流id
     private String pushStreamDeviceId;
     // 设备的ip地址

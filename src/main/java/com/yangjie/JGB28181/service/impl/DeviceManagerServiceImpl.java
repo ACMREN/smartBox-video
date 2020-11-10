@@ -181,13 +181,15 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     }
 
     @Override
-    public List<JSONObject> packageLiveCamDetailInfoVo(List<LiveCamInfoVo> liveCamInfoVos, List<DeviceBaseInfoVo> deviceBaseInfoVos) {
+    public List<JSONObject> packageLiveCamDetailInfoVo(List<LiveCamInfoVo> liveCamInfoVos, List<DeviceBaseInfoVo> deviceBaseInfoVos, Map<Integer, String> deviceRtspLinkMap) {
         List<JSONObject> resultList = new ArrayList<>();
         for (DeviceBaseInfoVo item : deviceBaseInfoVos) {
             Integer camId = item.getDeviceId();
             for (LiveCamInfoVo item1 : liveCamInfoVos) {
                 Integer deviceId = item1.getDeviceId();
                 if (camId.intValue() == deviceId.intValue()) {
+                    String rtspLink = deviceRtspLinkMap.get(deviceId);
+                    item1.setRtspLink(rtspLink);
                     JSONObject data = new JSONObject();
                     data.put("deviceBaseInfo", item);
                     data.put("camDetailInfo", item1);

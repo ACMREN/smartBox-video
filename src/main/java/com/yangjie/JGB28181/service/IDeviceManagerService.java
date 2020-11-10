@@ -10,6 +10,7 @@ import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface IDeviceManagerService {
@@ -50,7 +51,7 @@ public interface IDeviceManagerService {
      * @param deviceBaseInfoVos
      * @return
      */
-    List<JSONObject> packageLiveCamDetailInfoVo(List<LiveCamInfoVo> liveCamInfoVos, List<DeviceBaseInfoVo> deviceBaseInfoVos);
+    List<JSONObject> packageLiveCamDetailInfoVo(List<LiveCamInfoVo> liveCamInfoVos, List<DeviceBaseInfoVo> deviceBaseInfoVos, Map<Integer, String> deviceRtspLinkMap);
 
     /**
      * 更新设备列表

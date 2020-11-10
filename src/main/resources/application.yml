@@ -1,5 +1,5 @@
 server:
-  port: 1998
+  port: 1999
   context-path: /
   tomcat:
     uri-encoding: UTF-8

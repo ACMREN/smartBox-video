@@ -291,10 +291,12 @@ public class DeviceManagerController {
     public GBResult getDeviceDetail(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
         List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceIds);
+        List<CameraInfo> cameraInfos = cameraInfoService.getBaseMapper().selectList(new QueryWrapper<CameraInfo>().in("device_base_id", deviceIds));
+        Map<Integer, String> deviceRtspLinkMap = cameraInfos.stream().collect(Collectors.toMap(CameraInfo::getDeviceBaseId, CameraInfo::getRtspLink));
         List<DeviceBaseInfoVo> deviceBaseInfoVos = deviceManagerService.parseDeviceBaseInfoToVo(deviceBaseInfos);
         liveCamVoList = deviceManagerService.getLiveCamDetailInfo(liveCamVoList);
 
-        List<JSONObject> resultList = deviceManagerService.packageLiveCamDetailInfoVo(liveCamVoList, deviceBaseInfoVos);
+        List<JSONObject> resultList = deviceManagerService.packageLiveCamDetailInfoVo(liveCamVoList, deviceBaseInfoVos, deviceRtspLinkMap);
 
         return GBResult.ok(resultList);
     }
