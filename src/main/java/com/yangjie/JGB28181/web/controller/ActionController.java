@@ -102,6 +102,8 @@ public class ActionController implements OnProcessListener {
 	// 保存国标rtmp转hls或flv的关系流
 	public static Map<String, JSONObject> streamRelationMap = new HashMap<>(20);
 
+	private static Map<String, Integer> callIdCountMap = new HashMap<>(20);
+
 	// 判断设备是否正在推流
 	public static Map<Integer, PushStreamDevice> streamingDeviceMap = new HashMap<>(20);
 
@@ -161,20 +163,17 @@ public class ActionController implements OnProcessListener {
 		callEndMap.put(callId, false);
 
 		// 每请求一次对应的推流，则观看人数加一
-		JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceId);
-		Integer count = streamJson.getInteger("count");
+		Integer count = callIdCountMap.get(callId);
 		if (null == count) {
 			count = 1;
 		} else {
 			count++;
 		}
-		streamJson.put("count", count);
 
 		// 把推流的信息放入设备callId的map中
+		JSONObject streamJson = new JSONObject();
 		streamJson.put("callId", callId);
 		streamJson.put("type", BaseConstants.PUSH_STREAM_RTMP);
-		streamJson.put("endSymbol", false);
-		streamJson.put("count", count);
 		baseDeviceIdCallIdMap.put(deviceId, streamJson);
 	}
 
@@ -357,12 +356,11 @@ public class ActionController implements OnProcessListener {
 				return GBResult.ok();
 			}
 			String callId = streamJson.getString("callId");
-			Integer count = streamJson.getInteger("count");
 			// 判断观看人数是否已经为0
+			Integer count = callIdCountMap.get(callId);
 			count--;
 			if (count >= 0) {
-				streamJson.put("count", count);
-				baseDeviceIdCallIdMap.put(deviceId, streamJson);
+				callIdCountMap.put(callId, count);
 				return GBResult.ok();
 			}
 
