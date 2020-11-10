@@ -169,6 +169,7 @@ public class ActionController implements OnProcessListener {
 		} else {
 			count++;
 		}
+		callIdCountMap.put(callId, count);
 
 		// 把推流的信息放入设备callId的map中
 		JSONObject streamJson = new JSONObject();
@@ -358,6 +359,9 @@ public class ActionController implements OnProcessListener {
 			String callId = streamJson.getString("callId");
 			// 判断观看人数是否已经为0
 			Integer count = callIdCountMap.get(callId);
+			if (null == count) {
+				return GBResult.ok();
+			}
 			count--;
 			if (count >= 0) {
 				callIdCountMap.put(callId, count);
@@ -372,6 +376,7 @@ public class ActionController implements OnProcessListener {
 				if (!endSymbol) {
 					return;
 				}
+				logger.info("=======================关闭推流，开始================");
 				if (LinkTypeEnum.GB28181.getName().equals(linkType)) {
 					this.bye(callId);
 				} else if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
@@ -387,7 +392,8 @@ public class ActionController implements OnProcessListener {
 						ActionController.baseDeviceIdCallIdMap.remove(deviceId);
 					}
 				}
-			}, 2, TimeUnit.MINUTES);
+				logger.info("=======================关闭推流，完成================");
+			}, 30 * 1000, TimeUnit.MILLISECONDS);
 		}
 		return GBResult.ok();
 	}
