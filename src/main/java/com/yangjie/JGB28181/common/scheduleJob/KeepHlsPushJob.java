@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -32,7 +33,13 @@ public class KeepHlsPushJob {
                 logger.info("有hls推流进程终止，信息：processId=" + processId + ", deviceId=" + hlsInfoJson.getString("deviceId") + ", channelId=" + hlsInfoJson.getString("channelId"));
 
                 // 2. 重启hls推流进程
-                PushHlsStreamServiceImpl.pushRtmpToHls(hlsInfoJson.getString("deviceId"), hlsInfoJson.getString("channelId"));
+                String resource = hlsInfoJson.getString("resource");
+                if (!StringUtils.isEmpty(resource) && resource.equals("rtsp")) {
+                    String rtspLink = hlsInfoJson.getString("rtspLink");
+                    PushHlsStreamServiceImpl.pushRtspToHls(hlsInfoJson.getString("deviceId"), hlsInfoJson.getString("channelId"), rtspLink);
+                } else {
+                    PushHlsStreamServiceImpl.pushRtmpToHls(hlsInfoJson.getString("deviceId"), hlsInfoJson.getString("channelId"));
+                }
 
                 // 3. 删除已经终止的进程信息
                 PushHlsStreamServiceImpl.hlsProcessMap.remove(processId);

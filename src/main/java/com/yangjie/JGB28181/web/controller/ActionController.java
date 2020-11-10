@@ -91,6 +91,9 @@ public class ActionController implements OnProcessListener {
 	@Value("${config.checkSsrc}")
 	private boolean checkSsrc;
 
+	// 关闭推流的标志位
+	private static volatile Map<String, Boolean> callEndMap = new HashMap<>(20);
+
 	// 定时器执行线程池
 	public static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
 
@@ -98,6 +101,8 @@ public class ActionController implements OnProcessListener {
 
 	// 保存国标rtmp转hls或flv的关系流
 	public static Map<String, JSONObject> streamRelationMap = new HashMap<>(20);
+
+	public static Map<String, Integer> callIdCountMap = new HashMap<>(20);
 
 	// 判断设备是否正在推流
 	public static Map<Integer, PushStreamDevice> streamingDeviceMap = new HashMap<>(20);
@@ -130,30 +135,47 @@ public class ActionController implements OnProcessListener {
 				data.put("source", address);
 				resultList.add(data);
 
-				JSONObject streamJson = new JSONObject();
-				streamJson.put("callId", callId);
-				streamJson.put("type", BaseConstants.PUSH_STREAM_RTMP);
-				baseDeviceIdCallIdMap.put(deviceId, streamJson);
+				this.handleStreamInfoMap(callId, deviceId);
 			}
 		} else if (BaseConstants.PUSH_STREAM_HLS.equals(pushStreamType)) {
 			for (Integer deviceId : deviceIds) {
 				CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
 				result = this.playHls(cameraInfo, deviceId);
-				MediaData mediaData = (MediaData) result.getData();
-				JSONObject data = new JSONObject();
-				String address = mediaData.getAddress();
-				String callId = mediaData.getCallId();
-				data.put("deviceId", deviceId);
-				data.put("source", address);
-				resultList.add(data);
+				int resultCode = result.getCode();
+				if (resultCode == 200) {
+					MediaData mediaData = (MediaData) result.getData();
+					JSONObject data = new JSONObject();
+					String address = mediaData.getAddress();
+					String callId = mediaData.getCallId();
+					data.put("deviceId", deviceId);
+					data.put("source", address);
+					resultList.add(data);
 
-				JSONObject streamJson = new JSONObject();
-				streamJson.put("callId", callId);
-				streamJson.put("type", BaseConstants.PUSH_STREAM_HLS);
-				baseDeviceIdCallIdMap.put(deviceId, streamJson);
+					this.handleStreamInfoMap(callId, deviceId);
+				}
 			}
 		}
 		return GBResult.ok(resultList);
+	}
+
+	private void handleStreamInfoMap(String callId, Integer deviceId) {
+		// 设置关闭推流的标志位为假
+		callEndMap.put(callId, false);
+
+		// 每请求一次对应的推流，则观看人数加一
+		Integer count = callIdCountMap.get(callId);
+		if (null == count) {
+			count = 1;
+		} else {
+			count++;
+		}
+		callIdCountMap.put(callId, count);
+
+		// 把推流的信息放入设备callId的map中
+		JSONObject streamJson = new JSONObject();
+		streamJson.put("callId", callId);
+		streamJson.put("type", BaseConstants.PUSH_STREAM_RTMP);
+		baseDeviceIdCallIdMap.put(deviceId, streamJson);
 	}
 
 	/**
@@ -185,7 +207,7 @@ public class ActionController implements OnProcessListener {
 		String cameraInfoIp = cameraInfo.getIp();
 		GBResult rtmpResult = this.GBPlayRtmp(cameraInfoIp);
 		int code = rtmpResult.getCode();
-		if (code != 200 ){
+		if (code != 200){
 			return rtmpResult;
 		}
 
@@ -326,23 +348,47 @@ public class ActionController implements OnProcessListener {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
 		for (Integer deviceId : deviceIds) {
 			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
+			if (null == cameraInfo) {
+				return GBResult.ok();
+			}
 			String linkType = LinkTypeEnum.getDataByCode(cameraInfo.getLinkType()).getName();
 			JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceId);
-			String callId = streamJson.getString("callId");
-			if (LinkTypeEnum.GB28181.getName().equals(linkType)) {
-				this.bye(callId);
-			} else if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
-				// 关闭hls推流
-				this.rtspCloseCameraStream(callId);
-				// 关闭rtmp推流
-				CameraThread.MyRunnable rtspToRtmpRunnable = jobMap.get(callId);
-				if (null != rtspToRtmpRunnable) {
-					rtspToRtmpRunnable.setInterrupted();
-					// 清除缓存
-					CacheUtil.STREAMMAP.remove(callId);
-					ActionController.jobMap.remove(callId);
-				}
+			if (null == streamJson) {
+				return GBResult.ok();
 			}
+			String callId = streamJson.getString("callId");
+			// 设置该推流的关闭标志位为真
+			// 判断观看人数是否已经为0
+			Integer count = callIdCountMap.get(callId);
+			count--;
+			if (count >= 0) {
+				callIdCountMap.put(callId, count);
+				return GBResult.ok();
+			}
+
+			callEndMap.put(callId, true);
+			// 设定两分钟的延时，如果在延时时间内有请求推流，则停止关闭推流
+			scheduledExecutorService.schedule(() -> {
+				Boolean endSymbol = callEndMap.get(callId);
+				if (!endSymbol) {
+					return;
+				}
+				if (LinkTypeEnum.GB28181.getName().equals(linkType)) {
+					this.bye(callId);
+				} else if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
+					// 关闭hls推流
+					this.rtspCloseCameraStream(callId);
+					// 关闭rtmp推流
+					CameraThread.MyRunnable rtspToRtmpRunnable = jobMap.get(callId);
+					if (null != rtspToRtmpRunnable) {
+						rtspToRtmpRunnable.setInterrupted();
+						// 清除缓存
+						CacheUtil.STREAMMAP.remove(callId);
+						ActionController.jobMap.remove(callId);
+						ActionController.baseDeviceIdCallIdMap.remove(deviceId);
+					}
+				}
+			}, 2, TimeUnit.MINUTES);
 		}
 		return GBResult.ok();
 	}
@@ -373,6 +419,7 @@ public class ActionController implements OnProcessListener {
 			PushHlsStreamServiceImpl.hlsProcessMap.remove(callId);
 			PushHlsStreamServiceImpl.hlsInfoMap.remove(callId);
 			PushHlsStreamServiceImpl.deviceInfoMap.remove(deviceId);
+			ActionController.baseDeviceIdCallIdMap.remove(deviceId);
 		}
 		return GBResult.ok();
 	}
@@ -639,9 +686,14 @@ public class ActionController implements OnProcessListener {
 	@RequestMapping(value = "/rtmpToHls")
 	public GBResult rtmpToHls(@RequestParam(value = "deviceId")String deviceId,
 						  @RequestParam(value = "channelId")String channelId) {
-		Boolean isAlive = PushHlsStreamServiceImpl.deviceInfoMap.get(deviceId);
+		Boolean isAlive = PushHlsStreamServiceImpl.deviceInfoMap.get(Integer.valueOf(deviceId));
 		if (isAlive != null && isAlive) {
-			return GBResult.ok();
+			JSONObject dataJson = baseDeviceIdCallIdMap.get(deviceId);
+			String callId = dataJson.getString("callId");
+			String playFileName = StreamNameUtils.play(deviceId, channelId);
+			String hlsBaseUrl = BaseConstants.hlsBaseUrl;
+			hlsBaseUrl = hlsBaseUrl.replace("127.0.0.1", config.getStreamMediaIp());
+			return GBResult.ok(new MediaData(hlsBaseUrl + playFileName + "/index.m3u8", callId));
 		}
 		return pushHlsStreamService.pushStream(deviceId, channelId);
 	}
@@ -668,7 +720,12 @@ public class ActionController implements OnProcessListener {
 							  @RequestParam(value = "deviceId")String deviceId) {
 		Boolean isAlive = PushHlsStreamServiceImpl.deviceInfoMap.get(deviceId);
 		if (isAlive != null && isAlive) {
-			return GBResult.ok();
+			JSONObject dataJson = baseDeviceIdCallIdMap.get(Integer.valueOf(deviceId));
+			String callId = dataJson.getString("callId");
+			String playFileName = StreamNameUtils.rtspPlay(deviceId, "1");
+			String hlsBaseUrl = BaseConstants.hlsBaseUrl;
+			hlsBaseUrl = hlsBaseUrl.replace("127.0.0.1", config.getStreamMediaIp());
+			return GBResult.ok(new MediaData(hlsBaseUrl + playFileName + "/index.m3u8", callId));
 		}
 		return pushHlsStreamService.rtspPushStream(deviceId, "1", rtspLink);
 	}
