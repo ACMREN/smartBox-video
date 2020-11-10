@@ -21,4 +21,10 @@ public interface ResultConstants {
 	int CHANNEL_NO_EXIST_CODE = 314;
 	String CHANNEL_NO_EXIST = "通道不存在";
 
+	int DEVICE_NO_EXIST_CODE = 315;
+	String DEVICE_NO_EXIST = "设备不存在";
+
+	int DEVICE_NO_PUSH_STREAM_CODE = 316;
+	String DEVICE_NO_PUSH_STREAM = "设备不在推流";
+
 }

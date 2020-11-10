@@ -132,7 +132,9 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
         }
 
         newDataList = this.parseCameraInfoToLiveCamInfoVo(newCameraInfoList);
-        DeviceManagerController.liveCamVoList.addAll(newDataList);
+        Set<LiveCamInfoVo> liveCamVoSet = new HashSet<>(DeviceManagerController.liveCamVoList);
+        liveCamVoSet.addAll(newDataList);
+        DeviceManagerController.liveCamVoList = new ArrayList<>(liveCamVoSet);
     }
 
     @Override

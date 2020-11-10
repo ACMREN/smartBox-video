@@ -102,8 +102,6 @@ public class ActionController implements OnProcessListener {
 	// 保存国标rtmp转hls或flv的关系流
 	public static Map<String, JSONObject> streamRelationMap = new HashMap<>(20);
 
-	public static Map<String, Integer> callIdCountMap = new HashMap<>(20);
-
 	// 判断设备是否正在推流
 	public static Map<Integer, PushStreamDevice> streamingDeviceMap = new HashMap<>(20);
 
@@ -163,18 +161,20 @@ public class ActionController implements OnProcessListener {
 		callEndMap.put(callId, false);
 
 		// 每请求一次对应的推流，则观看人数加一
-		Integer count = callIdCountMap.get(callId);
+		JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceId);
+		Integer count = streamJson.getInteger("count");
 		if (null == count) {
 			count = 1;
 		} else {
 			count++;
 		}
-		callIdCountMap.put(callId, count);
+		streamJson.put("count", count);
 
 		// 把推流的信息放入设备callId的map中
-		JSONObject streamJson = new JSONObject();
 		streamJson.put("callId", callId);
 		streamJson.put("type", BaseConstants.PUSH_STREAM_RTMP);
+		streamJson.put("endSymbol", false);
+		streamJson.put("count", count);
 		baseDeviceIdCallIdMap.put(deviceId, streamJson);
 	}
 
@@ -357,15 +357,16 @@ public class ActionController implements OnProcessListener {
 				return GBResult.ok();
 			}
 			String callId = streamJson.getString("callId");
-			// 设置该推流的关闭标志位为真
+			Integer count = streamJson.getInteger("count");
 			// 判断观看人数是否已经为0
-			Integer count = callIdCountMap.get(callId);
 			count--;
 			if (count >= 0) {
-				callIdCountMap.put(callId, count);
+				streamJson.put("count", count);
+				baseDeviceIdCallIdMap.put(deviceId, streamJson);
 				return GBResult.ok();
 			}
 
+			// 设置该推流的关闭标志位为真
 			callEndMap.put(callId, true);
 			// 设定两分钟的延时，如果在延时时间内有请求推流，则停止关闭推流
 			scheduledExecutorService.schedule(() -> {

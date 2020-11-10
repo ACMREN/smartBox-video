@@ -2,11 +2,12 @@ package com.yangjie.JGB28181.entity;
 
 import lombok.Data;
 
+import java.util.Collection;
 import java.util.List;
 
 @Data
 public class PageListVo<T> {
-    private List<T> dataList;
+    private Collection<T> dataList;
     // 页码
     private Integer pageNo;
     // 每页数量
@@ -16,7 +17,7 @@ public class PageListVo<T> {
     // 分页数
     private Integer pageNum;
 
-    public PageListVo(List<T> dataList, Integer pageNo, Integer pageSize, Integer total) {
+    public PageListVo(Collection<T> dataList, Integer pageNo, Integer pageSize, Integer total) {
         this.dataList = dataList;
         this.pageNo = pageNo;
         this.pageSize = pageSize;
