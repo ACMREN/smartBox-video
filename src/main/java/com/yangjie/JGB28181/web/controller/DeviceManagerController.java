@@ -11,10 +11,12 @@ import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
 import com.yangjie.JGB28181.entity.enumEntity.TreeTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
+import com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition;
 import com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
+import com.yangjie.JGB28181.entity.vo.TreeInfoVo;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
@@ -324,24 +326,29 @@ public class DeviceManagerController {
      * 获取树状图
      * @return
      */
-    @PostMapping(value = "getCameraTree")
-    public GBResult getCameraTree(Integer userId, String treeType) {
+    @PostMapping(value = "getDeviceTree")
+    public GBResult getDeviceTree(@RequestBody SearchDeviceTreeCondition searchDeviceTreeCondition) {
+        Integer userId = searchDeviceTreeCondition.getUserId();
+        String treeType = searchDeviceTreeCondition.getTreeType();
         // 根据userId和treeType去获取树状图信息
         int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
         TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
 
-        return GBResult.ok(data);
+        TreeInfoVo result = new TreeInfoVo(data);
+
+        return GBResult.ok(result);
     }
 
     /**
      * 新增/更新树状图
-     * @param userId
-     * @param treeInfo
-     * @param treeType
+     * searchDeviceTreeCondition
      * @return
      */
-    @PostMapping(value = "setCameraTree")
-    public GBResult setCameraTree(Integer userId, String treeInfo, String treeType) {
+    @PostMapping(value = "setDeviceTree")
+    public GBResult setDeviceTree(@RequestBody SearchDeviceTreeCondition searchDeviceTreeCondition) {
+        Integer userId = searchDeviceTreeCondition.getUserId();
+        String treeType = searchDeviceTreeCondition.getTreeType();
+        String treeInfo = searchDeviceTreeCondition.getTreeInfo();
         int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
         TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
         if (null == data) {
@@ -360,27 +367,29 @@ public class DeviceManagerController {
 
     /**
      * 获取轮询列表信息
-     * @param userId
-     * @param treeType
      * @return
      */
     @PostMapping(value = "getPollingList")
-    public GBResult getPollingList(Integer userId, String treeType) {
+    public GBResult getPollingList(@RequestBody SearchDeviceTreeCondition searchDeviceTreeCondition) {
+        Integer userId = searchDeviceTreeCondition.getUserId();
+        String treeType = searchDeviceTreeCondition.getTreeType();
         int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
         TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
 
-        return GBResult.ok(data);
+        TreeInfoVo result = new TreeInfoVo(data);
+
+        return GBResult.ok(result);
     }
 
     /**
      * 更新轮询列表信息
-     * @param userId
-     * @param pollingList
-     * @param treeType
      * @return
      */
     @PostMapping(value = "setPollingList")
-    public GBResult setPollingList(Integer userId, String pollingList, String treeType) {
+    public GBResult setPollingList(@RequestBody SearchDeviceTreeCondition searchDeviceTreeCondition) {
+        Integer userId = searchDeviceTreeCondition.getUserId();
+        String pollingList = searchDeviceTreeCondition.getPollingList();
+        String treeType = searchDeviceTreeCondition.getTreeType();
         int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
         TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
         if (null == data) {
@@ -408,5 +417,4 @@ public class DeviceManagerController {
         deviceManagerService.updateDevice();
         return GBResult.ok();
     }
-
 }

@@ -21,4 +21,6 @@ public class Config {
     private String main_code;// 主码流最大码率
     @Value("${config.sub_code}")
     private String sub_code;// 主码流最大码率
+    @Value("${config.streamMediaIp}")
+    private String streamMediaIp;// 推流地址ip
 }
