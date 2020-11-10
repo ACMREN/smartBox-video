@@ -107,9 +107,10 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
         List<CameraInfo> newCameraInfoList = new ArrayList<>();
         for (CameraInfoVo item : cameraInfoVos) {
             // 先更新基础设备表
-            Integer deviceBaseId = item.getDeviceBaseId();
+            Integer deviceBaseId = item.getDeviceId();
             DeviceBaseInfo deviceBaseInfo = new DeviceBaseInfo(item);
             if (deviceBaseInfoIdMap.containsKey(deviceBaseId)) {
+                deviceBaseInfo.setId(deviceBaseId);
                 deviceBaseInfoService.getBaseMapper().updateById(deviceBaseInfo);
             } else {
                 deviceBaseInfoService.getBaseMapper().insert(deviceBaseInfo);
@@ -119,7 +120,9 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             // 再更新摄像头设备表
             CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
             if (null != cameraInfo) {
-                cameraInfo.setRtspLink(item.getRtspLink());
+                Integer cameraId = cameraInfo.getId();
+                cameraInfo = new CameraInfo(item);
+                cameraInfo.setId(cameraId);
                 cameraInfoService.updateById(cameraInfo);
             } else {
                 cameraInfo = new CameraInfo(item);
@@ -226,17 +229,18 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
     @Override
     public void removeLiveCamInfoVo(List<Integer> deviceIds) {
+        List<LiveCamInfoVo> newLiveCamInfoVos = new ArrayList<>(20);
         List<LiveCamInfoVo> liveCamInfoVos = DeviceManagerController.liveCamVoList;
         for (LiveCamInfoVo item : liveCamInfoVos) {
             Integer baseDeviceId = item.getBaseDeviceId();
             for (Integer deviceId : deviceIds) {
-                if (baseDeviceId.intValue() == deviceId) {
-                    liveCamInfoVos.remove(item);
+                if (baseDeviceId.intValue() != deviceId) {
+                    newLiveCamInfoVos.add(item);
                 }
             }
         }
 
-        DeviceManagerController.liveCamVoList = liveCamInfoVos;
+        DeviceManagerController.liveCamVoList = newLiveCamInfoVos;
     }
 
     /**
