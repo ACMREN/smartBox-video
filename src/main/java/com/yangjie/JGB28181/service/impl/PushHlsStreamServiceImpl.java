@@ -8,15 +8,18 @@ import com.yangjie.JGB28181.common.result.MediaData;
 import com.yangjie.JGB28181.common.utils.IDUtils;
 import com.yangjie.JGB28181.common.utils.RedisUtil;
 import com.yangjie.JGB28181.common.utils.StreamNameUtils;
+import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.service.IPushStreamService;
 import com.yangjie.JGB28181.web.controller.ActionController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
 
 @Component
 public class PushHlsStreamServiceImpl implements IPushStreamService {
@@ -89,6 +92,8 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         JSONObject hlsInfoJson = new JSONObject();
         hlsInfoJson.put("deviceId", deviceId);
         hlsInfoJson.put("channelId", channelId);
+        hlsInfoJson.put("resource", "rtsp");
+        hlsInfoJson.put("rtspLink", rtspLink);
         hlsInfoMap.put(callId, hlsInfoJson);
 
         // 3. 启动推流
@@ -100,8 +105,10 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
             RedisUtil.set(callId, 300, "keepStreaming");
             hlsProcessMap.put(callId, process);
             deviceInfoMap.put(deviceId, process.isAlive());
+            String hlsBaseUrl = BaseConstants.hlsBaseUrl;
+            hlsBaseUrl = hlsBaseUrl.replace("127.0.0.1", getStreamMediaIp());
 
-            return new MediaData(BaseConstants.hlsBaseUrl + playFileName, callId);
+            return new MediaData(hlsBaseUrl + playFileName + "/index.m3u8", callId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -118,6 +125,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         JSONObject hlsInfoJson = new JSONObject();
         hlsInfoJson.put("deviceId", deviceId);
         hlsInfoJson.put("channelId", channelId);
+        hlsInfoJson.put("resource", "rtmp");
         hlsInfoMap.put(callId, hlsInfoJson);
 
 //		String all = "ffmpeg -i rtsp://admin:gzbbn12345@203.88.202.253:554/h264/ch1/main/av_stream -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 rtmp://127.0.0.1:1935/hls/demo";
@@ -141,13 +149,24 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
             }
             subCallIdJson.put("hls", callId);
             ActionController.streamRelationMap.put(parentCallId, subCallIdJson);
+            String hlsBaseUrl = BaseConstants.hlsBaseUrl;
+            hlsBaseUrl = hlsBaseUrl.replace("127.0.0.1", getStreamMediaIp());
 
-            return new MediaData(BaseConstants.hlsBaseUrl + playFileName, callId);
+            return new MediaData(hlsBaseUrl + playFileName + "/index.m3u8", callId);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getStreamMediaIp() throws IOException {
+        File file = new File("src/main/resources/config.properties");
+        InputStream in = new FileInputStream(file);
+        Properties properties = new Properties();
+        properties.load(in);
+        String streamMediaIp = properties.getProperty("config.streamMediaIp");
+        return streamMediaIp;
     }
 
     /**
