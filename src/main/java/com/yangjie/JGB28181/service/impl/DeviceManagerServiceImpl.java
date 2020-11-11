@@ -132,9 +132,41 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
         }
 
         newDataList = this.parseCameraInfoToLiveCamInfoVo(newCameraInfoList);
-        Set<LiveCamInfoVo> liveCamVoSet = new HashSet<>(DeviceManagerController.liveCamVoList);
-        liveCamVoSet.addAll(newDataList);
-        DeviceManagerController.liveCamVoList = new ArrayList<>(liveCamVoSet);
+        this.updateLiveCamVoList(newDataList);
+    }
+
+    /**
+     * 实时更新liveCamVoList
+     * @param newDataList
+     * @return
+     */
+    private List<LiveCamInfoVo> updateLiveCamVoList(List<LiveCamInfoVo> newDataList) {
+        List<LiveCamInfoVo> newLiveCamVoList = new ArrayList<>();
+        List<LiveCamInfoVo> oldLiveCamVoList = DeviceManagerController.liveCamVoList;
+        List<Integer> deviceBaseIdList = new ArrayList<>();
+        // 1. 把新数据替换掉旧数据，加入到新的数据列表中
+        for (LiveCamInfoVo oldData : oldLiveCamVoList) {
+            Integer baseDeviceId = oldData.getBaseDeviceId();
+            for (LiveCamInfoVo newData : newDataList) {
+                Integer newDataBaseDeviceId = newData.getBaseDeviceId();
+                if (baseDeviceId.intValue() == newDataBaseDeviceId.intValue()) {
+                    deviceBaseIdList.add(baseDeviceId);
+                    newLiveCamVoList.add(newData);
+                }
+            }
+        }
+
+        // 2. 把旧数据放回到新的数据列表中
+        for (LiveCamInfoVo oldData : oldLiveCamVoList) {
+            Integer baseDeviceId = oldData.getBaseDeviceId();
+            if (deviceBaseIdList.contains(baseDeviceId)) {
+                continue;
+            }
+            newLiveCamVoList.add(oldData);
+        }
+        DeviceManagerController.liveCamVoList = newLiveCamVoList;
+
+        return null;
     }
 
     @Override
@@ -393,6 +425,10 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
             data.setPushStreamDeviceId(GBDevice.getDeviceId());
+            for (String channelId : GBDevice.getChannelCatalogMap().keySet()) {
+                data.setChannelId(channelId);
+                break;
+            }
             data.setDeviceId(cid);
             data.setIp(wanIp);
             data.setDeviceName("");

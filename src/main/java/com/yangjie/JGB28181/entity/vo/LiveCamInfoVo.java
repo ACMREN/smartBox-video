@@ -14,6 +14,8 @@ public class LiveCamInfoVo {
     private String rtspLink;
     // 设备推流id
     private String pushStreamDeviceId;
+    // 国标设备的推流通道id
+    private String channelId;
     // 设备的ip地址
     private String ip;
     // 设备名称
