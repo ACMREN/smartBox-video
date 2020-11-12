@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * 服务启动时开始第一次的设备搜索
  */
-@Component
+//@Component
 public class StartCheckDeviceService implements CommandLineRunner {
     Logger logger = LoggerFactory.getLogger(getClass());
 

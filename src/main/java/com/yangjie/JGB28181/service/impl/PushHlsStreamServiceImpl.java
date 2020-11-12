@@ -37,6 +37,13 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         // 2. 开始推流hls
         MediaData mediaData = this.pushRtmpToHls(deviceId, channelId);
 
+        // 3. 等待5秒返回，等待m3u8文件生成
+        try {
+            Thread.sleep(5 * 1000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
         return GBResult.ok(mediaData);
     }
 
@@ -47,6 +54,13 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
 
         // 2. 开始推流hls
         MediaData mediaData = this.pushRtspToHls(deviceId, channelId, rtspLink);
+
+        // 3. 等待5秒返回，等待m3u8文件生成
+        try {
+            Thread.sleep(5 * 1000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
 
         return GBResult.ok(mediaData);
     }

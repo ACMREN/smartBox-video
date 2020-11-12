@@ -194,8 +194,6 @@ public class ActionController implements OnProcessListener {
 			// 直接进行rtsp转hls推流
 			return this.rtspToHls(rtspLink, deviceId.toString());
 		}
-		// 等待5秒返回，等待m3u8文件生成
-		Thread.sleep(5 * 1000);
 		return null;
 	}
 
@@ -431,6 +429,22 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	@PostMapping(value = "testCameraStream")
+	public GBResult testCameraStream(@RequestParam(name = "pushStreamDeviceId", required = false)String pushStreamDeviceId,
+									 @RequestParam(name = "channelId", required = false)String channelId,
+									 @RequestParam(name = "rtspLink", required = false)String rtspLink,
+									 @RequestParam(name = "type")String type) {
+		if (!StringUtils.isEmpty(pushStreamDeviceId) && !StringUtils.isEmpty(channelId)) {
+			if (BaseConstants.PUSH_STREAM_HLS.equals(type)) {
+				this.play(null, pushStreamDeviceId, channelId, "TCP");
+				this.rtmpToHls(pushStreamDeviceId, channelId);
+			}
+		}
+
+
+		return GBResult.ok();
+	}
+
 	/**
 	 * 播放rtmp基础视频流
 	 * @param deviceId 设备id
@@ -443,8 +457,7 @@ public class ActionController implements OnProcessListener {
 			@RequestParam(value = "id", required = false)Integer id,
 			@RequestParam(value = "deviceId", required = false)String deviceId,
 			@RequestParam(value = "channelId", required = false)String channelId,
-			@RequestParam(required = false,name = "protocol",defaultValue = "TCP")String
-			mediaProtocol){
+			@RequestParam(required = false,name = "protocol",defaultValue = "TCP")String mediaProtocol){
 		GBResult result = null;
 		try{
 			int pushPort = 1935;
@@ -480,7 +493,7 @@ public class ActionController implements OnProcessListener {
 
 			//4.1响应成功，创建推流session
 			if(response != null ){
-				String address = pushHlsAddress.concat(streamName);
+				String address = pushRtmpAddress.concat(streamName);
 				Server server = isTcp ? new TCPServer() : new UDPServer();
 				Observer observer = new RtmpPusher(address, callId);
 				((RtmpPusher) observer).setDeviceId(streamName);

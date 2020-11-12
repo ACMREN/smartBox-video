@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.common.scheduleJob;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yangjie.JGB28181.common.utils.RedisUtil;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -23,7 +25,7 @@ public class KeepHlsPushJob {
     @Scheduled(cron = "0/30 * * * * ?")
     public void keepHlsPush() {
         logger.info("==================start check hls stream and keep save=========================");
-        Map<String, Process> tempProcessMap = PushHlsStreamServiceImpl.hlsProcessMap;
+        Map<String, Process> tempProcessMap = new HashMap<>(PushHlsStreamServiceImpl.hlsProcessMap);
         for (String processId : tempProcessMap.keySet()) {
             Process process = tempProcessMap.get(processId);
             if (!process.isAlive()) {
@@ -44,6 +46,7 @@ public class KeepHlsPushJob {
                 // 3. 删除已经终止的进程信息
                 PushHlsStreamServiceImpl.hlsProcessMap.remove(processId);
                 PushHlsStreamServiceImpl.hlsInfoMap.remove(processId);
+                RedisUtil.expire(processId, 0);
             }
         }
         logger.info("==================finish check hls stream and keep save=========================");
