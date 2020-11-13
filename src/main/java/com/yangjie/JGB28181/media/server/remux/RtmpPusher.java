@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
+import com.yangjie.JGB28181.web.controller.ActionController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -36,6 +37,10 @@ public class RtmpPusher extends Observer{
 	private boolean mIs90000TimeBase = false;
 
 	private String deviceId;
+
+	private Integer isTest;
+
+	private Integer cid;
 
 	FFmpegFrameGrabber grabber = null;
 	FFmpegFrameGrabber recorder = null;
@@ -132,12 +137,17 @@ public class RtmpPusher extends Observer{
 			while(mRunning){
 				avPacket=grabber.grabPacket();
 				if (avPacket != null && avPacket.size() >0 && avPacket.data() != null) {
+					if (isTest == 1) {
+						break;
+					}
 					pts = mPtsQueue.pop();
 					//pts+=40;
-					vmFree = rt.freeMemory() / byteToMb;
-					System.out.println("JVM内存的空闲空间为：" + vmFree + " MB");
+//					vmFree = rt.freeMemory() / byteToMb;
+//					System.out.println("JVM内存的空闲空间为：" + vmFree + " MB");
 					recorder.recordPacket(avPacket,pts,pts);
 //					recorder.recordPacket(avPacket);
+				} else if (isTest == 1){
+					ActionController.failCidList.add(cid);
 				}
 			}
 
@@ -187,7 +197,9 @@ public class RtmpPusher extends Observer{
 		this.mRunning = false;
 	}
 	@Override
-	public void startRemux() {
+	public void startRemux(Integer isTest, Integer cid) {
+		this.cid = cid;
+		this.isTest = isTest;
 		this.start();
 	}
 

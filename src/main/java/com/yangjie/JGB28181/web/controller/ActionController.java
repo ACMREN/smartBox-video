@@ -113,6 +113,8 @@ public class ActionController implements OnProcessListener {
 	// 存放任务 线程
 	public static Map<String, CameraThread.MyRunnable> jobMap = new HashMap<String, CameraThread.MyRunnable>();
 
+	public static List<Integer> failCidList;
+
 	/**
 	 * 获取视频流
 	 * @param deviceBaseCondition
@@ -135,7 +137,7 @@ public class ActionController implements OnProcessListener {
 				data.put("source", address);
 				resultList.add(data);
 
-				this.handleStreamInfoMap(callId, deviceId);
+				this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RTMP);
 			}
 		} else if (BaseConstants.PUSH_STREAM_HLS.equals(pushStreamType)) {
 			for (Integer deviceId : deviceIds) {
@@ -151,14 +153,14 @@ public class ActionController implements OnProcessListener {
 					data.put("source", address);
 					resultList.add(data);
 
-					this.handleStreamInfoMap(callId, deviceId);
+					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_HLS);
 				}
 			}
 		}
 		return GBResult.ok(resultList);
 	}
 
-	private void handleStreamInfoMap(String callId, Integer deviceId) {
+	private void handleStreamInfoMap(String callId, Integer deviceId, String type) {
 		// 设置关闭推流的标志位为假
 		callEndMap.put(callId, false);
 
@@ -172,9 +174,13 @@ public class ActionController implements OnProcessListener {
 		callIdCountMap.put(callId, count);
 
 		// 把推流的信息放入设备callId的map中
-		JSONObject streamJson = new JSONObject();
-		streamJson.put("callId", callId);
-		streamJson.put("type", BaseConstants.PUSH_STREAM_RTMP);
+		JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceId);
+		if (null == streamJson) {
+			streamJson = new JSONObject();
+		}
+		JSONObject typeStreamJson = new JSONObject();
+		typeStreamJson.put("callId", callId);
+		streamJson.put(type, typeStreamJson);
 		baseDeviceIdCallIdMap.put(deviceId, streamJson);
 	}
 
@@ -300,7 +306,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(null, pushStreamDeviceId, channelId, "TCP");
+			return this.play(null, pushStreamDeviceId, channelId, "TCP", 0, null);
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
@@ -333,10 +339,15 @@ public class ActionController implements OnProcessListener {
 	@PostMapping(value = "keepCameraStream")
 	public GBResult keepCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+		String type = deviceBaseCondition.getType();
 		// 更新redis中推流key-value对象的时间，保证推流
 		for (Integer deviceId : deviceIds) {
 			JSONObject streamJson = ActionController.baseDeviceIdCallIdMap.get(deviceId);
-			String callId = streamJson.getString("callId");
+			JSONObject typeStreamJson = streamJson.getJSONObject(type);
+			if (null == typeStreamJson) {
+				return GBResult.ok();
+			}
+			String callId = typeStreamJson.getString("callId");
 			RedisUtil.expire(callId, 30*1000);
 		}
 
@@ -346,6 +357,7 @@ public class ActionController implements OnProcessListener {
 	@PostMapping(value = "closeCameraStream")
 	public GBResult closeCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+		String type = deviceBaseCondition.getType();
 		for (Integer deviceId : deviceIds) {
 			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
 			if (null == cameraInfo) {
@@ -356,7 +368,11 @@ public class ActionController implements OnProcessListener {
 			if (null == streamJson) {
 				return GBResult.ok();
 			}
-			String callId = streamJson.getString("callId");
+			JSONObject typeStreamJson = streamJson.getJSONObject(type);
+			if (null == typeStreamJson) {
+				return GBResult.ok();
+			}
+			String callId = typeStreamJson.getString("callId");
 			// 判断观看人数是否已经为0
 			Integer count = callIdCountMap.get(callId);
 			if (null == count) {
@@ -433,16 +449,23 @@ public class ActionController implements OnProcessListener {
 	public GBResult testCameraStream(@RequestParam(name = "pushStreamDeviceId", required = false)String pushStreamDeviceId,
 									 @RequestParam(name = "channelId", required = false)String channelId,
 									 @RequestParam(name = "rtspLink", required = false)String rtspLink,
-									 @RequestParam(name = "type")String type) {
+									 @RequestParam(name = "deviceId")Integer cid,
+									 @RequestParam(name = "type")String type) throws InterruptedException {
+		failCidList = new ArrayList<>();
 		if (!StringUtils.isEmpty(pushStreamDeviceId) && !StringUtils.isEmpty(channelId)) {
-			if (BaseConstants.PUSH_STREAM_HLS.equals(type)) {
-				this.play(null, pushStreamDeviceId, channelId, "TCP");
-				this.rtmpToHls(pushStreamDeviceId, channelId);
-			}
+			this.play(null, pushStreamDeviceId, channelId, "TCP", 1, cid);
+		} else if (!StringUtils.isEmpty(rtspLink)) {
+			// 把rtsp连接转成pojo
+			CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+			cameraPojo.setIsTest(1);
+			cameraPojo.setCid(cid);
+			// 测试播放rtsp转rtmp
+			this.rtspPlayRtmp(cameraPojo);
 		}
+		// 等待5秒，结果返回
+		Thread.sleep(5 * 1000);
 
-
-		return GBResult.ok();
+		return GBResult.ok(ActionController.failCidList);
 	}
 
 	/**
@@ -457,7 +480,9 @@ public class ActionController implements OnProcessListener {
 			@RequestParam(value = "id", required = false)Integer id,
 			@RequestParam(value = "deviceId", required = false)String deviceId,
 			@RequestParam(value = "channelId", required = false)String channelId,
-			@RequestParam(required = false,name = "protocol",defaultValue = "TCP")String mediaProtocol){
+			@RequestParam(value = "protocol", required = false, defaultValue = "TCP")String mediaProtocol,
+			@RequestParam(value = "isTest", defaultValue = "0")Integer isTest,
+			@RequestParam(value = "cid", required = false)Integer cid){
 		GBResult result = null;
 		try{
 			int pushPort = 1935;
@@ -504,7 +529,7 @@ public class ActionController implements OnProcessListener {
 				
 				pushStreamDevice.setDialog(response);
 				server.startServer(pushStreamDevice.getFrameDeque(),Integer.valueOf(ssrc),port,false, streamName);
-				observer.startRemux();
+				observer.startRemux(isTest, cid);
 
 				observer.setOnProcessListener(this);
 				mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
@@ -550,7 +575,7 @@ public class ActionController implements OnProcessListener {
 			if (0 == keys.size()) {
 				// 开始推流
 				cameraPojo = openStream(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(),
-						pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime);
+						pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid());
 				result = GBResult.ok(new MediaData(cameraPojo.getUrl(), cameraPojo.getToken()));
 				logger.info("打开：" + cameraPojo.getRtsp());
 			} else {
@@ -573,7 +598,7 @@ public class ActionController implements OnProcessListener {
 						logger.info("打开：" + cameraPojo.getRtsp());
 					} else {
 						cameraPojo = openStream(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(),
-								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime);
+								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid());
 						result = GBResult.ok(new MediaData(cameraPojo.getUrl(), cameraPojo.getToken()));
 						logger.info("打开：" + cameraPojo.getRtsp());
 					}
@@ -594,7 +619,7 @@ public class ActionController implements OnProcessListener {
 						logger.info(cameraPojo.getRtsp() + " 正在进行回放...");
 					} else {
 						cameraPojo = openStream(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(),
-								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime);
+								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid());
 						result = GBResult.ok(new MediaData(cameraPojo.getUrl(), cameraPojo.getToken()));
 						logger.info("打开：" + cameraPojo.getRtsp());
 					}
@@ -605,7 +630,7 @@ public class ActionController implements OnProcessListener {
 	}
 
 	public CameraPojo openStream(String ip, String username, String password, String channel, String stream,
-								 String starttime, String endtime, String openTime) {
+								 String starttime, String endtime, String openTime, Integer cid) {
 		CameraPojo cameraPojo = new CameraPojo();
 		// 生成token
 		String token = UUID.randomUUID().toString();
@@ -672,6 +697,7 @@ public class ActionController implements OnProcessListener {
 		cameraPojo.setOpenTime(openTime);
 		cameraPojo.setCount(1);
 		cameraPojo.setToken(token);
+		cameraPojo.setCid(cid);
 
 		// 执行任务
 		CameraThread.MyRunnable job = new CameraThread.MyRunnable(cameraPojo);

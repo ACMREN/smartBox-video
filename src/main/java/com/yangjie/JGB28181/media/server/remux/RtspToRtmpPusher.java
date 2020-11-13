@@ -4,6 +4,7 @@ import com.yangjie.JGB28181.common.utils.IpUtil;
 import com.yangjie.JGB28181.common.utils.TimerUtil;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
+import com.yangjie.JGB28181.web.controller.ActionController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.ffmpeg.global.avutil;
@@ -93,6 +94,7 @@ public class RtspToRtmpPusher {
         try {
             rtspSocket.connect(new InetSocketAddress(cameraPojo.getIp(), 554), 1000);
         } catch (IOException e) {
+            ActionController.failCidList.add(cameraPojo.getCid());
             grabber.stop();
             grabber.close();
             rtspSocket.close();
@@ -220,6 +222,7 @@ public class RtspToRtmpPusher {
         logger.info(cameraPojo.getRtsp() + " 开始推流...");
         // 释放探测时缓存下来的数据帧，避免pts初始值不为0导致画面延时
         grabber.flush();
+        int isTest = cameraPojo.getIsTest();
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
                 // 用于中断线程时，结束该循环
@@ -233,6 +236,9 @@ public class RtspToRtmpPusher {
                     no_frame_index++;
                     err_index++;
                     continue;
+                }
+                if (isTest == 1) {
+                    break;
                 }
                 // 不需要编码直接把音视频帧推出去
                 err_index += (record.recordPacket(pkt) ? 0 : 1);

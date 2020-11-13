@@ -79,11 +79,14 @@ public class TimerUtil implements CommandLineRunner {
 							Long heartbeats = heartbeatsMap.get(key);
 							Long lastHeartbeats = lastHeartbeatsMap.get(key);
 							if (lastHeartbeats != null && lastHeartbeats - heartbeats == 0) {
+								int isTest = cameraPojo.getIsTest();
 								logger.info("移除已经停止推流的直播，key：" + key);
 								CacheUtil.STREAMMAP.remove(key);
 								ActionController.jobMap.remove(key);
-								openStream(cameraPojo.getIp(), cameraPojo.getUsername(), cameraPojo.getPassword(), cameraPojo.getChannel(), cameraPojo.getStream(), cameraPojo.getStartTime(),
-										cameraPojo.getEndTime(), cameraPojo.getOpenTime());
+								if (isTest != 1) {
+									openStream(cameraPojo.getIp(), cameraPojo.getUsername(), cameraPojo.getPassword(), cameraPojo.getChannel(), cameraPojo.getStream(), cameraPojo.getStartTime(),
+											cameraPojo.getEndTime(), cameraPojo.getOpenTime());
+								}
 							}
 							lastHeartbeatsMap.put(key, heartbeats);
 						} catch (Exception e) {
@@ -95,28 +98,40 @@ public class TimerUtil implements CommandLineRunner {
 				Map<Integer, JSONObject> baseDeviceIdCallIdMap = ActionController.baseDeviceIdCallIdMap;
 				for (Integer deviceBaseId : baseDeviceIdCallIdMap.keySet()) {
 					JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceBaseId);
-					String callId = streamJson.getString("callId");
-					String streamType = streamJson.getString("type");
-					String str = RedisUtil.get(callId);
-					CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
-					if (StringUtils.isEmpty(str)) {
-						Integer linkType = cameraInfo.getLinkType();
-						// 如果是rtmp推流，则有区分国标和rtsp链接
-						if (BaseConstants.PUSH_STREAM_RTMP.equals(streamType)) {
-							if (LinkTypeEnum.RTSP.getCode() == linkType.intValue()) {
-								ActionController.jobMap.get(callId).setInterrupted();
-							}
-							if (LinkTypeEnum.GB28181.getCode() == linkType.intValue()) {
-								try {
-									sipLayer.sendBye(callId);
-								} catch (SipException e) {
-									e.printStackTrace();
+					for (int i = 0; i < 2; i++) {
+						String streamType = null;
+						if (i == 0) {
+							streamType = BaseConstants.PUSH_STREAM_RTMP;
+						}
+						if (i == 1) {
+							streamType  = BaseConstants.PUSH_STREAM_HLS;
+						}
+						JSONObject typeStreamJson = streamJson.getJSONObject(streamType);
+						if (null == typeStreamJson) {
+							continue;
+						}
+						String callId = typeStreamJson.getString("callId");
+						String str = RedisUtil.get(callId);
+						CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
+						if (StringUtils.isEmpty(str)) {
+							Integer linkType = cameraInfo.getLinkType();
+							// 如果是rtmp推流，则有区分国标和rtsp链接
+							if (BaseConstants.PUSH_STREAM_RTMP.equals(streamType)) {
+								if (LinkTypeEnum.RTSP.getCode() == linkType.intValue()) {
+									ActionController.jobMap.get(callId).setInterrupted();
+								}
+								if (LinkTypeEnum.GB28181.getCode() == linkType.intValue()) {
+									try {
+										sipLayer.sendBye(callId);
+									} catch (SipException e) {
+										e.printStackTrace();
+									}
 								}
 							}
-						}
-						// hls推流统一都是都是通过命令行执行，无需区分
-						if (BaseConstants.PUSH_STREAM_HLS.equals(streamType)) {
-							pushHlsStreamService.closeStream(callId);
+							// hls推流统一都是都是通过命令行执行，无需区分
+							if (BaseConstants.PUSH_STREAM_HLS.equals(streamType)) {
+								pushHlsStreamService.closeStream(callId);
+							}
 						}
 					}
 				}

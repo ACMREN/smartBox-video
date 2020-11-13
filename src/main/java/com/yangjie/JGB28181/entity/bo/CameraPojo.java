@@ -16,6 +16,8 @@ public class CameraPojo implements Serializable {
 	private String endTime;// 回放结束时间
 	private String openTime;// 打开时间
 	private int count = 0;// 使用人数
+	private int isTest;//是否测试
+	private Integer cid;
 	private String token;
 
 	public String getUsername() {
@@ -120,6 +122,22 @@ public class CameraPojo implements Serializable {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public int getIsTest() {
+		return isTest;
+	}
+
+	public void setIsTest(int isTest) {
+		this.isTest = isTest;
+	}
+
+	public Integer getCid() {
+		return cid;
+	}
+
+	public void setCid(Integer cid) {
+		this.cid = cid;
 	}
 
 	@Override
