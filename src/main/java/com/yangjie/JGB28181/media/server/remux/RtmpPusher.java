@@ -103,10 +103,10 @@ public class RtmpPusher extends Observer{
 			grabber = new FFmpegFrameGrabber(pis,0);
 			//阻塞式，直到通道有数据
 			grabber.setOption("stimeout", "200000");
-			grabber.setOption("-re", "");
+//			grabber.setOption("-re", "");
 			grabber.start();
 
-			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
+			recorder = new CustomFFmpegFrameRecorder("/Users/huangmingen/Downloads/test.flv",1280,720,0);
 			recorder.setInterleaved(true);
 			recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 			recorder.setFormat("flv");

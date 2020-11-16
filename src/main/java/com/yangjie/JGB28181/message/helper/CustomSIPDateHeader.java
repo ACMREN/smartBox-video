@@ -10,8 +10,7 @@ import gov.nist.javax.sip.header.SIPHeader;
 public class CustomSIPDateHeader extends SIPHeader{
 
 	@Override
-	protected StringBuilder encodeBody(StringBuilder buffer) {
-		return buffer.append(DateUtils.getGBFormatDate(new Date()));
+	protected String encodeBody() {
+		return null;
 	}
-
 }

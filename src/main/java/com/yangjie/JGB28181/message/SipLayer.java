@@ -1,11 +1,8 @@
 package com.yangjie.JGB28181.message;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.text.ParseException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -30,12 +27,10 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
-import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;

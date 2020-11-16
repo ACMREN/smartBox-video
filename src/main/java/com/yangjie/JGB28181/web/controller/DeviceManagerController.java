@@ -23,6 +23,9 @@ import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.TreeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,8 +80,10 @@ public class DeviceManagerController {
     public static List<LiveCamInfoVo> liveCamVoList = new ArrayList<>();
 
     static {
-        File file = new File("src/main/resources/config.properties");
+        File file = null;
+//        File file = new File("src/main/resources/config.properties");
         try {
+            file = ResourceUtils.getFile("classpath:config.properties");
             FileInputStream inputStream = new FileInputStream(file);
             Properties properties = new Properties();
             properties.load(inputStream);

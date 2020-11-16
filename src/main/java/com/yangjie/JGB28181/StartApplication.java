@@ -5,6 +5,8 @@ import com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -14,7 +16,7 @@ import java.util.Date;
 @SpringBootApplication
 @EnableScheduling
 @MapperScan("com.yangjie.JGB28181.mapper")
-public class StartApplication
+public class StartApplication extends SpringBootServletInitializer
 {
 	public static void main( String[] args )
 	{
@@ -23,5 +25,13 @@ public class StartApplication
 		// 将上下文传入CameraPush类中，用于检测tcp连接是否正常
 		final ApplicationContext applicationContext = SpringApplication.run(StartApplication.class, args);
 		RtspToRtmpPusher.setApplicationContext(applicationContext);
+	}
+
+	/*
+    使用外部tomcat启动必须加上
+     */
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+		return builder.sources(StartApplication.class);
 	}
 }

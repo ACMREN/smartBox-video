@@ -4,10 +4,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import javax.sip.Dialog;
 import javax.sip.SipException;
@@ -27,7 +24,6 @@ import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
-import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +93,7 @@ public class ActionController implements OnProcessListener {
 	// 定时器执行线程池
 	public static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
 
-	public static ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 3000, TimeUnit.MILLISECONDS, new BlockingArrayQueue<>(10));
+	public static ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 3000, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(10));
 
 	// 保存国标rtmp转hls或flv的关系流
 	public static Map<String, JSONObject> streamRelationMap = new HashMap<>(20);
