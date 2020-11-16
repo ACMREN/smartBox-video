@@ -149,8 +149,8 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             Integer baseDeviceId = oldData.getBaseDeviceId();
             for (LiveCamInfoVo newData : newDataList) {
                 Integer newDataBaseDeviceId = newData.getBaseDeviceId();
-                if (baseDeviceId.intValue() == newDataBaseDeviceId.intValue()) {
-                    deviceBaseIdList.add(baseDeviceId);
+                if (null == baseDeviceId || baseDeviceId.intValue() == newDataBaseDeviceId.intValue()) {
+                    deviceBaseIdList.add(newDataBaseDeviceId);
                     newLiveCamVoList.add(newData);
                 }
             }

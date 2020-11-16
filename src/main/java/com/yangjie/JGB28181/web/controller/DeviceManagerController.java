@@ -341,7 +341,10 @@ public class DeviceManagerController {
         int treeTypeCode = TreeTypeEnum.getDataByName(treeType).getCode();
         TreeInfo data = treeInfoService.getDataByUserAndType(userId, treeTypeCode);
 
-        TreeInfoVo result = new TreeInfoVo(data);
+        TreeInfoVo result = new TreeInfoVo();
+        if (null != data) {
+            result = new TreeInfoVo(data);
+        }
 
         return GBResult.ok(result);
     }

@@ -17,4 +17,7 @@ public class TreeInfoVo {
         this.pollingList = treeInfo.getPollingList();
         this.treeType = TreeTypeEnum.getDataByCode(treeInfo.getTreeType()).getName();
     }
+
+    public TreeInfoVo() {
+    }
 }
