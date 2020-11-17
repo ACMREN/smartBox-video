@@ -125,15 +125,19 @@ public class ActionController implements OnProcessListener {
 		if (BaseConstants.PUSH_STREAM_RTMP.equals(pushStreamType)) {
 			for (Integer deviceId : deviceIds) {
 				result = this.playRtmp(deviceId);
-				MediaData mediaData = (MediaData) result.getData();
-				JSONObject data = new JSONObject();
-				String address = mediaData.getAddress();
-				String callId = mediaData.getCallId();
-				data.put("deviceId", deviceId);
-				data.put("source", address);
-				resultList.add(data);
-
-				this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RTMP);
+				int resultCode = result.getCode();
+				if (200 == resultCode) {
+					MediaData mediaData = (MediaData) result.getData();
+					JSONObject data = new JSONObject();
+					String address = mediaData.getAddress();
+					String callId = mediaData.getCallId();
+					data.put("deviceId", deviceId);
+					data.put("source", address);
+					resultList.add(data);
+					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RTMP);
+				} else {
+					return result;
+				}
 			}
 		} else if (BaseConstants.PUSH_STREAM_HLS.equals(pushStreamType)) {
 			for (Integer deviceId : deviceIds) {
@@ -150,6 +154,8 @@ public class ActionController implements OnProcessListener {
 					resultList.add(data);
 
 					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_HLS);
+				} else {
+					return result;
 				}
 			}
 		}
@@ -321,10 +327,12 @@ public class ActionController implements OnProcessListener {
 			String itemIp = item.getIp();
 			// 如果ip匹配上，则从redis上获取设备的信息
 			if (cameraIp.equals(itemIp)) {
+				logger.info("==================ip匹配成功===============");
 				dataJson = new JSONObject();
 				pushStreamDeviceId = item.getPushStreamDeviceId();
 				deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + pushStreamDeviceId);
 
+				logger.info("=============deviceStr:" + deviceStr + ",pushStreamDeviceId:" + pushStreamDeviceId + "=============");
 				dataJson.put("deviceStr", deviceStr);
 				dataJson.put("pushStreamDeviceId", pushStreamDeviceId);
 			}
