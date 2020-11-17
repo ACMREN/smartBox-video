@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.util.*;
@@ -175,7 +176,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
     }
 
     public static String getStreamMediaIp() throws IOException {
-        File file = new File("src/main/resources/config.properties");
+        File file = ResourceUtils.getFile("classpath:config.properties");
         InputStream in = new FileInputStream(file);
         Properties properties = new Properties();
         properties.load(in);

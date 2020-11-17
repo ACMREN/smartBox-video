@@ -106,7 +106,7 @@ public class RtmpPusher extends Observer{
 //			grabber.setOption("-re", "");
 			grabber.start();
 
-			recorder = new CustomFFmpegFrameRecorder("/Users/huangmingen/Downloads/test.flv",1280,720,0);
+			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 			recorder.setInterleaved(true);
 			recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 			recorder.setFormat("flv");
