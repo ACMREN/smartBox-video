@@ -736,7 +736,7 @@ public class ActionController implements OnProcessListener {
 	@RequestMapping(value = "/rtmpToHls")
 	public GBResult rtmpToHls(@RequestParam(value = "deviceId")String deviceId,
 						  @RequestParam(value = "channelId")String channelId) {
-		Boolean isAlive = PushHlsStreamServiceImpl.deviceInfoMap.get(Integer.valueOf(deviceId));
+		Boolean isAlive = PushHlsStreamServiceImpl.deviceInfoMap.get(deviceId);
 		if (isAlive != null && isAlive) {
 			JSONObject dataJson = baseDeviceIdCallIdMap.get(deviceId);
 			String callId = dataJson.getString("callId");
