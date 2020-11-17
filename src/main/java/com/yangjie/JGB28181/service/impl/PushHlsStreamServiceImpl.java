@@ -33,7 +33,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
     @Override
     public GBResult pushStream(String deviceId, String channelId) {
         // 1. 开启清理过期的TS索引文件的定时器
-        this.cleanUpTempTsFile(deviceId, channelId);
+        this.cleanUpTempTsFile(deviceId, channelId, 0);
 
         // 2. 开始推流hls
         MediaData mediaData = this.pushRtmpToHls(deviceId, channelId);
@@ -51,7 +51,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
     @Override
     public GBResult rtspPushStream(String deviceId, String channelId, String rtspLink) {
         // 1. 开启清理过期的TS索引文件的定时器
-        this.cleanUpTempTsFile(deviceId, channelId);
+        this.cleanUpTempTsFile(deviceId, channelId, 1);
 
         // 2. 开始推流hls
         MediaData mediaData = this.pushRtspToHls(deviceId, channelId, rtspLink);
@@ -135,7 +135,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         String callId = IDUtils.id();
         String playFileName = StreamNameUtils.play(deviceId, channelId);
         String rtmpUrl = BaseConstants.rtmpBaseUrl + playFileName;
-        String all = "ffmpeg -re -i " + rtmpUrl + " -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 -hls_time 10 -hls_wrap 5 rtmp://127.0.0.1:1935/hls/" + playFileName;
+        String all = "ffmpeg -rtsp_transport tcp -re -i " + rtmpUrl + " -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 -hls_time 10 -hls_wrap 5 rtmp://127.0.0.1:1935/hls/" + playFileName;
         // 2. 把HLS信息放到静态map中
         JSONObject hlsInfoJson = new JSONObject();
         hlsInfoJson.put("deviceId", deviceId);
@@ -187,10 +187,16 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
     /**
      * 定时清理过期的ts文件
      */
-    public void cleanUpTempTsFile(String deviceId, String channelId) {
-        String playFileName = StreamNameUtils.rtspPlay(deviceId, channelId);
+    public void cleanUpTempTsFile(String deviceId, String channelId, Integer isRtsp) {
+        String playFileName = null;
+        if (isRtsp == 1) {
+            playFileName = StreamNameUtils.rtspPlay(deviceId, channelId);
+        } else {
+            playFileName = StreamNameUtils.play(deviceId, channelId);
+        }
+        final String documentName = playFileName;
         ActionController.scheduledExecutorService.scheduleAtFixedRate(() -> {
-            String filePath = BaseConstants.hlsStreamPath + playFileName + "/";
+            String filePath = BaseConstants.hlsStreamPath + documentName + "/";
             System.out.println("====================start file clean up==================");
             File dir = new File(filePath);
             File[] fileList = dir.listFiles();

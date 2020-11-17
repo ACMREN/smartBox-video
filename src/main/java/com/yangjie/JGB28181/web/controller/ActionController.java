@@ -234,7 +234,7 @@ public class ActionController implements OnProcessListener {
 			}
 		}
 		// 再进行hls的推流
-		return this.rtmpToHls(pushStreamDeviceId, channelId);
+		return this.rtmpToHls(pushStreamDeviceId, channelId, cameraInfo.getDeviceBaseId());
 	}
 
 	/**
@@ -735,10 +735,11 @@ public class ActionController implements OnProcessListener {
 	 */
 	@RequestMapping(value = "/rtmpToHls")
 	public GBResult rtmpToHls(@RequestParam(value = "deviceId")String deviceId,
-						  @RequestParam(value = "channelId")String channelId) {
+							  @RequestParam(value = "channelId")String channelId,
+							  @RequestParam(value = "id", required = false)Integer id) {
 		Boolean isAlive = PushHlsStreamServiceImpl.deviceInfoMap.get(deviceId);
 		if (isAlive != null && isAlive) {
-			JSONObject dataJson = baseDeviceIdCallIdMap.get(deviceId);
+			JSONObject dataJson = baseDeviceIdCallIdMap.get(id);
 			String callId = dataJson.getString("callId");
 			String playFileName = StreamNameUtils.play(deviceId, channelId);
 			String hlsBaseUrl = BaseConstants.hlsBaseUrl;
