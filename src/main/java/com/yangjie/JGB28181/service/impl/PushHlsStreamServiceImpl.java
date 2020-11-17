@@ -135,7 +135,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         String callId = IDUtils.id();
         String playFileName = StreamNameUtils.play(deviceId, channelId);
         String rtmpUrl = BaseConstants.rtmpBaseUrl + playFileName;
-        String all = "ffmpeg -rtsp_transport tcp -re -i " + rtmpUrl + " -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 -hls_time 10 -hls_wrap 5 rtmp://127.0.0.1:1935/hls/" + playFileName;
+        String all = "ffmpeg -re -i " + rtmpUrl + " -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 -hls_time 10 -hls_wrap 5 rtmp://127.0.0.1:1935/hls/" + playFileName;
         // 2. 把HLS信息放到静态map中
         JSONObject hlsInfoJson = new JSONObject();
         hlsInfoJson.put("deviceId", deviceId);

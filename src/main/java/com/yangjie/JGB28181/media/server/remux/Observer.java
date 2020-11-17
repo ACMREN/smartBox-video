@@ -10,7 +10,7 @@ public abstract class Observer  extends Thread{
 
 	public abstract void onPts(long pts,boolean isAudio); 
 
-	public abstract void startRemux(Integer isTest, Integer cid);
+	public abstract void startRemux(Integer isTest, Integer cid, Integer toHls);
 
 	public abstract void stopRemux();
 

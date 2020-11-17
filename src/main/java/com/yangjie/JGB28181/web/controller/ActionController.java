@@ -195,7 +195,7 @@ public class ActionController implements OnProcessListener {
 	private GBResult playHls(CameraInfo cameraInfo, Integer deviceId) throws InterruptedException {
 		if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
 			// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
-			return this.GBPlayHls(cameraInfo);
+			return this.GBPlayHls(cameraInfo.getIp());
 		} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
 			// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
 			String rtspLink = cameraInfo.getRtspLink();
@@ -210,7 +210,7 @@ public class ActionController implements OnProcessListener {
 	 * @param cameraInfo
 	 * @return
 	 */
-	private GBResult GBPlayHls(CameraInfo cameraInfo) {
+	private GBResult GBPlayHls(CameraInfo cameraInfo) throws InterruptedException {
 		// 先进行rtmp的推流
 		String cameraInfoIp = cameraInfo.getIp();
 		GBResult rtmpResult = this.GBPlayRtmp(cameraInfoIp);
@@ -308,7 +308,31 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(null, pushStreamDeviceId, channelId, "TCP", 0, null);
+			return this.play(null, pushStreamDeviceId, channelId, "TCP", 0, null, 0);
+		}
+		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
+	}
+
+	private GBResult GBPlayHls(String cameraIp) {
+		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraIp);
+		String deviceStr = null;
+		String pushStreamDeviceId = null;
+		if (null != dataJson) {
+			deviceStr = dataJson.getString("deviceStr");
+			pushStreamDeviceId = dataJson.getString("pushStreamDeviceId");
+		}
+		// 如果redis上获取设备的信息成功，则进行推流
+		if (!StringUtils.isEmpty(deviceStr)) {
+			Device device = JSONObject.parseObject(deviceStr, Device.class);
+			Map<String, DeviceChannel> channelMap = device.getChannelMap();
+			String channelId = null;
+			for (String key : channelMap.keySet()) {
+				DeviceChannel deviceChannel = channelMap.get(key);
+				if (null != deviceChannel) {
+					channelId = key;
+				}
+			}
+			return this.play(null, pushStreamDeviceId, channelId, "TCP", 0, null, 1);
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
@@ -327,12 +351,10 @@ public class ActionController implements OnProcessListener {
 			String itemIp = item.getIp();
 			// 如果ip匹配上，则从redis上获取设备的信息
 			if (cameraIp.equals(itemIp)) {
-				logger.info("==================ip匹配成功===============");
 				dataJson = new JSONObject();
 				pushStreamDeviceId = item.getPushStreamDeviceId();
 				deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + pushStreamDeviceId);
 
-				logger.info("=============deviceStr:" + deviceStr + ",pushStreamDeviceId:" + pushStreamDeviceId + "=============");
 				dataJson.put("deviceStr", deviceStr);
 				dataJson.put("pushStreamDeviceId", pushStreamDeviceId);
 			}
@@ -457,7 +479,7 @@ public class ActionController implements OnProcessListener {
 									 @RequestParam(name = "type")String type) throws InterruptedException {
 		failCidList = new ArrayList<>();
 		if (!StringUtils.isEmpty(pushStreamDeviceId) && !StringUtils.isEmpty(channelId)) {
-			this.play(null, pushStreamDeviceId, channelId, "TCP", 1, cid);
+			this.play(null, pushStreamDeviceId, channelId, "TCP", 1, cid, 0);
 		} else if (!StringUtils.isEmpty(rtspLink)) {
 			// 把rtsp连接转成pojo
 			CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
@@ -486,7 +508,8 @@ public class ActionController implements OnProcessListener {
 			@RequestParam(value = "channelId", required = false)String channelId,
 			@RequestParam(value = "protocol", required = false, defaultValue = "TCP")String mediaProtocol,
 			@RequestParam(value = "isTest", defaultValue = "0")Integer isTest,
-			@RequestParam(value = "cid", required = false)Integer cid){
+			@RequestParam(value = "cid", required = false)Integer cid,
+			@RequestParam(value = "toHls", required = false)Integer toHls){
 		GBResult result = null;
 		try{
 			int pushPort = 1935;
@@ -523,6 +546,9 @@ public class ActionController implements OnProcessListener {
 			//4.1响应成功，创建推流session
 			if(response != null ){
 				String address = pushRtmpAddress.concat(streamName);
+				if (toHls == 1) {
+					address = pushHlsAddress.concat(streamName);
+				}
 				Server server = isTcp ? new TCPServer() : new UDPServer();
 				Observer observer = new RtmpPusher(address, callId);
 				((RtmpPusher) observer).setDeviceId(streamName);
@@ -533,7 +559,7 @@ public class ActionController implements OnProcessListener {
 				
 				pushStreamDevice.setDialog(response);
 				server.startServer(pushStreamDevice.getFrameDeque(),Integer.valueOf(ssrc),port,false, streamName);
-				observer.startRemux(isTest, cid);
+				observer.startRemux(isTest, cid, toHls);
 
 				observer.setOnProcessListener(this);
 				mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);

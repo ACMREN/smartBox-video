@@ -42,6 +42,8 @@ public class RtmpPusher extends Observer{
 
 	private Integer cid;
 
+	private Integer toHls;
+
 	FFmpegFrameGrabber grabber = null;
 	FFmpegFrameGrabber recorder = null;
 
@@ -103,27 +105,39 @@ public class RtmpPusher extends Observer{
 			grabber = new FFmpegFrameGrabber(pis,0);
 			//阻塞式，直到通道有数据
 			grabber.setOption("stimeout", "200000");
-//			grabber.setOption("-re", "");
+			if (toHls == 1) {
+				grabber.setOption("-re", "");
+			}
 			grabber.start();
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
-			recorder.setInterleaved(true);
-			recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-			recorder.setFormat("flv");
-			recorder.setFrameRate(25);
+
+			// 推流rtmp的参数
+			if (toHls == 0) {
+				recorder.setInterleaved(true);
+				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+				recorder.setFormat("flv");
+				recorder.setFrameRate(25);
+			}
 
 			// 推流hls的参数
-//			recorder.setOption("loglevel", "quiet");
-//			recorder.setOption("vprofile", "baseline");
-//			recorder.setOption("acodec", "aac");
-//			recorder.setOption("ar", "44100");
-//			recorder.setOption("strict", "2");
-//			recorder.setOption("ac", "1");
-//			recorder.setOption("f", "flv");
-//			recorder.setOption("s", "1280x720");
-//			recorder.setOption("q", "10");
-//			recorder.setOption("hls_time", "10");
-//			recorder.setOption("hls_wrap", "5");
+			if (toHls == 1) {
+				recorder.setInterleaved(true);
+				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+				recorder.setFormat("flv");
+				recorder.setFrameRate(25);
+				recorder.setOption("loglevel", "quiet");
+				recorder.setOption("vprofile", "baseline");
+				recorder.setOption("acodec", "aac");
+				recorder.setOption("ar", "44100");
+				recorder.setOption("strict", "2");
+				recorder.setOption("ac", "1");
+				recorder.setOption("f", "flv");
+				recorder.setOption("s", "1280x720");
+				recorder.setOption("q", "10");
+				recorder.setOption("hls_time", "10");
+				recorder.setOption("hls_wrap", "5");
+			}
 
 
 			recorder.start(grabber.getFormatContext());
@@ -197,9 +211,10 @@ public class RtmpPusher extends Observer{
 		this.mRunning = false;
 	}
 	@Override
-	public void startRemux(Integer isTest, Integer cid) {
+	public void startRemux(Integer isTest, Integer cid, Integer toHls) {
 		this.cid = cid;
 		this.isTest = isTest;
+		this.toHls = toHls;
 		this.start();
 	}
 
