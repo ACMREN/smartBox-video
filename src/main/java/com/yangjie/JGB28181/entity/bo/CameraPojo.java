@@ -11,7 +11,9 @@ public class CameraPojo implements Serializable {
 	private String stream;// 摄像头码流
 	private String rtsp;// rtsp地址
 	private String rtmp;// rtmp地址
+	private String hls;// hls地址
 	private String url;// 播放地址
+	private String hlsUrl;// hls播放地址
 	private String startTime;// 回放开始时间
 	private String endTime;// 回放结束时间
 	private String openTime;// 打开时间
@@ -19,6 +21,8 @@ public class CameraPojo implements Serializable {
 	private int isTest;//是否测试
 	private Integer cid;
 	private String token;
+	private Integer toHls;
+	private String deviceId;// 设备的基础id
 
 	public String getUsername() {
 		return username;
@@ -138,6 +142,38 @@ public class CameraPojo implements Serializable {
 
 	public void setCid(Integer cid) {
 		this.cid = cid;
+	}
+
+	public Integer getToHls() {
+		return toHls;
+	}
+
+	public void setToHls(Integer toHls) {
+		this.toHls = toHls;
+	}
+
+	public String getHls() {
+		return hls;
+	}
+
+	public void setHls(String hls) {
+		this.hls = hls;
+	}
+
+	public String getHlsUrl() {
+		return hlsUrl;
+	}
+
+	public void setHlsUrl(String hlsUrl) {
+		this.hlsUrl = hlsUrl;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 
 	@Override

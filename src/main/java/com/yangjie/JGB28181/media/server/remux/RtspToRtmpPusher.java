@@ -1,5 +1,6 @@
 package com.yangjie.JGB28181.media.server.remux;
 
+import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.utils.IpUtil;
 import com.yangjie.JGB28181.common.utils.TimerUtil;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
@@ -12,12 +13,18 @@ import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FFmpegLogCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.Timer;
 
 import static org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_H264;
@@ -36,11 +43,14 @@ public class RtspToRtmpPusher {
     private final static Logger logger = LoggerFactory.getLogger(RtspToRtmpPusher.class);
 
     // 配置类
-    private static Config config;
+    private static Config config = new Config();
 
     // 通过applicationContext上下文获取Config类
     public static void setApplicationContext(ApplicationContext applicationContext) {
-        config = applicationContext.getBean(Config.class);
+//        logger.info("===============开始注入config=============");
+//        config = applicationContext.getBean(Config.class);
+//        System.out.println(config);
+//        logger.info("===============完成注入config=============");
     }
 
     public static Timer timer;
@@ -73,6 +83,32 @@ public class RtspToRtmpPusher {
         this.cameraPojo = cameraPojo;
     }
 
+    static {
+        try {
+            logger.info("===============开始注入config=============");
+            File file = ResourceUtils.getFile("classpath:config.properties");
+            InputStream in = new FileInputStream(file);
+            Properties properties = new Properties();
+            properties.load(in);
+            String pushHost = properties.getProperty("config.push_host");
+            String pushPort = properties.getProperty("config.push_port");
+            String hostExtra = properties.getProperty("config.host_extra");
+            String mainCode = properties.getProperty("config.main_code");
+            String subCode = properties.getProperty("config.sub_code");
+
+            config.setPush_port(pushPort);
+            config.setPush_host(pushHost);
+            config.setHost_extra(hostExtra);
+            config.setMain_code(mainCode);
+            config.setSub_code(subCode);
+
+            System.out.println(config);
+            logger.info("===============完成注入config=============");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     /**
      * 选择视频源
      *
@@ -85,6 +121,8 @@ public class RtspToRtmpPusher {
     public RtspToRtmpPusher from() throws Exception {
         // 采集/抓取器
         grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
+
+
 
         // 解决ip输入错误时，grabber.start();出现阻塞无法释放grabber而导致后续推流无法进行；
         Socket rtspSocket = new Socket();
@@ -115,6 +153,11 @@ public class RtspToRtmpPusher {
         logger.debug("******   TCPCheck    END     ******");
 
         if (cameraPojo.getRtsp().indexOf("rtsp") >= 0) {
+            grabber.setOption("y", "");
+            grabber.setOption("vsync", "0");
+            // 使用硬件加速
+            grabber.setOption("hwaccel", "cuvid");
+            grabber.setVideoCodecName("h264_cuvid");
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
         }
 
@@ -130,7 +173,7 @@ public class RtspToRtmpPusher {
             } else if ("main".equals(cameraPojo.getStream())) {
                 grabber.start(config.getMain_code());
             } else {
-                grabber.start(config.getMain_code());
+                grabber.start(config.getSub_code());
             }
 
             logger.debug("******   grabber.start()    END     ******");
@@ -175,7 +218,11 @@ public class RtspToRtmpPusher {
      */
     public RtspToRtmpPusher to() throws Exception {
         // 录制/推流器
-        record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), width, height);
+        if (cameraPojo.getToHls() == 1) {
+            record = new FFmpegFrameRecorder(cameraPojo.getHls(), width, height);
+        } else {
+            record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), width, height);
+        }
         record.setVideoOption("crf", "28");// 画面质量参数，0~51；18~28是一个合理范围
         record.setGopSize(2);
         record.setFrameRate(framerate);
@@ -184,12 +231,12 @@ public class RtspToRtmpPusher {
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
         record.setSampleRate(sampleRate);
+        record.setVideoCodecName("h264_nvenc");
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
             // 封装格式flv
             record.setFormat("flv");
             record.setAudioCodecName("aac");
-            record.setVideoCodec(AV_CODEC_ID_H264);
             fc = grabber.getFormatContext();
         }
         try {

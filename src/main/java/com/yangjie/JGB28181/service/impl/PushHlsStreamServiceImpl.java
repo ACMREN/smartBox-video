@@ -11,6 +11,8 @@ import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.service.IPushStreamService;
 import com.yangjie.JGB28181.web.controller.ActionController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class PushHlsStreamServiceImpl implements IPushStreamService {
+    private final static Logger logger = LoggerFactory.getLogger(PushHlsStreamServiceImpl.class);
+
     public static Map<String, Boolean> deviceInfoMap = new HashMap<>();
 
     public static Map<String, JSONObject> hlsInfoMap = new HashMap<>();
@@ -102,7 +106,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         // 1. 生成hls推流的参数
         String callId = IDUtils.id();
         String playFileName = "rtsp_" + deviceId + "_" + channelId;
-        String all = "ffmpeg -rtsp_transport tcp -re -i " + rtspLink + " -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 -hls_time 10 -hls_wrap 5 rtmp://127.0.0.1:1935/hls/" + playFileName;
+        String all = "ffmpeg -y -vsync 0 -hwaccel cuvid -c:v h264_cuvid -re -i " + rtspLink + " -loglevel quiet -c:v h264_nvenc -f flv rtmp://127.0.0.1:1935/hls/" + playFileName;
         // 2. 把hls推流信息放到静态map中
         JSONObject hlsInfoJson = new JSONObject();
         hlsInfoJson.put("deviceId", deviceId);
@@ -115,6 +119,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         Runtime runtime = Runtime.getRuntime();
         try {
             Process process = runtime.exec(all);
+            logger.info("=====================推流rtsp转hls开始============");
             // 1. 保存hls推流信息
             // 设置5分钟的过期时间
             RedisUtil.set(callId, 300, "keepStreaming");
@@ -135,7 +140,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
         String callId = IDUtils.id();
         String playFileName = StreamNameUtils.play(deviceId, channelId);
         String rtmpUrl = BaseConstants.rtmpBaseUrl + playFileName;
-        String all = "ffmpeg -re -i " + rtmpUrl + " -loglevel quiet -vcodec libx264 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -s 1280x720 -q 10 -hls_time 10 -hls_wrap 5 rtmp://127.0.0.1:1935/hls/" + playFileName;
+        String all = "ffmpeg -y -vsync 0 -hwaccel cuvid -c:v h264_cuvid -re -i " + rtmpUrl + " -loglevel quiet -c:v h264_nvenc -f flv rtmp://127.0.0.1:1935/hls/" + playFileName;
         // 2. 把HLS信息放到静态map中
         JSONObject hlsInfoJson = new JSONObject();
         hlsInfoJson.put("deviceId", deviceId);
@@ -154,7 +159,6 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
             RedisUtil.set(callId, 300, "keepStreaming");
             hlsProcessMap.put(callId, process);
             deviceInfoMap.put(deviceId, process.isAlive());
-
             // 2. 保存基础流和分支流的关系
             PushStreamDevice pushStreamDevice = ActionController.mPushStreamDeviceManager.get(playFileName);
             String parentCallId = pushStreamDevice.getCallId();
@@ -187,7 +191,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
     /**
      * 定时清理过期的ts文件
      */
-    public void cleanUpTempTsFile(String deviceId, String channelId, Integer isRtsp) {
+    public static void cleanUpTempTsFile(String deviceId, String channelId, Integer isRtsp) {
         String playFileName = null;
         if (isRtsp == 1) {
             playFileName = StreamNameUtils.rtspPlay(deviceId, channelId);

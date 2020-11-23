@@ -128,9 +128,14 @@ public class TimerUtil implements CommandLineRunner {
 									}
 								}
 							}
-							// hls推流统一都是都是通过命令行执行，无需区分
+							// 关闭hls推流
 							if (BaseConstants.PUSH_STREAM_HLS.equals(streamType)) {
-								pushHlsStreamService.closeStream(callId);
+								if (LinkTypeEnum.RTSP.getCode() == linkType.intValue()) {
+									ActionController.jobMap.get(callId).setInterrupted();
+								}
+								if (LinkTypeEnum.GB28181.getCode() == linkType.intValue()) {
+									pushHlsStreamService.closeStream(callId);
+								}
 							}
 						}
 					}

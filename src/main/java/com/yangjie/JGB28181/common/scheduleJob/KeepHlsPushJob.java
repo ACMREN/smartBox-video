@@ -14,8 +14,8 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-@EnableScheduling
+//@Component
+//@EnableScheduling
 public class KeepHlsPushJob {
     private Logger logger = LoggerFactory.getLogger(getClass());
 

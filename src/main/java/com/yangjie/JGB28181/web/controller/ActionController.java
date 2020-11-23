@@ -87,6 +87,9 @@ public class ActionController implements OnProcessListener {
 	@Value("${config.checkSsrc}")
 	private boolean checkSsrc;
 
+	@Value("${config.streamMediaIp}")
+	private String streamMediaIp;
+
 	// 关闭推流的标志位
 	private static volatile Map<String, Boolean> callEndMap = new HashMap<>(20);
 
@@ -200,41 +203,12 @@ public class ActionController implements OnProcessListener {
 			// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
 			String rtspLink = cameraInfo.getRtspLink();
 			// 直接进行rtsp转hls推流
-			return this.rtspToHls(rtspLink, deviceId.toString());
+			CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+			cameraPojo.setToHls(1);
+			cameraPojo.setDeviceId(deviceId.toString());
+			return this.rtspPlayRtmp(cameraPojo);
 		}
 		return null;
-	}
-
-	/**
-	 * 国标播放hls视频
-	 * @param cameraInfo
-	 * @return
-	 */
-	private GBResult GBPlayHls(CameraInfo cameraInfo) throws InterruptedException {
-		// 先进行rtmp的推流
-		String cameraInfoIp = cameraInfo.getIp();
-		GBResult rtmpResult = this.GBPlayRtmp(cameraInfoIp);
-		int code = rtmpResult.getCode();
-		if (code != 200){
-			return rtmpResult;
-		}
-
-		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraInfoIp);
-		String deviceStr = dataJson.getString("deviceStr");
-		String pushStreamDeviceId = dataJson.getString("pushStreamDeviceId");
-		String channelId = null;
-		if (!StringUtils.isEmpty(deviceStr)) {
-			Device device = JSONObject.parseObject(deviceStr, Device.class);
-			Map<String, DeviceChannel> channelMap = device.getChannelMap();
-			for (String key : channelMap.keySet()) {
-				DeviceChannel deviceChannel = channelMap.get(key);
-				if (null != deviceChannel) {
-					channelId = key;
-				}
-			}
-		}
-		// 再进行hls的推流
-		return this.rtmpToHls(pushStreamDeviceId, channelId, cameraInfo.getDeviceBaseId());
 	}
 
 	/**
@@ -279,6 +253,7 @@ public class ActionController implements OnProcessListener {
 				// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
 				String rtspLink = cameraInfo.getRtspLink();
 				CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+				cameraPojo.setToHls(0);
 				return this.rtspPlayRtmp(cameraPojo);
 			}
 		}
@@ -374,7 +349,7 @@ public class ActionController implements OnProcessListener {
 				return GBResult.ok();
 			}
 			String callId = typeStreamJson.getString("callId");
-			RedisUtil.expire(callId, 30*1000);
+			RedisUtil.expire(callId, 300);
 		}
 
 		return GBResult.ok();
@@ -546,6 +521,7 @@ public class ActionController implements OnProcessListener {
 			//4.1响应成功，创建推流session
 			if(response != null ){
 				String address = pushRtmpAddress.concat(streamName);
+				// 如果是hls，则推到hls的地址
 				if (toHls == 1) {
 					address = pushHlsAddress.concat(streamName);
 				}
@@ -569,7 +545,18 @@ public class ActionController implements OnProcessListener {
 				if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
 					streamingDeviceMap.put(id, pushStreamDevice);
 				}
-				result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+				if (toHls == 1) {
+					// 开启清理过期的TS索引文件的定时器
+					PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
+
+					String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
+					String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
+					String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
+					pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
+					result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
+				} else {
+					result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+				}
 			}
 			else {
 				//3.2响应失败，删除推流session
@@ -598,6 +585,7 @@ public class ActionController implements OnProcessListener {
 		if (!StringUtils.isEmpty(pojo.getIp()) && !StringUtils.isEmpty(pojo.getUsername()) && !StringUtils.isEmpty(pojo.getPassword())
 				&& !StringUtils.isEmpty(pojo.getChannel())) {
 			CameraPojo cameraPojo = new CameraPojo();
+			cameraPojo.setToHls(pojo.getToHls());
 			// 获取当前时间
 			String openTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			Set<String> keys = CacheUtil.STREAMMAP.keySet();
@@ -605,8 +593,12 @@ public class ActionController implements OnProcessListener {
 			if (0 == keys.size()) {
 				// 开始推流
 				cameraPojo = openStream(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(),
-						pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid());
-				result = GBResult.ok(new MediaData(cameraPojo.getUrl(), cameraPojo.getToken()));
+						pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid(), pojo.getToHls(), pojo.getDeviceId());
+				String url = cameraPojo.getUrl();
+				if (pojo.getToHls() == 1) {
+					url = cameraPojo.getHlsUrl();
+				}
+				result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
 				logger.info("打开：" + cameraPojo.getRtsp());
 			} else {
 				// 是否存在的标志；0：不存在；1：存在
@@ -624,12 +616,20 @@ public class ActionController implements OnProcessListener {
 					if (sign == 1) {// 存在
 						cameraPojo.setCount(cameraPojo.getCount() + 1);
 						cameraPojo.setOpenTime(openTime);
-						result = GBResult.ok(new MediaData(cameraPojo.getUrl(), cameraPojo.getToken()));
+						String url = cameraPojo.getUrl();
+						if (pojo.getToHls() == 1) {
+							url = cameraPojo.getHlsUrl();
+						}
+						result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
 						logger.info("打开：" + cameraPojo.getRtsp());
 					} else {
 						cameraPojo = openStream(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(),
-								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid());
-						result = GBResult.ok(new MediaData(cameraPojo.getUrl(), cameraPojo.getToken()));
+								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid(), pojo.getToHls(), pojo.getDeviceId());
+						String url = cameraPojo.getUrl();
+						if (pojo.getToHls() == 1) {
+							url = cameraPojo.getHlsUrl();
+						}
+						result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
 						logger.info("打开：" + cameraPojo.getRtsp());
 					}
 
@@ -649,7 +649,7 @@ public class ActionController implements OnProcessListener {
 						logger.info(cameraPojo.getRtsp() + " 正在进行回放...");
 					} else {
 						cameraPojo = openStream(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(),
-								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid());
+								pojo.getStream(), pojo.getStartTime(), pojo.getEndTime(), openTime, pojo.getCid(), pojo.getToHls(), pojo.getDeviceId());
 						result = GBResult.ok(new MediaData(cameraPojo.getUrl(), cameraPojo.getToken()));
 						logger.info("打开：" + cameraPojo.getRtsp());
 					}
@@ -660,12 +660,14 @@ public class ActionController implements OnProcessListener {
 	}
 
 	public CameraPojo openStream(String ip, String username, String password, String channel, String stream,
-								 String starttime, String endtime, String openTime, Integer cid) {
+								 String starttime, String endtime, String openTime, Integer cid, Integer toHls, String deviceId) {
 		CameraPojo cameraPojo = new CameraPojo();
 		// 生成token
 		String token = UUID.randomUUID().toString();
 		String rtsp = "";
 		String rtmp = "";
+		String hls = "";
+		String hlsUrl = "";
 		String IP = IpUtil.IpConvert(ip);
 		StringBuilder sb = new StringBuilder();
 		String[] ipArr = ip.split("\\.");
@@ -705,11 +707,19 @@ public class ActionController implements OnProcessListener {
 						+ token;
 			}
 		} else {// 直播流
+			if (toHls == 1) {
+				// 开启清理过期的TS索引文件的定时器
+				PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, "1", 1);
+			}
 			rtsp = "rtsp://" + username + ":" + password + "@" + IP + ":554/h264/ch" + channel + "/" + stream
 					+ "/av_stream";
 			rtmp = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/live/" + token;
+			hls = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/hls/" + StreamNameUtils.rtspPlay(deviceId, "1");
 			if (config.getHost_extra().equals("127.0.0.1")) {
+				hlsUrl = BaseConstants.hlsBaseUrl + StreamNameUtils.rtspPlay(deviceId, "1") + "/index.m3u8";
+				hlsUrl = hlsUrl.replace("127.0.0.1", streamMediaIp);
 				url = rtmp;
+				url = url.replace("127.0.0.1", streamMediaIp);
 			} else {
 				url = "rtmp://" + IpUtil.IpConvert(config.getHost_extra()) + ":" + config.getPush_port() + "/live/"
 						+ token;
@@ -723,11 +733,14 @@ public class ActionController implements OnProcessListener {
 		cameraPojo.setStream(stream);
 		cameraPojo.setRtsp(rtsp);
 		cameraPojo.setRtmp(rtmp);
+		cameraPojo.setHls(hls);
 		cameraPojo.setUrl(url);
+		cameraPojo.setHlsUrl(hlsUrl);
 		cameraPojo.setOpenTime(openTime);
 		cameraPojo.setCount(1);
 		cameraPojo.setToken(token);
 		cameraPojo.setCid(cid);
+		cameraPojo.setToHls(toHls);
 
 		// 执行任务
 		CameraThread.MyRunnable job = new CameraThread.MyRunnable(cameraPojo);
