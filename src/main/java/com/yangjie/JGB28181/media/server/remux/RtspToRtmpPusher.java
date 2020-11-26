@@ -8,9 +8,12 @@ import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
+import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FFmpegLogCallback;
+import org.bytedeco.javacv.Frame;
+import org.opencv.videoio.Videoio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -176,6 +179,7 @@ public class RtspToRtmpPusher {
                 grabber.start(config.getSub_code());
             }
 
+
             logger.debug("******   grabber.start()    END     ******");
 
             // 开始之后ffmpeg会采集视频信息，之后就可以获取音视频信息
@@ -219,19 +223,22 @@ public class RtspToRtmpPusher {
     public RtspToRtmpPusher to() throws Exception {
         // 录制/推流器
         if (cameraPojo.getToHls() == 1) {
-            record = new FFmpegFrameRecorder(cameraPojo.getHls(), width, height);
+            record = new FFmpegFrameRecorder(cameraPojo.getHls(), 1280, 720);
         } else {
-            record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), width, height);
+            record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), 1280, 720);
         }
-        record.setVideoOption("crf", "28");// 画面质量参数，0~51；18~28是一个合理范围
+        record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围
         record.setGopSize(2);
         record.setFrameRate(framerate);
-        record.setVideoBitrate(bitrate);
+        record.setVideoCodecName("h264_nvenc");
+//        record.setVideoCodec(AV_CODEC_ID_H264);
+        record.setVideoBitrate(20000);
+        record.setVideoOption("b:v", "2048k");
+        record.setVideoOption("vf", "scale_npp=1280:720");
 
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
         record.setSampleRate(sampleRate);
-        record.setVideoCodecName("h264_nvenc");
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
             // 封装格式flv
@@ -273,34 +280,39 @@ public class RtspToRtmpPusher {
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
                 // 用于中断线程时，结束该循环
-                nowThread.sleep(1);
-                AVPacket pkt = null;
-                // 获取没有解码的音视频帧
-                pkt = grabber.grabPacket();
-                System.out.println(Thread.currentThread().getId() + ":" + pkt.size());
-                if (pkt == null || pkt.size() <= 0 || pkt.data() == null) {
-                    // 空包记录次数跳过
-                    no_frame_index++;
-                    err_index++;
-                    continue;
+                nowThread.sleep(0);
+                Frame frame = grabber.grab();
+                if (null != frame) {
+                    record.record(frame);
                 }
-                if (isTest == 1) {
-                    break;
-                }
-                // 不需要编码直接把音视频帧推出去
-                err_index += (record.recordPacket(pkt) ? 0 : 1);
 
-                String token = cameraPojo.getToken();
-                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
-                if (null != heartbeats) {
-                    heartbeats++;
-                } else {
-                    heartbeats = 1L;
-                }
-                TimerUtil.heartbeatsMap.put(token, heartbeats);
-
-                av_packet_unref(pkt);
+//                AVPacket pkt = null;
+//                // 获取没有解码的音视频帧
+//                pkt = grabber.grabPacket();
+//                if (pkt == null || pkt.size() <= 0 || pkt.data() == null) {
+//                    // 空包记录次数跳过
+//                    no_frame_index++;
+//                    err_index++;
+//                    continue;
+//                }
+//                if (isTest == 1) {
+//                    break;
+//                }
+//                // 不需要编码直接把音视频帧推出去
+//                err_index += (record.recordPacket(pkt) ? 0 : 1);
+//
+//                String token = cameraPojo.getToken();
+//                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
+//                if (null != heartbeats) {
+//                    heartbeats++;
+//                } else {
+//                    heartbeats = 1L;
+//                }
+//                TimerUtil.heartbeatsMap.put(token, heartbeats);
+//
+//                av_packet_unref(pkt);
             } catch (InterruptedException e) {
+                e.printStackTrace();
                 // 销毁构造器
                 grabber.stop();
                 grabber.close();

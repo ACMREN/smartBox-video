@@ -10,6 +10,7 @@ import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +122,7 @@ public class RtmpPusher extends Observer{
 			if (toHls == 0) {
 				recorder.setInterleaved(true);
 				recorder.setVideoCodecName("h264_nvenc");
+//				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 				recorder.setFormat("flv");
 				recorder.setFrameRate(25);
 			}
@@ -128,15 +130,15 @@ public class RtmpPusher extends Observer{
 			// 推流hls的参数
 			if (toHls == 1) {
 				recorder.setInterleaved(true);
-				recorder.setOption("-c:v", "h264_nvenc");
+				recorder.setVideoCodecName("h264_nvenc");
+//				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 				recorder.setFormat("flv");
 				recorder.setFrameRate(25);
 				recorder.setOption("loglevel", "quiet");
-				recorder.setOption("f", "flv");
 			}
 
 
-			recorder.start(grabber.getFormatContext());
+			recorder.start();
 			AVPacket avPacket;
 
 

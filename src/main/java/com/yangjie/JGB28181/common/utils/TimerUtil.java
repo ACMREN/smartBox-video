@@ -134,7 +134,11 @@ public class TimerUtil implements CommandLineRunner {
 									ActionController.jobMap.get(callId).setInterrupted();
 								}
 								if (LinkTypeEnum.GB28181.getCode() == linkType.intValue()) {
-									pushHlsStreamService.closeStream(callId);
+									try {
+										sipLayer.sendBye(callId);
+									} catch (SipException e) {
+										e.printStackTrace();
+									}
 								}
 							}
 						}

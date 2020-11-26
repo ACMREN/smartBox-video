@@ -122,6 +122,8 @@ public class RedisUtil {
 			return resultMap;
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			releaseResource(jedis);
 		}
 		return new HashMap<>();
 	}
@@ -215,7 +217,7 @@ public class RedisUtil {
 	 * @param jedis
 	 */
 	public static void releaseResource( Jedis jedis){
-		if (jedis != null)  
+		if (jedis != null)
 			jedis.close();  
 	}  
 
