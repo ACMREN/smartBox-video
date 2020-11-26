@@ -1,55 +1,80 @@
-10:02:04.592 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on 172-0-0-85.lightspeed.brhmal.sbcglobal.net with PID 2519 (/Users/huangmingen/IdeaProjects/JGB28181/smartBox-video/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/JGB28181/smartBox-video)
-10:02:04.605 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
-10:02:04.668 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
-10:02:04.686 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@85e6769: startup date [Thu Oct 29 10:02:04 CST 2020]; root of context hierarchy
-10:02:05.932 [main] INFO  org.eclipse.jetty.util.log.Log.initialized(Log.java:193) - Logging initialized @4077ms to org.eclipse.jetty.util.log.Slf4jLog
-10:02:06.024 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory.getEmbeddedServletContainer(JettyEmbeddedServletContainerFactory.java:177) - Server initialized with port: 1998
-10:02:06.026 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:374) - jetty-9.4.10.v20180503; built: 2018-05-03T15:56:21.710Z; git: daa59876e6f384329b122929e70a80934569428c; jvm 15+36-1562
-10:02:06.141 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:365) - DefaultSessionIdManager workerName=node0
-10:02:06.142 [main] INFO  org.eclipse.jetty.server.session.DefaultSessionIdManager.doStart(DefaultSessionIdManager.java:370) - No SessionScavenger set, using defaults
-10:02:06.144 [main] INFO  org.eclipse.jetty.server.session.HouseKeeper.startScavenging(HouseKeeper.java:149) - node0 Scavenging every 600000ms
-10:02:06.151 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring embedded WebApplicationContext
-10:02:06.151 [main] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 1476 ms
-10:02:06.325 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
-10:02:06.327 [main] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
-10:02:06.329 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
-10:02:06.329 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
-10:02:06.330 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
-10:02:06.330 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
-10:02:06.331 [main] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
-10:02:06.334 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:788) - Started o.s.b.c.e.j.JettyEmbeddedWebAppContext@1668919e{/,[file:///private/var/folders/52/yfk065zn3gvbppm04sm6lvv40000gn/T/jetty-docbase.9207579605450463558.1998/],AVAILABLE}
-10:02:06.335 [main] INFO  org.eclipse.jetty.server.Server.doStart(Server.java:411) - Started @4482ms
-10:02:07.035 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - using default tls security policy
-10:02:07.038 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default keystore type pkcs12
-10:02:07.038 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS server settings will be inactive - TLS key store will use JVM defaults keyStoreType=pkcs12 javax.net.ssl.keyStore=null javax.net.ssl.keyStorePassword=null
-10:02:07.038 [main] INFO  gov.nist.core.LogWriter.logInfo(LogWriter.java:461) - javax.net.ssl.trustStorePassword is null, using the password passed through javax.net.ssl.keyStorePassword
-10:02:07.039 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - Using default truststore type pkcs12
-10:02:07.039 [main] WARN  gov.nist.core.LogWriter.logWarning(LogWriter.java:451) - TLS trust settings will be inactive - TLS trust store will use JVM defaults. trustStoreType=pkcs12 javax.net.ssl.trustStore=null javax.net.ssl.trustStorePassword=null
-10:02:07.293 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15060
-10:02:07.531 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@85e6769: startup date [Thu Oct 29 10:02:04 CST 2020]; root of context hierarchy
-10:02:07.586 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeHls(java.lang.String)
-10:02:07.587 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
-10:02:07.587 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testSendRegister]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testSendRegister(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,long)
-10:02:07.588 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/playHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.toHls(java.lang.String,java.lang.String)
-10:02:07.588 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getHlsStreamInfo]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getHlsStreamInfo()
-10:02:07.588 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
-10:02:07.589 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.String,java.lang.String,java.lang.String)
-10:02:07.592 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getLiveCamList()
-10:02:07.592 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getGBInfo],methods=[GET]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getGBInfo() throws java.net.UnknownHostException
-10:02:07.593 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setGBInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setGBInfo(com.yangjie.JGB28181.entity.ServerInfoBo)
-10:02:07.594 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/test],methods=[GET]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.testSearch()
-10:02:07.595 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
-10:02:07.596 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
-10:02:07.618 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
-10:02:07.619 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
-10:02:07.649 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
-10:02:07.818 [main] INFO  org.springframework.ui.freemarker.SpringTemplateLoader.<init>(SpringTemplateLoader.java:61) - SpringTemplateLoader for FreeMarker: using resource loader [org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@85e6769: startup date [Thu Oct 29 10:02:04 CST 2020]; root of context hierarchy] and template loader path [classpath:/templates/]
-10:02:07.819 [main] INFO  org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer.postProcessTemplateLoaders(FreeMarkerConfigurer.java:127) - ClassTemplateLoader for Spring macros added to FreeMarker configuration
-10:02:07.929 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> REGISTER sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK1078937200;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=355317389
+09:54:47.585 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on 172-0-0-85.lightspeed.brhmal.sbcglobal.net with PID 2238 (/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/sipClient/sipClient)
+09:54:47.598 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+09:54:47.649 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@14dda234: startup date [Thu Nov 26 09:54:47 CST 2020]; root of context hierarchy
+09:54:47.876 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+09:54:49.292 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.initialize(TomcatEmbeddedServletContainer.java:92) - Tomcat initialized with port(s): 1999 (http)
+09:54:49.309 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing ProtocolHandler ["http-nio-1999"]
+09:54:49.323 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting service [Tomcat]
+09:54:49.323 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting Servlet Engine: Apache Tomcat/8.5.31
+09:54:49.420 [localhost-startStop-1] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring embedded WebApplicationContext
+09:54:49.420 [localhost-startStop-1] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 1771 ms
+09:54:49.640 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+09:54:49.642 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+09:54:49.645 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+09:54:49.646 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+09:54:49.646 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+09:54:49.646 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+09:54:49.647 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+09:54:50.738 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15061
+09:54:50.750 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:91) - ===============开始注入config=============
+09:54:50.750 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:109) - ===============完成注入config=============
+09:54:51.018 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@14dda234: startup date [Thu Nov 26 09:54:47 CST 2020]; root of context hierarchy
+09:54:51.083 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+09:54:51.085 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer)
+09:54:51.085 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToRtmpPlay],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(com.yangjie.JGB28181.entity.bo.CameraPojo)
+09:54:51.085 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeHls(java.lang.String)
+09:54:51.086 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+09:54:51.086 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition) throws java.lang.InterruptedException
+09:54:51.086 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/keepCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.keepCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:54:51.087 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:54:51.087 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testCameraStream(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String) throws java.lang.InterruptedException
+09:54:51.087 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testSendRegister]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testSendRegister(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,long)
+09:54:51.088 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtmpToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtmpToHls(java.lang.String,java.lang.String,java.lang.Integer)
+09:54:51.088 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getHlsStreamInfo]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getHlsStreamInfo()
+09:54:51.088 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspToHls(java.lang.String,java.lang.String)
+09:54:51.095 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/discoverDevice],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.discoverDevice() throws java.io.IOException
+09:54:51.096 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getLiveCamList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getLiveCamList(com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition)
+09:54:51.096 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:54:51.096 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:54:51.097 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getGBInfo],methods=[GET]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getGBInfo() throws java.net.UnknownHostException
+09:54:51.097 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setGBInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setGBInfo(com.yangjie.JGB28181.entity.bo.ServerInfoBo)
+09:54:51.097 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceInfo(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:54:51.097 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceInfo(com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo)
+09:54:51.098 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceDetail],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceDetail(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:54:51.098 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/registerCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.registerCamera(java.util.List<com.yangjie.JGB28181.entity.vo.CameraInfoVo>)
+09:54:51.098 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/removeCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.removeCamera(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:54:51.099 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:54:51.099 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:54:51.099 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/test],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.testSearch()
+09:54:51.101 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+09:54:51.102 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+09:54:51.126 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:54:51.127 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:54:51.162 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:54:51.334 [main] INFO  org.springframework.ui.freemarker.SpringTemplateLoader.<init>(SpringTemplateLoader.java:61) - SpringTemplateLoader for FreeMarker: using resource loader [org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@14dda234: startup date [Thu Nov 26 09:54:47 CST 2020]; root of context hierarchy] and template loader path [classpath:/templates/]
+09:54:51.335 [main] INFO  org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer.postProcessTemplateLoaders(FreeMarkerConfigurer.java:127) - ClassTemplateLoader for Spring macros added to FreeMarker configuration
+09:54:51.567 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+09:54:51.568 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+09:54:51.571 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+09:54:51.580 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+09:54:51.587 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting ProtocolHandler ["http-nio-1999"]
+09:54:51.599 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Using a shared selector for servlet write/read
+09:54:51.612 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.start(TomcatEmbeddedServletContainer.java:216) - Tomcat started on port(s): 1999 (http)
+09:54:51.616 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:54:51.616 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 4.393 seconds (JVM running for 7.265)
+09:54:51.616 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:55:00.009 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+09:55:00.417 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+09:55:07.028 [pool-4-thread-1] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:07.135 [pool-4-thread-1] INFO  com.alibaba.druid.pool.DruidDataSource.init(DruidDataSource.java:847) - {dataSource-1} inited
+09:55:07.331 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+09:55:21.621 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:55:21.623 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:55:24.880 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK804974208
+From: <sip:34020000001320000005@3402000000>;tag=2134492482
 To: <sip:34020000001320000005@3402000000>
-Call-ID: 45313072
+Call-ID: 1894536295
 CSeq: 1 REGISTER
 Contact: <sip:34020000001320000005@172.0.0.81:5060>
 Max-Forwards: 70
@@ -58,46 +83,47 @@ Expires: 3600
 Content-Length: 0
 
 
-10:02:07.933 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 401 Unauthorized
-CSeq: 1 REGISTER
-Call-ID: 45313072
-From: <sip:34020000001320000005@3402000000>;tag=355317389
+09:55:24.886 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 401 Unauthorized
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK804974208
+From: <sip:34020000001320000005@3402000000>;tag=2134492482
 To: <sip:34020000001320000005@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK1078937200;received=172.0.0.81
-WWW-Authenticate: Digest realm="3402000000",nonce="76b9b4371e1a75eff740e0bb3c91b5f1",opaque="",stale=FALSE,algorithm=MD5
+Call-ID: 1894536295
+CSeq: 1 REGISTER
+WWW-Authenticate: Digest opaque="",stale=FALSE,realm="3402000000",nonce="113fb3e15d1882601c08cabb71dc3301",algorithm=MD5
 Content-Length: 0
 
 
-10:02:07.954 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> REGISTER sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK1277726369;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=355317389
+09:55:24.897 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1727358272
+From: <sip:34020000001320000005@3402000000>;tag=2134492482
 To: <sip:34020000001320000005@3402000000>
-Call-ID: 45313072
+Call-ID: 1894536295
 CSeq: 2 REGISTER
 Contact: <sip:34020000001320000005@172.0.0.81:5060>
-Authorization: Digest username="34020000001320000005",realm="3402000000",nonce="76b9b4371e1a75eff740e0bb3c91b5f1",uri="sip:34020000002000000001@3402000000",response="07707c660c61d0165fee616f50674596",algorithm=MD5
+Authorization: Digest response="5e3a8c322d9c4adf27ad968b25a49b97",realm="3402000000",nonce="113fb3e15d1882601c08cabb71dc3301",uri="sip:34020000002000000002@3402000000",username="34020000001320000005",algorithm=MD5
 Max-Forwards: 70
 User-Agent: IP Camera
 Expires: 3600
 Content-Length: 0
 
 
-10:02:07.957 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 200 OK
-CSeq: 2 REGISTER
-Call-ID: 45313072
-From: <sip:34020000001320000005@3402000000>;tag=355317389
+09:55:24.900 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1727358272
+From: <sip:34020000001320000005@3402000000>;tag=2134492482
 To: <sip:34020000001320000005@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK1277726369;received=172.0.0.81
-Date: Thu, 29 Oct 2020 02:02:07 GMT
+Call-ID: 1894536295
+CSeq: 2 REGISTER
+Date: Thu, 26 Nov 2020 01:55:24 GMT
 Contact: <sip:34020000001320000005@172.0.0.81:5060>
 Expires: 3600
 Content-Length: 0
 
 
-10:02:08.048 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendRequest(SipLayer.java:552) - sendRequest >>> MESSAGE sip:34020000001320000005@172.0.0.81:5060 SIP/2.0
-Call-ID: 2AA828ED50C843FFB180986A95A99C2E
+09:55:24.966 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:24.970 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendRequest(SipLayer.java:605) - sendRequest >>> MESSAGE sip:34020000001320000005@172.0.0.81:5060 SIP/2.0
+Call-ID: 2769725A908C48E284E49D7925C1A548
 CSeq: 1 MESSAGE
-From: <sip:34020000002000000001@3402000000>;tag=19A75E24FDD348FA8BB0699A9B01ED8D
+From: <sip:34020000002000000002@3402000000>;tag=6CF6EDEF482242B88EA6DB3560BB5D50
 To: <sip:34020000001320000005@3402000000>
 Via: SIP/2.0/UDP 172.0.0.81:5060;rport
 Max-Forwards: 70
@@ -110,21 +136,21 @@ Content-Length: 123
 <SN>1</SN>
 <DeviceID>34020000001320000005</DeviceID>
 </Query>
-10:02:08.064 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processResponse(SipLayer.java:563) - processResponse >>> SIP/2.0 200 OK
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=15060;branch=z9hG4bK-363833-e73c17b311c513594b236a87e2005bc6;received=172.0.0.85
-From: <sip:34020000002000000001@3402000000>;tag=19A75E24FDD348FA8BB0699A9B01ED8D
-To: <sip:34020000001320000005@3402000000>;tag=305042440
-Call-ID: 2AA828ED50C843FFB180986A95A99C2E
+09:55:24.986 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processResponse(SipLayer.java:616) - processResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=15061;received=172.0.0.85;branch=z9hG4bKdb94f853f7fb84b8f82ff9e06d5c67a7
+From: <sip:34020000002000000002@3402000000>;tag=6CF6EDEF482242B88EA6DB3560BB5D50
+To: <sip:34020000001320000005@3402000000>;tag=1473644618
+Call-ID: 2769725A908C48E284E49D7925C1A548
 CSeq: 1 MESSAGE
 User-Agent: IP Camera
 Content-Length: 0
 
 
-10:02:08.065 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> MESSAGE sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK706592122;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=354724615
-To: <sip:34020000002000000001@3402000000>
-Call-ID: 476030504
+09:55:24.990 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
 CSeq: 20 MESSAGE
 Content-Type: Application/MANSCDP+xml
 Max-Forwards: 70
@@ -156,188 +182,1191 @@ Content-Length: 582
 </DeviceList>
 </Response>
 
-10:02:08.110 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 200 OK
-CSeq: 20 MESSAGE
-Call-ID: 476030504
-From: <sip:34020000001320000005@3402000000>;tag=354724615
-To: <sip:34020000002000000001@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK706592122;received=172.0.0.81
-Content-Length: 0
-
-
-10:02:08.135 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
-10:02:08.137 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
-10:02:08.141 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
-10:02:08.149 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
-10:02:08.167 [main] INFO  org.eclipse.jetty.server.handler.ContextHandler$Context.log(ContextHandler.java:2221) - Initializing Spring FrameworkServlet 'dispatcherServlet'
-10:02:08.168 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
-10:02:08.180 [main] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 12 ms
-10:02:08.214 [main] INFO  org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:289) - Started ServerConnector@63300c4b{HTTP/1.1,[http/1.1]}{0.0.0.0:1998}
-10:02:08.217 [main] INFO  org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer.start(JettyEmbeddedServletContainer.java:155) - Jetty started on port(s) 1998 (http/1.1)
-10:02:08.220 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 3.935 seconds (JVM running for 6.367)
-10:02:11.193 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> MESSAGE sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK1698080846;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=1475944553
-To: <sip:34020000002000000001@3402000000>
-Call-ID: 1970169115
+09:55:25.040 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:25.523 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
 CSeq: 20 MESSAGE
 Content-Type: Application/MANSCDP+xml
 Max-Forwards: 70
 User-Agent: IP Camera
-Content-Length: 179
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:25.529 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:26.552 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:26.558 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:28.580 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:28.587 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:29.796 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK607854162
+From: <sip:34020000001320000005@3402000000>;tag=1128736327
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 234639173
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 178
 
 <?xml version="1.0" encoding="GB2312"?>
 <Notify>
 <CmdType>Keepalive</CmdType>
-<SN>1791</SN>
+<SN>941</SN>
 <DeviceID>34020000001320000005</DeviceID>
 <Status>OK</Status>
 <Info>
 </Info>
 </Notify>
 
-10:02:11.198 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 200 OK
+09:55:29.801 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:29.801 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 400 Bad request
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK607854162
+From: <sip:34020000001320000005@3402000000>;tag=1128736327
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 234639173
 CSeq: 20 MESSAGE
-Call-ID: 1970169115
-From: <sip:34020000001320000005@3402000000>;tag=1475944553
-To: <sip:34020000002000000001@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK1698080846;received=172.0.0.81
 Content-Length: 0
 
 
-10:02:30.006 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:02:30.007 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:03:00.004 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:03:00.005 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:03:11.381 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> MESSAGE sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK139923689;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=334648364
-To: <sip:34020000002000000001@3402000000>
-Call-ID: 1730503720
+09:55:32.609 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
 CSeq: 20 MESSAGE
 Content-Type: Application/MANSCDP+xml
 Max-Forwards: 70
 User-Agent: IP Camera
-Content-Length: 179
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:32.615 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:36.643 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:36.647 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:40.673 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:40.677 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:44.699 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:44.705 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:48.728 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:48.731 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:51.626 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:55:51.627 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:55:52.762 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:52.765 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:55:56.791 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK245243044
+From: <sip:34020000001320000005@3402000000>;tag=486451991
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1510794580
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:55:56.797 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:56:00.001 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+09:56:00.020 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+09:56:07.414 [pool-4-thread-1] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:56:07.434 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+09:56:21.629 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:56:21.630 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:56:30.044 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK238065486
+From: <sip:34020000001320000005@3402000000>;tag=991311562
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 504843491
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 178
 
 <?xml version="1.0" encoding="GB2312"?>
 <Notify>
 <CmdType>Keepalive</CmdType>
-<SN>1792</SN>
+<SN>942</SN>
 <DeviceID>34020000001320000005</DeviceID>
 <Status>OK</Status>
 <Info>
 </Info>
 </Notify>
 
-10:03:11.386 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 200 OK
+09:56:30.047 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+09:56:30.048 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 400 Bad request
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK238065486
+From: <sip:34020000001320000005@3402000000>;tag=991311562
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 504843491
 CSeq: 20 MESSAGE
-Call-ID: 1730503720
-From: <sip:34020000001320000005@3402000000>;tag=334648364
-To: <sip:34020000002000000001@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK139923689;received=172.0.0.81
 Content-Length: 0
 
 
-10:03:30.000 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:03:30.002 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:04:00.003 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:04:00.003 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:04:11.570 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> MESSAGE sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK286001673;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=212284808
-To: <sip:34020000002000000001@3402000000>
-Call-ID: 1845074126
+09:56:54.558 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on 172-0-0-85.lightspeed.brhmal.sbcglobal.net with PID 2298 (/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/sipClient/sipClient)
+09:56:54.564 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+09:56:54.757 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2a79d4b1: startup date [Thu Nov 26 09:56:54 CST 2020]; root of context hierarchy
+09:56:54.976 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+09:56:56.491 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.initialize(TomcatEmbeddedServletContainer.java:92) - Tomcat initialized with port(s): 1999 (http)
+09:56:56.505 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing ProtocolHandler ["http-nio-1999"]
+09:56:56.515 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting service [Tomcat]
+09:56:56.516 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting Servlet Engine: Apache Tomcat/8.5.31
+09:56:56.591 [localhost-startStop-1] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring embedded WebApplicationContext
+09:56:56.591 [localhost-startStop-1] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 1834 ms
+09:56:56.770 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+09:56:56.771 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+09:56:56.775 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+09:56:56.775 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+09:56:56.775 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+09:56:56.776 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+09:56:56.776 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+09:56:58.071 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15061
+09:56:58.081 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:91) - ===============开始注入config=============
+09:56:58.081 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:109) - ===============完成注入config=============
+09:56:58.411 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2a79d4b1: startup date [Thu Nov 26 09:56:54 CST 2020]; root of context hierarchy
+09:56:58.458 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+09:56:58.460 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer)
+09:56:58.460 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToRtmpPlay],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(com.yangjie.JGB28181.entity.bo.CameraPojo)
+09:56:58.460 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeHls(java.lang.String)
+09:56:58.461 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+09:56:58.461 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition) throws java.lang.InterruptedException
+09:56:58.461 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/keepCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.keepCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:56:58.462 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:56:58.462 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testCameraStream(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String) throws java.lang.InterruptedException
+09:56:58.462 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testSendRegister]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testSendRegister(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,long)
+09:56:58.462 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtmpToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtmpToHls(java.lang.String,java.lang.String,java.lang.Integer)
+09:56:58.463 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getHlsStreamInfo]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getHlsStreamInfo()
+09:56:58.463 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspToHls(java.lang.String,java.lang.String)
+09:56:58.470 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/discoverDevice],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.discoverDevice() throws java.io.IOException
+09:56:58.470 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getLiveCamList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getLiveCamList(com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition)
+09:56:58.471 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:56:58.471 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:56:58.471 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getGBInfo],methods=[GET]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getGBInfo() throws java.net.UnknownHostException
+09:56:58.472 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setGBInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setGBInfo(com.yangjie.JGB28181.entity.bo.ServerInfoBo)
+09:56:58.472 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceInfo(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:56:58.472 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceInfo(com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo)
+09:56:58.473 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceDetail],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceDetail(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:56:58.473 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/registerCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.registerCamera(java.util.List<com.yangjie.JGB28181.entity.vo.CameraInfoVo>)
+09:56:58.473 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/removeCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.removeCamera(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:56:58.474 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:56:58.474 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:56:58.475 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/test],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.testSearch()
+09:56:58.476 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+09:56:58.476 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+09:56:58.498 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:56:58.498 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:56:58.530 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:56:58.692 [main] INFO  org.springframework.ui.freemarker.SpringTemplateLoader.<init>(SpringTemplateLoader.java:61) - SpringTemplateLoader for FreeMarker: using resource loader [org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2a79d4b1: startup date [Thu Nov 26 09:56:54 CST 2020]; root of context hierarchy] and template loader path [classpath:/templates/]
+09:56:58.694 [main] INFO  org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer.postProcessTemplateLoaders(FreeMarkerConfigurer.java:127) - ClassTemplateLoader for Spring macros added to FreeMarker configuration
+09:56:58.937 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+09:56:58.940 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+09:56:58.945 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+09:56:58.953 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+09:56:58.960 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting ProtocolHandler ["http-nio-1999"]
+09:56:58.972 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Using a shared selector for servlet write/read
+09:56:58.985 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.start(TomcatEmbeddedServletContainer.java:216) - Tomcat started on port(s): 1999 (http)
+09:56:58.990 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:56:58.990 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:56:58.990 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 5.164 seconds (JVM running for 7.417)
+09:57:00.004 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+09:57:00.334 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+09:57:07.632 [pool-4-thread-1] INFO  com.alibaba.druid.pool.DruidDataSource.init(DruidDataSource.java:847) - {dataSource-1} inited
+09:57:07.794 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+09:57:28.991 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:57:28.992 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:57:30.346 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK646692095
+From: <sip:34020000001320000005@3402000000>;tag=783068890
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 902985770
 CSeq: 20 MESSAGE
 Content-Type: Application/MANSCDP+xml
 Max-Forwards: 70
 User-Agent: IP Camera
-Content-Length: 179
+Content-Length: 178
 
 <?xml version="1.0" encoding="GB2312"?>
 <Notify>
 <CmdType>Keepalive</CmdType>
-<SN>1793</SN>
+<SN>943</SN>
 <DeviceID>34020000001320000005</DeviceID>
 <Status>OK</Status>
 <Info>
 </Info>
 </Notify>
 
-10:04:11.572 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 200 OK
+09:57:30.377 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 400 Bad request
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK646692095
+From: <sip:34020000001320000005@3402000000>;tag=783068890
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 902985770
 CSeq: 20 MESSAGE
-Call-ID: 1845074126
-From: <sip:34020000001320000005@3402000000>;tag=212284808
-To: <sip:34020000002000000001@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK286001673;received=172.0.0.81
 Content-Length: 0
 
 
-10:04:30.000 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:04:30.002 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:05:00.004 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:05:00.005 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:05:11.747 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> MESSAGE sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK2023743101;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=1196755591
-To: <sip:34020000002000000001@3402000000>
-Call-ID: 1095355231
+09:57:58.993 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:57:58.993 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:58:00.001 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+09:58:00.030 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+09:58:01.194 [http-nio-1999-exec-2] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+09:58:01.195 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+09:58:01.221 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 26 ms
+09:58:01.438 [http-nio-1999-exec-2] INFO  com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(ActionController.java:602) - 打开：rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream
+09:58:03.110 [pool-9-thread-1] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.go(RtspToRtmpPusher.java:275) - rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream 开始推流...
+09:58:08.668 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+09:58:28.998 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:58:29.078 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:58:30.523 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1838092815
+From: <sip:34020000001320000005@3402000000>;tag=735674876
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1331673692
 CSeq: 20 MESSAGE
 Content-Type: Application/MANSCDP+xml
 Max-Forwards: 70
 User-Agent: IP Camera
-Content-Length: 179
+Content-Length: 178
 
 <?xml version="1.0" encoding="GB2312"?>
 <Notify>
 <CmdType>Keepalive</CmdType>
-<SN>1794</SN>
+<SN>944</SN>
 <DeviceID>34020000001320000005</DeviceID>
 <Status>OK</Status>
 <Info>
 </Info>
 </Notify>
 
-10:05:11.752 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 200 OK
+09:58:30.528 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 400 Bad request
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1838092815
+From: <sip:34020000001320000005@3402000000>;tag=735674876
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1331673692
 CSeq: 20 MESSAGE
-Call-ID: 1095355231
-From: <sip:34020000001320000005@3402000000>;tag=1196755591
-To: <sip:34020000002000000001@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK2023743101;received=172.0.0.81
 Content-Length: 0
 
 
-10:05:30.004 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:05:30.005 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:06:00.004 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:24) - ==================start check hls stream and keep save=========================
-10:06:00.005 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.KeepHlsPushJob.keepHlsPush(KeepHlsPushJob.java:42) - ==================finish check hls stream and keep save=========================
-10:06:11.946 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:182) - processRequest >>> MESSAGE sip:34020000002000000001@3402000000 SIP/2.0
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK550712384;received=172.0.0.81
-From: <sip:34020000001320000005@3402000000>;tag=523018962
-To: <sip:34020000002000000001@3402000000>
-Call-ID: 738415210
+09:58:54.059 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on 172-0-0-85.lightspeed.brhmal.sbcglobal.net with PID 2343 (/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/sipClient/sipClient)
+09:58:54.113 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+09:58:54.198 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+09:58:54.199 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@17cdf2d0: startup date [Thu Nov 26 09:58:54 CST 2020]; root of context hierarchy
+09:58:55.556 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.initialize(TomcatEmbeddedServletContainer.java:92) - Tomcat initialized with port(s): 1999 (http)
+09:58:55.570 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing ProtocolHandler ["http-nio-1999"]
+09:58:55.580 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting service [Tomcat]
+09:58:55.580 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting Servlet Engine: Apache Tomcat/8.5.31
+09:58:55.678 [localhost-startStop-1] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring embedded WebApplicationContext
+09:58:55.678 [localhost-startStop-1] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 1479 ms
+09:58:55.851 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+09:58:55.852 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+09:58:55.856 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+09:58:55.856 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+09:58:55.857 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+09:58:55.857 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+09:58:55.857 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+09:58:56.733 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15061
+09:58:56.744 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:91) - ===============开始注入config=============
+09:58:56.745 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:109) - ===============完成注入config=============
+09:58:56.984 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@17cdf2d0: startup date [Thu Nov 26 09:58:54 CST 2020]; root of context hierarchy
+09:58:57.034 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer)
+09:58:57.035 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToRtmpPlay],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(com.yangjie.JGB28181.entity.bo.CameraPojo)
+09:58:57.035 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition) throws java.lang.InterruptedException
+09:58:57.035 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/keepCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.keepCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:58:57.035 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:58:57.036 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testCameraStream(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String) throws java.lang.InterruptedException
+09:58:57.036 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testSendRegister]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testSendRegister(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,long)
+09:58:57.037 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtmpToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtmpToHls(java.lang.String,java.lang.String,java.lang.Integer)
+09:58:57.037 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getHlsStreamInfo]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getHlsStreamInfo()
+09:58:57.037 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspToHls(java.lang.String,java.lang.String)
+09:58:57.037 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+09:58:57.038 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+09:58:57.038 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeHls(java.lang.String)
+09:58:57.044 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceInfo(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:58:57.045 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceInfo(com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo)
+09:58:57.045 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceDetail],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceDetail(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:58:57.045 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/registerCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.registerCamera(java.util.List<com.yangjie.JGB28181.entity.vo.CameraInfoVo>)
+09:58:57.046 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/removeCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.removeCamera(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+09:58:57.046 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:58:57.046 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:58:57.046 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/test],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.testSearch()
+09:58:57.047 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getLiveCamList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getLiveCamList(com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition)
+09:58:57.047 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/discoverDevice],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.discoverDevice() throws java.io.IOException
+09:58:57.047 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:58:57.047 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+09:58:57.048 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getGBInfo],methods=[GET]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getGBInfo() throws java.net.UnknownHostException
+09:58:57.048 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setGBInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setGBInfo(com.yangjie.JGB28181.entity.bo.ServerInfoBo)
+09:58:57.049 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+09:58:57.050 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+09:58:57.072 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:58:57.072 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:58:57.101 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+09:58:57.238 [main] INFO  org.springframework.ui.freemarker.SpringTemplateLoader.<init>(SpringTemplateLoader.java:61) - SpringTemplateLoader for FreeMarker: using resource loader [org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@17cdf2d0: startup date [Thu Nov 26 09:58:54 CST 2020]; root of context hierarchy] and template loader path [classpath:/templates/]
+09:58:57.239 [main] INFO  org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer.postProcessTemplateLoaders(FreeMarkerConfigurer.java:127) - ClassTemplateLoader for Spring macros added to FreeMarker configuration
+09:58:57.470 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+09:58:57.473 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+09:58:57.476 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+09:58:57.485 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+09:58:57.492 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting ProtocolHandler ["http-nio-1999"]
+09:58:57.503 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Using a shared selector for servlet write/read
+09:58:57.517 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.start(TomcatEmbeddedServletContainer.java:216) - Tomcat started on port(s): 1999 (http)
+09:58:57.521 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:58:57.521 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:58:57.521 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 3.946 seconds (JVM running for 5.872)
+09:59:00.008 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+09:59:00.357 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+09:59:06.445 [pool-4-thread-1] INFO  com.alibaba.druid.pool.DruidDataSource.init(DruidDataSource.java:847) - {dataSource-1} inited
+09:59:06.617 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+09:59:25.812 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK2071898042
+From: <sip:34020000001320000005@3402000000>;tag=2144139868
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 1124990660
+CSeq: 1 REGISTER
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Max-Forwards: 70
+User-Agent: IP Camera
+Expires: 3600
+Content-Length: 0
+
+
+09:59:25.819 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 401 Unauthorized
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK2071898042
+From: <sip:34020000001320000005@3402000000>;tag=2144139868
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 1124990660
+CSeq: 1 REGISTER
+WWW-Authenticate: Digest opaque="",stale=FALSE,realm="3402000000",nonce="6151bbba5f3dcecc88dd711b713c0cfd",algorithm=MD5
+Content-Length: 0
+
+
+09:59:25.838 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK551768073
+From: <sip:34020000001320000005@3402000000>;tag=2144139868
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 1124990660
+CSeq: 2 REGISTER
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Authorization: Digest response="47fdd6708aa9f4aa46e2bdc0969b7a29",realm="3402000000",nonce="6151bbba5f3dcecc88dd711b713c0cfd",uri="sip:34020000002000000002@3402000000",username="34020000001320000005",algorithm=MD5
+Max-Forwards: 70
+User-Agent: IP Camera
+Expires: 3600
+Content-Length: 0
+
+
+09:59:25.842 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK551768073
+From: <sip:34020000001320000005@3402000000>;tag=2144139868
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 1124990660
+CSeq: 2 REGISTER
+Date: Thu, 26 Nov 2020 01:59:25 GMT
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Expires: 3600
+Content-Length: 0
+
+
+09:59:25.930 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendRequest(SipLayer.java:605) - sendRequest >>> MESSAGE sip:34020000001320000005@172.0.0.81:5060 SIP/2.0
+Call-ID: 9CF96A06B93741B4B9C2C737DA8A892A
+CSeq: 1 MESSAGE
+From: <sip:34020000002000000002@3402000000>;tag=7A5589B1C299411594D9F4D9820B819C
+To: <sip:34020000001320000005@3402000000>
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport
+Max-Forwards: 70
+Content-Type: Application/MANSCDP+xml
+Content-Length: 123
+
+<?xml version="1.0"?>
+<Query>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+</Query>
+09:59:25.952 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processResponse(SipLayer.java:616) - processResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=15061;received=172.0.0.85;branch=z9hG4bK93d95c4914bbe1dab34a16b09dcfc48e
+From: <sip:34020000002000000002@3402000000>;tag=7A5589B1C299411594D9F4D9820B819C
+To: <sip:34020000001320000005@3402000000>;tag=2025146029
+Call-ID: 9CF96A06B93741B4B9C2C737DA8A892A
+CSeq: 1 MESSAGE
+User-Agent: IP Camera
+Content-Length: 0
+
+
+09:59:25.956 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1120991129
+From: <sip:34020000001320000005@3402000000>;tag=615349633
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 506020774
 CSeq: 20 MESSAGE
 Content-Type: Application/MANSCDP+xml
 Max-Forwards: 70
 User-Agent: IP Camera
-Content-Length: 179
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+09:59:25.993 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1120991129
+From: <sip:34020000001320000005@3402000000>;tag=615349633
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 506020774
+CSeq: 20 MESSAGE
+Content-Length: 0
+
+
+09:59:27.525 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:59:27.525 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+09:59:30.759 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1955995367
+From: <sip:34020000001320000005@3402000000>;tag=1457009780
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1332636465
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 178
 
 <?xml version="1.0" encoding="GB2312"?>
 <Notify>
 <CmdType>Keepalive</CmdType>
-<SN>1795</SN>
+<SN>945</SN>
 <DeviceID>34020000001320000005</DeviceID>
 <Status>OK</Status>
 <Info>
 </Info>
 </Notify>
 
-10:06:11.954 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:548) - sendResponse >>> SIP/2.0 200 OK
+09:59:30.765 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1955995367
+From: <sip:34020000001320000005@3402000000>;tag=1457009780
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1332636465
 CSeq: 20 MESSAGE
-Call-ID: 738415210
-From: <sip:34020000001320000005@3402000000>;tag=523018962
-To: <sip:34020000002000000001@3402000000>
-Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;branch=z9hG4bK550712384;received=172.0.0.81
 Content-Length: 0
 
 
+09:59:57.527 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+09:59:57.530 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+10:00:00.001 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+10:00:00.013 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+10:00:06.029 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+10:00:06.030 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.GCJob.gcTest(GCJob.java:14) - ==================start gc=========================
+10:00:06.091 [pool-4-thread-1] INFO  com.yangjie.JGB28181.common.scheduleJob.GCJob.gcTest(GCJob.java:16) - ==================finish gc=========================
+10:00:27.532 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+10:00:27.533 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+10:00:31.005 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1405104107
+From: <sip:34020000001320000005@3402000000>;tag=1826331584
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1053012909
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 178
+
+<?xml version="1.0" encoding="GB2312"?>
+<Notify>
+<CmdType>Keepalive</CmdType>
+<SN>946</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<Status>OK</Status>
+<Info>
+</Info>
+</Notify>
+
+10:00:31.010 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1405104107
+From: <sip:34020000001320000005@3402000000>;tag=1826331584
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1053012909
+CSeq: 20 MESSAGE
+Content-Length: 0
+
+
+10:00:49.668 [http-nio-1999-exec-2] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+10:00:49.669 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+10:00:49.699 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 30 ms
+10:00:49.859 [http-nio-1999-exec-2] INFO  com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(ActionController.java:602) - 打开：rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream
+10:00:51.608 [pool-9-thread-1] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.go(RtspToRtmpPusher.java:275) - rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream 开始推流...
+10:00:57.533 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+10:00:57.546 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+10:01:00.005 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+10:01:00.019 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+10:01:06.548 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+10:01:20.531 [Thread-6] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@17cdf2d0: startup date [Thu Nov 26 09:58:54 CST 2020]; root of context hierarchy
+10:01:45.446 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on 172-0-0-85.lightspeed.brhmal.sbcglobal.net with PID 2409 (/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/sipClient/sipClient)
+10:01:45.452 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+10:01:45.503 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 10:01:45 CST 2020]; root of context hierarchy
+10:01:45.609 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+10:01:46.856 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.initialize(TomcatEmbeddedServletContainer.java:92) - Tomcat initialized with port(s): 1999 (http)
+10:01:46.871 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing ProtocolHandler ["http-nio-1999"]
+10:01:46.881 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting service [Tomcat]
+10:01:46.881 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting Servlet Engine: Apache Tomcat/8.5.31
+10:01:46.955 [localhost-startStop-1] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring embedded WebApplicationContext
+10:01:46.955 [localhost-startStop-1] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 1452 ms
+10:01:47.133 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+10:01:47.135 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+10:01:47.138 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+10:01:47.138 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+10:01:47.138 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+10:01:47.139 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+10:01:47.139 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+10:01:48.097 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15061
+10:01:48.109 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:91) - ===============开始注入config=============
+10:01:48.109 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:109) - ===============完成注入config=============
+10:01:48.356 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 10:01:45 CST 2020]; root of context hierarchy
+10:01:48.404 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer)
+10:01:48.405 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+10:01:48.405 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToRtmpPlay],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(com.yangjie.JGB28181.entity.bo.CameraPojo)
+10:01:48.405 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeHls(java.lang.String)
+10:01:48.405 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+10:01:48.406 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition) throws java.lang.InterruptedException
+10:01:48.406 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/keepCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.keepCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+10:01:48.406 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+10:01:48.407 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testCameraStream(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String) throws java.lang.InterruptedException
+10:01:48.407 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testSendRegister]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testSendRegister(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,long)
+10:01:48.407 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtmpToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtmpToHls(java.lang.String,java.lang.String,java.lang.Integer)
+10:01:48.408 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getHlsStreamInfo]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getHlsStreamInfo()
+10:01:48.408 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspToHls(java.lang.String,java.lang.String)
+10:01:48.414 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/discoverDevice],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.discoverDevice() throws java.io.IOException
+10:01:48.414 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getLiveCamList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getLiveCamList(com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition)
+10:01:48.415 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+10:01:48.415 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+10:01:48.415 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getGBInfo],methods=[GET]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getGBInfo() throws java.net.UnknownHostException
+10:01:48.415 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setGBInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setGBInfo(com.yangjie.JGB28181.entity.bo.ServerInfoBo)
+10:01:48.416 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceInfo(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+10:01:48.416 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceInfo(com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo)
+10:01:48.416 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceDetail],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceDetail(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+10:01:48.417 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/registerCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.registerCamera(java.util.List<com.yangjie.JGB28181.entity.vo.CameraInfoVo>)
+10:01:48.417 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/removeCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.removeCamera(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+10:01:48.417 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+10:01:48.418 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+10:01:48.418 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/test],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.testSearch()
+10:01:48.419 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+10:01:48.419 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+10:01:48.440 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+10:01:48.441 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+10:01:48.471 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+10:01:48.611 [main] INFO  org.springframework.ui.freemarker.SpringTemplateLoader.<init>(SpringTemplateLoader.java:61) - SpringTemplateLoader for FreeMarker: using resource loader [org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 10:01:45 CST 2020]; root of context hierarchy] and template loader path [classpath:/templates/]
+10:01:48.613 [main] INFO  org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer.postProcessTemplateLoaders(FreeMarkerConfigurer.java:127) - ClassTemplateLoader for Spring macros added to FreeMarker configuration
+10:01:48.836 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+10:01:48.839 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+10:01:48.842 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+10:01:48.851 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+10:01:48.857 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting ProtocolHandler ["http-nio-1999"]
+10:01:48.868 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Using a shared selector for servlet write/read
+10:01:48.885 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.start(TomcatEmbeddedServletContainer.java:216) - Tomcat started on port(s): 1999 (http)
+10:01:48.890 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+10:01:48.890 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 3.848 seconds (JVM running for 5.792)
+10:01:48.890 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+10:01:51.019 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1861464860
+From: <sip:34020000001320000005@3402000000>;tag=1072118956
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 89756090
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 178
+
+<?xml version="1.0" encoding="GB2312"?>
+<Notify>
+<CmdType>Keepalive</CmdType>
+<SN>947</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<Status>OK</Status>
+<Info>
+</Info>
+</Notify>
+
+10:01:51.087 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1861464860
+From: <sip:34020000001320000005@3402000000>;tag=1072118956
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 89756090
+CSeq: 20 MESSAGE
+Content-Length: 0
+
+
+10:02:00.010 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+10:02:00.390 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+10:02:00.576 [http-nio-1999-exec-2] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+10:02:00.577 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+10:02:00.613 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 36 ms
+10:02:00.803 [http-nio-1999-exec-2] INFO  com.alibaba.druid.pool.DruidDataSource.init(DruidDataSource.java:847) - {dataSource-1} inited
+10:02:01.007 [http-nio-1999-exec-2] INFO  com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(ActionController.java:602) - 打开：rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream
+10:02:02.303 [pool-7-thread-1] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.go(RtspToRtmpPusher.java:275) - rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream 开始推流...
+10:02:08.639 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:263) - ==============================更新设备完成======================
+10:02:11.325 [Thread-6] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 10:01:45 CST 2020]; root of context hierarchy
+11:14:57.542 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on 172-0-0-85.lightspeed.brhmal.sbcglobal.net with PID 3899 (/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/sipClient/sipClient)
+11:14:57.548 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+11:14:57.641 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 11:14:57 CST 2020]; root of context hierarchy
+11:14:57.839 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+11:14:59.265 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.initialize(TomcatEmbeddedServletContainer.java:92) - Tomcat initialized with port(s): 1999 (http)
+11:14:59.283 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing ProtocolHandler ["http-nio-1999"]
+11:14:59.299 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting service [Tomcat]
+11:14:59.300 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting Servlet Engine: Apache Tomcat/8.5.31
+11:14:59.421 [localhost-startStop-1] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring embedded WebApplicationContext
+11:14:59.421 [localhost-startStop-1] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 1780 ms
+11:14:59.688 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+11:14:59.690 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+11:14:59.694 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+11:14:59.695 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+11:14:59.696 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+11:14:59.697 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+11:14:59.697 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+11:15:01.077 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15061
+11:15:01.096 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:91) - ===============开始注入config=============
+11:15:01.097 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:109) - ===============完成注入config=============
+11:15:01.375 [main] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.initControllerAdviceCache(RequestMappingHandlerAdapter.java:534) - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 11:14:57 CST 2020]; root of context hierarchy
+11:15:01.430 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/play]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.play(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer)
+11:15:01.431 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToRtmpPlay],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(com.yangjie.JGB28181.entity.bo.CameraPojo)
+11:15:01.431 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeHls(java.lang.String)
+11:15:01.431 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/bye]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.bye(java.lang.String)
+11:15:01.432 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition) throws java.lang.InterruptedException
+11:15:01.432 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/keepCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.keepCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+11:15:01.432 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/closeCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.closeCameraStream(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+11:15:01.432 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testCameraStream],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testCameraStream(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String) throws java.lang.InterruptedException
+11:15:01.433 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/testSendRegister]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.testSendRegister(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,long)
+11:15:01.433 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtmpToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtmpToHls(java.lang.String,java.lang.String,java.lang.Integer)
+11:15:01.433 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/getHlsStreamInfo]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.getHlsStreamInfo()
+11:15:01.433 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/rtspToHls]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.rtspToHls(java.lang.String,java.lang.String)
+11:15:01.434 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/camera/discoverDevice]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.ActionController.discoverDevice()
+11:15:01.439 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getGBInfo],methods=[GET]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getGBInfo() throws java.net.UnknownHostException
+11:15:01.439 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+11:15:01.440 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setPollingList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setPollingList(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+11:15:01.440 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setGBInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setGBInfo(com.yangjie.JGB28181.entity.bo.ServerInfoBo)
+11:15:01.440 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceInfo(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+11:15:01.440 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceInfo],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceInfo(com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo)
+11:15:01.441 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceDetail],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceDetail(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+11:15:01.441 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/registerCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.registerCamera(java.util.List<com.yangjie.JGB28181.entity.vo.CameraInfoVo>)
+11:15:01.441 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/removeCamera],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.removeCamera(com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition)
+11:15:01.441 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+11:15:01.442 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/setDeviceTree],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.setDeviceTree(com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition)
+11:15:01.442 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/test],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.testSearch()
+11:15:01.442 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/discoverDevice],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.discoverDevice() throws java.io.IOException
+11:15:01.442 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/device/getLiveCamList],methods=[POST]}" onto public com.yangjie.JGB28181.common.result.GBResult com.yangjie.JGB28181.web.controller.DeviceManagerController.getLiveCamList(com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition)
+11:15:01.444 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+11:15:01.444 [main] INFO  org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:543) - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+11:15:01.465 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+11:15:01.465 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+11:15:01.495 [main] INFO  org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.registerHandler(AbstractUrlHandlerMapping.java:362) - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+11:15:01.670 [main] INFO  org.springframework.ui.freemarker.SpringTemplateLoader.<init>(SpringTemplateLoader.java:61) - SpringTemplateLoader for FreeMarker: using resource loader [org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 11:14:57 CST 2020]; root of context hierarchy] and template loader path [classpath:/templates/]
+11:15:01.671 [main] INFO  org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer.postProcessTemplateLoaders(FreeMarkerConfigurer.java:127) - ClassTemplateLoader for Spring macros added to FreeMarker configuration
+11:15:01.908 [main] INFO  org.springframework.jmx.export.MBeanExporter.afterSingletonsInstantiated(MBeanExporter.java:431) - Registering beans for JMX exposure on startup
+11:15:01.910 [main] INFO  org.springframework.jmx.export.MBeanExporter.autodetect(MBeanExporter.java:918) - Bean with name 'dataSource' has been autodetected for JMX exposure
+11:15:01.913 [main] INFO  org.springframework.jmx.export.MBeanExporter.registerBeanInstance(MBeanExporter.java:672) - Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.pool:name=dataSource,type=DruidDataSource]
+11:15:01.921 [main] INFO  org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor.finishRegistration(ScheduledAnnotationBeanPostProcessor.java:268) - No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+11:15:01.929 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting ProtocolHandler ["http-nio-1999"]
+11:15:01.940 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Using a shared selector for servlet write/read
+11:15:01.953 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.start(TomcatEmbeddedServletContainer.java:216) - Tomcat started on port(s): 1999 (http)
+11:15:01.957 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+11:15:01.957 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarted(StartupInfoLogger.java:57) - Started StartApplication in 4.967 seconds (JVM running for 6.918)
+11:15:01.957 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+11:15:12.929 [http-nio-1999-exec-2] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring FrameworkServlet 'dispatcherServlet'
+11:15:12.929 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:489) - FrameworkServlet 'dispatcherServlet': initialization started
+11:15:12.954 [http-nio-1999-exec-2] INFO  org.springframework.web.servlet.FrameworkServlet.initServletBean(FrameworkServlet.java:508) - FrameworkServlet 'dispatcherServlet': initialization completed in 25 ms
+11:15:13.192 [http-nio-1999-exec-2] INFO  com.alibaba.druid.pool.DruidDataSource.init(DruidDataSource.java:847) - {dataSource-1} inited
+11:15:13.498 [http-nio-1999-exec-2] INFO  com.yangjie.JGB28181.web.controller.ActionController.rtspPlayRtmp(ActionController.java:602) - 打开：rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream
+11:15:15.138 [pool-5-thread-1] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.go(RtspToRtmpPusher.java:275) - rtsp://admin:qq12345678@203.88.202.231:554/h264/ch7/main/av_stream 开始推流...
+11:15:31.962 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+11:15:32.018 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+11:15:49.430 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK666976102
+From: <sip:34020000001320000005@3402000000>;tag=1458147729
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 958009953
+CSeq: 1 REGISTER
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Max-Forwards: 70
+User-Agent: IP Camera
+Expires: 3600
+Content-Length: 0
+
+
+11:15:49.438 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 401 Unauthorized
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK666976102
+From: <sip:34020000001320000005@3402000000>;tag=1458147729
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 958009953
+CSeq: 1 REGISTER
+WWW-Authenticate: Digest opaque="",stale=FALSE,realm="3402000000",nonce="a9b8f3f528824ef6cf692829c9c24e73",algorithm=MD5
+Content-Length: 0
+
+
+11:15:49.454 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK173776978
+From: <sip:34020000001320000005@3402000000>;tag=1458147729
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 958009953
+CSeq: 2 REGISTER
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Authorization: Digest response="16544aafd41adcf97cbd44ba0b8ef447",realm="3402000000",nonce="a9b8f3f528824ef6cf692829c9c24e73",uri="sip:34020000002000000002@3402000000",username="34020000001320000005",algorithm=MD5
+Max-Forwards: 70
+User-Agent: IP Camera
+Expires: 3600
+Content-Length: 0
+
+
+11:15:49.458 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK173776978
+From: <sip:34020000001320000005@3402000000>;tag=1458147729
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 958009953
+CSeq: 2 REGISTER
+Date: Thu, 26 Nov 2020 03:15:49 GMT
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Expires: 3600
+Content-Length: 0
+
+
+11:15:49.496 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendRequest(SipLayer.java:605) - sendRequest >>> MESSAGE sip:34020000001320000005@172.0.0.81:5060 SIP/2.0
+Call-ID: F232769CDC5D4D79B5C54EFFD22ABA9A
+CSeq: 1 MESSAGE
+From: <sip:34020000002000000002@3402000000>;tag=F4DE4692D6EA400BACABDD7B4816749D
+To: <sip:34020000001320000005@3402000000>
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport
+Max-Forwards: 70
+Content-Type: Application/MANSCDP+xml
+Content-Length: 123
+
+<?xml version="1.0"?>
+<Query>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+</Query>
+11:15:49.521 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processResponse(SipLayer.java:616) - processResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=15061;received=172.0.0.85;branch=z9hG4bKc3c89165989c1f98902316b6480e8634
+From: <sip:34020000002000000002@3402000000>;tag=F4DE4692D6EA400BACABDD7B4816749D
+To: <sip:34020000001320000005@3402000000>;tag=400348792
+Call-ID: F232769CDC5D4D79B5C54EFFD22ABA9A
+CSeq: 1 MESSAGE
+User-Agent: IP Camera
+Content-Length: 0
+
+
+11:15:49.527 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1283924808
+From: <sip:34020000001320000005@3402000000>;tag=1401277194
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1282648658
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+11:15:49.611 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1283924808
+From: <sip:34020000001320000005@3402000000>;tag=1401277194
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1282648658
+CSeq: 20 MESSAGE
+Content-Length: 0
+
+
+11:15:54.362 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1447162527
+From: <sip:34020000001320000005@3402000000>;tag=1115714847
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 121314322
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 178
+
+<?xml version="1.0" encoding="GB2312"?>
+<Notify>
+<CmdType>Keepalive</CmdType>
+<SN>952</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<Status>OK</Status>
+<Info>
+</Info>
+</Notify>
+
+11:15:54.369 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1447162527
+From: <sip:34020000001320000005@3402000000>;tag=1115714847
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 121314322
+CSeq: 20 MESSAGE
+Content-Length: 0
+
+
+11:16:00.009 [pool-4-thread-1] INFO  com.yangjie.JGB28181.service.impl.DeviceManagerServiceImpl.updateDevice(DeviceManagerServiceImpl.java:238) - ==============================更新设备开始======================
+11:16:00.467 [pool-4-thread-1] INFO  org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean.buildServiceFromClass(ReflectionServiceFactoryBean.java:437) - Creating Service {http://schemas.xmlsoap.org/ws/2005/04/discovery}DiscoveryProxy from class org.apache.cxf.jaxws.support.DummyImpl
+11:16:01.965 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
+11:16:01.972 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
+11:16:04.402 [Thread-6] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2e9fda69: startup date [Thu Nov 26 11:14:57 CST 2020]; root of context hierarchy
