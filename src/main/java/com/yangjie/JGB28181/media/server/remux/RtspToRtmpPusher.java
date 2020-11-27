@@ -281,11 +281,15 @@ public class RtspToRtmpPusher {
         int isTest = cameraPojo.getIsTest();
 
         String command = "ffmpeg -y -vsync 0 -hwaccel cuvid -c:v h264_cuvid -i rtsp://admin:a12345678@203.88.202.226:554/h264/ch1/main/av_stream -vf scale_npp=1280:720 -f flv -c:v h264_nvenc rtmp://127.0.0.1:1935/live";
+        Runtime runtime = Runtime.getRuntime();
         try {
+            Process process = runtime.exec(command);
             while (true) {
                 nowThread.sleep(0);
             }
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 //        for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
