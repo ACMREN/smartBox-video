@@ -79,6 +79,12 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             return deviceUrlSet;
         } catch (Exception e) {
             return deviceUrlSet;
+        } finally {
+            try {
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -284,11 +284,6 @@ public class RtspToRtmpPusher {
         Runtime runtime = Runtime.getRuntime();
         try {
             Process process = runtime.exec(command);
-            while (true) {
-                nowThread.sleep(0);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
