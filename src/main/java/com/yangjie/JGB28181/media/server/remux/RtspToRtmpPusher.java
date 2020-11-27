@@ -161,6 +161,7 @@ public class RtspToRtmpPusher {
             // 使用硬件加速
             grabber.setOption("hwaccel", "cuvid");
             grabber.setVideoCodecName("h264_cuvid");
+            grabber.setOption("gpu", "");
             grabber.setVideoOption("resize", "1280x720");
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
         }
@@ -234,6 +235,7 @@ public class RtspToRtmpPusher {
         record.setVideoCodecName("h264_nvenc");
 //        record.setVideoCodec(AV_CODEC_ID_H264);
         record.setVideoBitrate(20000);
+        record.setOption("gpu", "");
         record.setOption("b:v", "2048k");
         record.setOption("vf", "scale_npp=1280:720");
 
