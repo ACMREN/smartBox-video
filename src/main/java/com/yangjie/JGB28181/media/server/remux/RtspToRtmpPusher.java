@@ -283,36 +283,36 @@ public class RtspToRtmpPusher {
             try {
                 // 用于中断线程时，结束该循环
                 nowThread.sleep(0);
-//                Frame frame = grabber.grab();
-//                if (null != frame) {
-//                    record.record(frame);
+                Frame frame = grabber.grab();
+                if (null != frame) {
+                    record.record(frame);
+                }
+
+//                AVPacket pkt = null;
+//                // 获取没有解码的音视频帧
+//                pkt = grabber.grabPacket();
+//                if (pkt == null || pkt.size() <= 0 || pkt.data() == null) {
+//                    // 空包记录次数跳过
+//                    no_frame_index++;
+//                    err_index++;
+//                    continue;
 //                }
-
-                AVPacket pkt = null;
-                // 获取没有解码的音视频帧
-                pkt = grabber.grabPacket();
-                if (pkt == null || pkt.size() <= 0 || pkt.data() == null) {
-                    // 空包记录次数跳过
-                    no_frame_index++;
-                    err_index++;
-                    continue;
-                }
-                if (isTest == 1) {
-                    break;
-                }
-                // 不需要编码直接把音视频帧推出去
-                err_index += (record.recordPacket(pkt) ? 0 : 1);
-
-                String token = cameraPojo.getToken();
-                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
-                if (null != heartbeats) {
-                    heartbeats++;
-                } else {
-                    heartbeats = 1L;
-                }
-                TimerUtil.heartbeatsMap.put(token, heartbeats);
-
-                av_packet_unref(pkt);
+//                if (isTest == 1) {
+//                    break;
+//                }
+//                // 不需要编码直接把音视频帧推出去
+//                err_index += (record.recordPacket(pkt) ? 0 : 1);
+//
+//                String token = cameraPojo.getToken();
+//                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
+//                if (null != heartbeats) {
+//                    heartbeats++;
+//                } else {
+//                    heartbeats = 1L;
+//                }
+//                TimerUtil.heartbeatsMap.put(token, heartbeats);
+//
+//                av_packet_unref(pkt);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 // 销毁构造器
