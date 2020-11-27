@@ -279,14 +279,23 @@ public class RtspToRtmpPusher {
         // 释放探测时缓存下来的数据帧，避免pts初始值不为0导致画面延时
         grabber.flush();
         int isTest = cameraPojo.getIsTest();
-        for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
-            try {
-                // 用于中断线程时，结束该循环
+
+        String command = "ffmpeg -y -vsync 0 -hwaccel cuvid -c:v h264_cuvid -i rtsp://admin:a12345678@203.88.202.226:554/h264/ch1/main/av_stream -vf scale_npp=1280:720 -f flv -c:v h264_nvenc rtmp://127.0.0.1:1935/live";
+        try {
+            while (true) {
                 nowThread.sleep(0);
-                Frame frame = grabber.grab();
-                if (null != frame) {
-                    record.record(frame);
-                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
+//            try {
+//                // 用于中断线程时，结束该循环
+//                nowThread.sleep(0);
+//                Frame frame = grabber.grab();
+//                if (null != frame) {
+//                    record.record(frame);
+//                }
 
 //                AVPacket pkt = null;
 //                // 获取没有解码的音视频帧
@@ -313,21 +322,21 @@ public class RtspToRtmpPusher {
 //                TimerUtil.heartbeatsMap.put(token, heartbeats);
 //
 //                av_packet_unref(pkt);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                // 销毁构造器
-                grabber.stop();
-                grabber.close();
-                record.stop();
-                record.close();
-                logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
-                break;
-            } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
-                err_index++;
-            } catch (org.bytedeco.javacv.FrameRecorder.Exception e) {
-                err_index++;
-            }
-        }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//                // 销毁构造器
+//                grabber.stop();
+//                grabber.close();
+//                record.stop();
+//                record.close();
+//                logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
+//                break;
+//            } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
+//                err_index++;
+//            } catch (org.bytedeco.javacv.FrameRecorder.Exception e) {
+//                err_index++;
+//            }
+//        }
         // 程序正常结束销毁构造器
         grabber.stop();
         grabber.close();
