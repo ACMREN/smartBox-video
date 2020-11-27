@@ -234,8 +234,8 @@ public class RtspToRtmpPusher {
         record.setVideoCodecName("h264_nvenc");
 //        record.setVideoCodec(AV_CODEC_ID_H264);
         record.setVideoBitrate(20000);
-        record.setVideoOption("b:v", "2048k");
-        record.setVideoOption("vf", "scale_npp=1280:720");
+        record.setOption("b:v", "2048k");
+        record.setOption("vf", "scale_npp=1280:720");
 
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
@@ -248,7 +248,7 @@ public class RtspToRtmpPusher {
             fc = grabber.getFormatContext();
         }
         try {
-            record.start();
+            record.start(fc);
         } catch (Exception e) {
             logger.error(cameraPojo.getRtsp() + "  推流异常！");
             logger.error("ffmpeg错误信息：", e);
