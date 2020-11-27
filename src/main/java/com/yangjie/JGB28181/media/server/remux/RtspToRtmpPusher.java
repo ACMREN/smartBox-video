@@ -248,7 +248,7 @@ public class RtspToRtmpPusher {
             fc = grabber.getFormatContext();
         }
         try {
-            record.start(fc);
+            record.start();
         } catch (Exception e) {
             logger.error(cameraPojo.getRtsp() + "  推流异常！");
             logger.error("ffmpeg错误信息：", e);
