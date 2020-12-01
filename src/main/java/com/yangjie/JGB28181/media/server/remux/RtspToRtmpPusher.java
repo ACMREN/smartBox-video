@@ -283,7 +283,7 @@ public class RtspToRtmpPusher {
         int isTest = cameraPojo.getIsTest();
 
         String ffmpeg = Loader.load(org.bytedeco.ffmpeg.ffmpeg.class);
-        ProcessBuilder pb = new ProcessBuilder(ffmpeg, "-y", "-vsync", "0", "-hwaccel", "cuvid", "-c:v", "h264_cuvid", "-i", "rtsp://admin:a12345678@203.88.202.226:554/h264/ch1/main/av_stream", "-f", "flv", "-c:v", "h264_nvenc", "-vf", "npp_scale=1280:720", "rtmp://127.0.0.1:1935/live");
+        ProcessBuilder pb = new ProcessBuilder(ffmpeg, "-y", "-vsync", "0", "-hwaccel", "cuvid", "-c:v", "h264_cuvid", "-i", "rtsp://admin:a12345678@203.88.202.226:554/h264/ch1/main/av_stream", "-f", "flv", "-c:v", "h264_nvenc", "-vf", "scale_npp=1280:720", "rtmp://127.0.0.1:1935/live");
         try {
             pb.inheritIO().start().waitFor();
         } catch (InterruptedException e) {
