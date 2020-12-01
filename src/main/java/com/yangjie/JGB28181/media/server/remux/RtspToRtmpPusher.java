@@ -10,6 +10,7 @@ import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
+import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
@@ -229,6 +230,7 @@ public class RtspToRtmpPusher {
         } else {
             record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), 1280, 720);
         }
+
         record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围
         record.setGopSize(2);
         record.setFrameRate(framerate);
