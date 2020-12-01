@@ -238,7 +238,7 @@ public class RtspToRtmpPusher {
 //        record.setVideoCodec(AV_CODEC_ID_H264);
         record.setVideoBitrate(20000);
         record.setOption("gpu", "gpu");
-        record.setOption("vf", "scale_npp=1280:720");
+        record.setOption("vf", "scale_cuda=1280:720");
 
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
