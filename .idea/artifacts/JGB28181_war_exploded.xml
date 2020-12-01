@@ -81,7 +81,6 @@
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:android-x86:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:android-x86_64:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-x86:4.2.1-1.5.2" />
-          <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-x86_64:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-armhf:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-arm64:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-ppc64le:4.2.1-1.5.2" />
