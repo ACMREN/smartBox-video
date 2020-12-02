@@ -869,6 +869,7 @@ public class ActionController implements OnProcessListener {
 	 * @param password
 	 * @return
 	 */
+	@RequestMapping("PTZControlTest")
 	public GBResult PTZControlTest(@RequestParam("ip")String ip,
 								   @RequestParam("port")Integer port,
 								   @RequestParam("userName")String userName,
