@@ -179,6 +179,18 @@
 			<optional>true</optional>
 		</dependency>
 
+		<dependency>
+			<groupId>com.sun.jna.examples</groupId>
+			<artifactId>test</artifactId>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/examples.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jna</groupId>
+			<artifactId>test</artifactId>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/jna.jar</systemPath>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
