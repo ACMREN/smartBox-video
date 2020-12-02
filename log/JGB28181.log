@@ -4287,3 +4287,257 @@ Content-Length: 0
 10:57:44.409 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:62) - ******   执行定时任务       BEGIN   ******
 10:57:44.410 [timeTimer] INFO  com.yangjie.JGB28181.common.utils.TimerUtil$1.run(TimerUtil.java:147) - ******   执行定时任务       END     ******
 10:57:54.930 [Thread-6] INFO  org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:984) - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@7b5a12ae: startup date [Wed Dec 02 10:41:40 CST 2020]; root of context hierarchy
+14:41:25.839 [main] INFO  org.springframework.boot.StartupInfoLogger.logStarting(StartupInfoLogger.java:48) - Starting StartApplication on 172-0-0-85.lightspeed.brhmal.sbcglobal.net with PID 8870 (/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes started by huangmingen in /Users/huangmingen/IdeaProjects/sipClient/sipClient)
+14:41:25.844 [main] INFO  org.springframework.boot.SpringApplication.logStartupProfileInfo(SpringApplication.java:593) - No active profile set, falling back to default profiles: default
+14:41:25.914 [main] INFO  org.springframework.context.support.AbstractApplicationContext.prepareRefresh(AbstractApplicationContext.java:583) - Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2374d36a: startup date [Wed Dec 02 14:41:25 CST 2020]; root of context hierarchy
+14:41:26.026 [background-preinit] INFO  org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.3.6.Final
+14:41:27.432 [main] INFO  org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.initialize(TomcatEmbeddedServletContainer.java:92) - Tomcat initialized with port(s): 1999 (http)
+14:41:27.464 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing ProtocolHandler ["http-nio-1999"]
+14:41:27.475 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting service [Tomcat]
+14:41:27.476 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Starting Servlet Engine: Apache Tomcat/8.5.31
+14:41:27.572 [localhost-startStop-1] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Initializing Spring embedded WebApplicationContext
+14:41:27.572 [localhost-startStop-1] INFO  org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.prepareEmbeddedWebApplicationContext(EmbeddedWebApplicationContext.java:276) - Root WebApplicationContext: initialization completed in 1658 ms
+14:41:27.796 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'dispatcherServlet' to [/]
+14:41:27.797 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.ServletRegistrationBean.onStartup(ServletRegistrationBean.java:190) - Mapping servlet: 'statViewServlet' to [/druid/*]
+14:41:27.802 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'characterEncodingFilter' to: [/*]
+14:41:27.802 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+14:41:27.802 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'httpPutFormContentFilter' to: [/*]
+14:41:27.802 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:258) - Mapping filter: 'requestContextFilter' to: [/*]
+14:41:27.803 [localhost-startStop-1] INFO  org.springframework.boot.web.servlet.AbstractFilterRegistrationBean.configure(AbstractFilterRegistrationBean.java:271) - Mapping filter: 'webStatFilter' to urls: [/*]
+14:41:28.827 [main] INFO  com.yangjie.JGB28181.message.config.SipLayerConfig.sipLayer(SipLayerConfig.java:42) - Sip Server 启动成功 port 15061
+14:41:28.837 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:92) - ===============开始注入config=============
+14:41:28.838 [main] INFO  com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher.<clinit>(RtspToRtmpPusher.java:110) - ===============完成注入config=============
+14:41:28.901 [main] WARN  org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551) - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'actionController' defined in file [/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes/com/yangjie/JGB28181/web/controller/ActionController.class]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.yangjie.JGB28181.web.controller.ActionController]: Constructor threw exception; nested exception is java.lang.UnsatisfiedLinkError: Unable to load library 'hcnetsdk': dlopen(libhcnetsdk.dylib, 1): image not found
+14:41:28.903 [main] INFO  org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180) - Stopping service [Tomcat]
+14:41:28.924 [main] INFO  org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer.logAutoConfigurationReport(AutoConfigurationReportLoggingInitializer.java:101) - 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+14:41:28.927 [main] ERROR org.springframework.boot.SpringApplication.reportFailure(SpringApplication.java:771) - Application startup failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'actionController' defined in file [/Users/huangmingen/IdeaProjects/sipClient/sipClient/target/classes/com/yangjie/JGB28181/web/controller/ActionController.class]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.yangjie.JGB28181.web.controller.ActionController]: Constructor threw exception; nested exception is java.lang.UnsatisfiedLinkError: Unable to load library 'hcnetsdk': dlopen(libhcnetsdk.dylib, 1): image not found
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1163) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1107) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:513) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:483) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:312) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:230) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:308) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:197) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:761) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:867) ~[spring-context-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:543) ~[spring-context-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:122) ~[spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:693) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:360) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:303) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1118) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1107) [spring-boot-1.5.13.RELEASE.jar:1.5.13.RELEASE]
+	at com.yangjie.JGB28181.StartApplication.main(StartApplication.java:26) [classes/:?]
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.yangjie.JGB28181.web.controller.ActionController]: Constructor threw exception; nested exception is java.lang.UnsatisfiedLinkError: Unable to load library 'hcnetsdk': dlopen(libhcnetsdk.dylib, 1): image not found
+	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:154) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:89) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1155) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 17 more
+Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'hcnetsdk': dlopen(libhcnetsdk.dylib, 1): image not found
+	at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:145) ~[jna.jar:3.0.9 b0]
+	at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:188) ~[jna.jar:3.0.9 b0]
+	at com.sun.jna.Library$Handler.<init>(Library.java:123) ~[jna.jar:3.0.9 b0]
+	at com.sun.jna.Native.loadLibrary(Native.java:255) ~[jna.jar:3.0.9 b0]
+	at com.sun.jna.Native.loadLibrary(Native.java:241) ~[jna.jar:3.0.9 b0]
+	at com.yangjie.JGB28181.common.utils.HCNetSDK.<clinit>(HCNetSDK.java:37) ~[classes/:?]
+	at com.yangjie.JGB28181.web.controller.ActionController.<init>(ActionController.java:92) ~[classes/:?]
+	at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:64) ~[?:?]
+	at jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:?]
+	at java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500) ~[?:?]
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:481) ~[?:?]
+	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:142) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:89) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1155) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 17 more
+14:41:30.340 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK121398188
+From: <sip:34020000001320000005@3402000000>;tag=1374123664
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 617474404
+CSeq: 1 REGISTER
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Max-Forwards: 70
+User-Agent: IP Camera
+Expires: 3600
+Content-Length: 0
+
+
+14:41:30.345 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 401 Unauthorized
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK121398188
+From: <sip:34020000001320000005@3402000000>;tag=1374123664
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 617474404
+CSeq: 1 REGISTER
+WWW-Authenticate: Digest opaque="",stale=FALSE,realm="3402000000",nonce="f2dabe140168b14b2f8807d2834f2bb7",algorithm=MD5
+Content-Length: 0
+
+
+14:41:30.366 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> REGISTER sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1924866438
+From: <sip:34020000001320000005@3402000000>;tag=1374123664
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 617474404
+CSeq: 2 REGISTER
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Authorization: Digest response="323a30707483adeff246fd096ff142dd",realm="3402000000",nonce="f2dabe140168b14b2f8807d2834f2bb7",uri="sip:34020000002000000002@3402000000",username="34020000001320000005",algorithm=MD5
+Max-Forwards: 70
+User-Agent: IP Camera
+Expires: 3600
+Content-Length: 0
+
+
+14:41:30.370 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendResponse(SipLayer.java:601) - sendResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK1924866438
+From: <sip:34020000001320000005@3402000000>;tag=1374123664
+To: <sip:34020000001320000005@3402000000>
+Call-ID: 617474404
+CSeq: 2 REGISTER
+Date: Wed, 02 Dec 2020 06:41:30 GMT
+Contact: <sip:34020000001320000005@172.0.0.81:5060>
+Expires: 3600
+Content-Length: 0
+
+
+14:41:30.475 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+14:41:30.479 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.sendRequest(SipLayer.java:605) - sendRequest >>> MESSAGE sip:34020000001320000005@172.0.0.81:5060 SIP/2.0
+Call-ID: 6325A33573EE40E487454B07E760F51F
+CSeq: 1 MESSAGE
+From: <sip:34020000002000000002@3402000000>;tag=71A9D362A88144D2B549A66B669FC718
+To: <sip:34020000001320000005@3402000000>
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport
+Max-Forwards: 70
+Content-Type: Application/MANSCDP+xml
+Content-Length: 123
+
+<?xml version="1.0"?>
+<Query>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+</Query>
+14:41:30.493 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processResponse(SipLayer.java:616) - processResponse >>> SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=15061;received=172.0.0.85;branch=z9hG4bKc8708a2f47561df6cdbe57c52eeaff6f
+From: <sip:34020000002000000002@3402000000>;tag=71A9D362A88144D2B549A66B669FC718
+To: <sip:34020000001320000005@3402000000>;tag=863341626
+Call-ID: 6325A33573EE40E487454B07E760F51F
+CSeq: 1 MESSAGE
+User-Agent: IP Camera
+Content-Length: 0
+
+
+14:41:30.495 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK578570568
+From: <sip:34020000001320000005@3402000000>;tag=1458839259
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1859956226
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+14:41:30.521 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+14:41:31.015 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK578570568
+From: <sip:34020000001320000005@3402000000>;tag=1458839259
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1859956226
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+14:41:31.018 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+14:41:32.049 [EventScannerThread] INFO  com.yangjie.JGB28181.message.SipLayer.processRequest(SipLayer.java:183) - processRequest >>> MESSAGE sip:34020000002000000002@3402000000 SIP/2.0
+Via: SIP/2.0/UDP 172.0.0.81:5060;rport=5060;received=172.0.0.81;branch=z9hG4bK578570568
+From: <sip:34020000001320000005@3402000000>;tag=1458839259
+To: <sip:34020000002000000002@3402000000>
+Call-ID: 1859956226
+CSeq: 20 MESSAGE
+Content-Type: Application/MANSCDP+xml
+Max-Forwards: 70
+User-Agent: IP Camera
+Content-Length: 582
+
+<?xml version="1.0" encoding="GB2312"?>
+<Response>
+<CmdType>Catalog</CmdType>
+<SN>1</SN>
+<DeviceID>34020000001320000005</DeviceID>
+<SumNum>1</SumNum>
+<DeviceList Num="1">
+<Item>
+<DeviceID>34020000001320000005</DeviceID>
+<Name>Camera 01</Name>
+<Manufacturer>Hikvision</Manufacturer>
+<Model>IP Camera</Model>
+<Owner>Owner</Owner>
+<CivilCode>CivilCode</CivilCode>
+<Address>Address</Address>
+<Parental>0</Parental>
+<ParentID>34020000001320000005</ParentID>
+<SafetyWay>0</SafetyWay>
+<RegisterWay>1</RegisterWay>
+<Secrecy>0</Secrecy>
+<Status>ON</Status>
+</Item>
+</DeviceList>
+</Response>
+
+14:41:32.054 [EventScannerThread] ERROR com.yangjie.JGB28181.common.utils.RedisUtil.getJedis(RedisUtil.java:89) - redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
