@@ -10,6 +10,8 @@ import javax.sip.Dialog;
 import javax.sip.SipException;
 
 import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.common.thread.CameraThread;
@@ -881,20 +883,26 @@ public class ActionController implements OnProcessListener {
 
 		boolean initSuc = hcNetSDK.NET_DVR_Init();//设备初始化
 		System.out.println("initSuc:"+initSuc);
-//		lPreviewHandle = loginDevice(ip, port.shortValue(), userName, password);
 		lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
 		System.out.println("lUserID,"+lUserID);
 
 		m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
 		m_strClientInfo.lChannel = new NativeLong(1);
 
-		boolean result = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.PAN_LEFT, 1);
-		System.out.println("result:" + result);
-		if (!result) {
-			System.out.println("PTZ control fail,error code:" + hcNetSDK.NET_DVR_GetLastError());
+//		boolean result = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.PAN_LEFT, 1);
+//		System.out.println("result:" + result);
+//		if (!result) {
+//			System.out.println("PTZ control fail,error code:" + hcNetSDK.NET_DVR_GetLastError());
+//		}
+
+		IntByReference intByReference = new IntByReference(0);
+		//创建PTZPOS参数对象
+		HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
+		Pointer pointer = net_dvr_ptzpos.getPointer();
+		if(!hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS ,new NativeLong(1),pointer,net_dvr_ptzpos.size() , intByReference)){
+			System.out.println("获取DVR参数PTZ参数失败,错误码为:    " + hcNetSDK.NET_DVR_GetLastError());
+			return GBResult.fail();
 		}
-//		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_START, 0);
-//		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_STOP, 1);
 
 		return GBResult.ok();
 	}
