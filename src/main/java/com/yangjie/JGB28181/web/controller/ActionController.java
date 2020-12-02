@@ -904,7 +904,17 @@ public class ActionController implements OnProcessListener {
 			return GBResult.fail();
 		}
 
-		return GBResult.ok();
+		short action = net_dvr_ptzpos.wAction;
+		short wPanPos = net_dvr_ptzpos.wPanPos;
+		short wTiltPos = net_dvr_ptzpos.wTiltPos;
+		short wZoomPos = net_dvr_ptzpos.wZoomPos;
+		Map<String, Short> resultMap = new HashMap<>();
+		resultMap.put("action", action);
+		resultMap.put("panPos", wPanPos);
+		resultMap.put("tiltPos", wTiltPos);
+		resultMap.put("zoomPos", wZoomPos);
+
+		return GBResult.ok(resultMap);
 	}
 
 	private NativeLong loginDevice(String ip, short port, String userName, String password)
