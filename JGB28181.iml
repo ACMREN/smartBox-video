@@ -184,9 +184,6 @@
     <orderEntry type="library" name="Maven: org.freemarker:freemarker:2.3.28" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:4.3.17.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.0" level="project" />
-    <orderEntry type="library" name="ffmpeg-linux-x86_64" level="project" />
-    <orderEntry type="library" name="ffmpeg" level="project" />
-    <orderEntry type="library" name="jna" level="project" />
-    <orderEntry type="library" name="examples" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>
