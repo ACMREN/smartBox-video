@@ -874,7 +874,7 @@ public class ActionController implements OnProcessListener {
 								   @RequestParam("port")Integer port,
 								   @RequestParam("userName")String userName,
 								   @RequestParam("password")String password) {
-		System.out.println("ip:" + ip + "port:" + port + "userName:" + userName + "password:" + password);
+		System.out.println("ip:" + ip + ",port:" + port + ",userName:" + userName + ",password:" + password);
 		HCNetSDK.NET_DVR_CLIENTINFO m_strClientInfo = null;
 		NativeLong lUserID;//用户句柄
 		NativeLong lPreviewHandle;//预览句柄
