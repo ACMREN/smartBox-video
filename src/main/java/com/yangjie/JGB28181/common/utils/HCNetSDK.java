@@ -19,12 +19,13 @@ package com.yangjie.JGB28181.common.utils;
 
 import com.sun.jna.*;
 import com.sun.jna.examples.win32.W32API;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinDef.HDC;
+import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
 import com.sun.jna.ptr.ShortByReference;
-import com.sun.jna.examples.win32.W32API.HDC;
-import com.sun.jna.examples.win32.W32API.HWND;
 
 import java.util.Arrays;
 import java.util.List;
@@ -3152,7 +3153,7 @@ enum ENUM_UPGRADE_TYPE
     public static class NET_DVR_CLIENTINFO extends Structure {
         public NativeLong lChannel;
         public NativeLong lLinkMode;
-        public W32API.HWND hPlayWnd;
+        public HWND hPlayWnd;
         public String sMultiCastIP;
     }
     
@@ -3161,7 +3162,7 @@ enum ENUM_UPGRADE_TYPE
 		public NativeLong lChannel;
 		public int dwStreamType;
 		public int dwLinkMode;
-		public W32API.HWND hPlayWnd;
+		public HWND hPlayWnd;
 		public boolean bBlocked;
 		public boolean bPassbackRecord;
 		public byte byPreviewMode;
@@ -4422,7 +4423,7 @@ interface PlayCtrl extends Library
     boolean PlayM4_InputData(NativeLong nPort, ByteByReference pBuf, int nSize);
     boolean PlayM4_CloseStream(NativeLong nPort);
     boolean PlayM4_SetStreamOpenMode(NativeLong nPort, int nMode);
-    boolean PlayM4_Play(NativeLong nPort, HWND hWnd);
+    boolean PlayM4_Play(NativeLong nPort, WinDef.HWND hWnd);
     boolean PlayM4_Stop(NativeLong nPort);
     boolean PlayM4_SetSecretKey(NativeLong nPort, NativeLong lKeyType, String pSecretKey, NativeLong lKeyLen);
 }
