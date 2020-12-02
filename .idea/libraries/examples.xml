@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="ffmpeg">
+  <library name="examples">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/ffmpeg.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/examples.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

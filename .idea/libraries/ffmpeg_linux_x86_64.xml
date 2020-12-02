@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="ffmpeg-linux-x86_64">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/ffmpeg-linux-x86_64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ffmpeg-linux-x86_64.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

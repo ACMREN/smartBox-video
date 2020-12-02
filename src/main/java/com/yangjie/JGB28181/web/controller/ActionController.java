@@ -10,6 +10,7 @@ import javax.sip.Dialog;
 import javax.sip.SipException;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sun.jna.NativeLong;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.thread.CameraThread;
 import com.yangjie.JGB28181.common.utils.*;
@@ -857,6 +858,38 @@ public class ActionController implements OnProcessListener {
 		} catch (SipException e) {
 			e.printStackTrace();
 		}
+		return GBResult.ok();
+	}
+
+	/**
+	 * 测试云台控制
+	 * @param ip
+	 * @param port
+	 * @param userName
+	 * @param password
+	 * @return
+	 */
+	public GBResult PTZControlTest(@RequestParam("ip")String ip,
+								   @RequestParam("port")Integer port,
+								   @RequestParam("userName")String userName,
+								   @RequestParam("password")String password) {
+		HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+
+		HCNetSDK.NET_DVR_CLIENTINFO m_strClientInfo = null;
+		NativeLong lUserID;//用户句柄
+		NativeLong lPreviewHandle;//预览句柄
+
+		boolean initSuc = hcNetSDK.NET_DVR_Init();//设备初始化
+		System.out.println("initSuc:"+initSuc);
+		lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
+		System.out.println("lUserID,"+lUserID);
+
+		m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
+		m_strClientInfo.lChannel = new NativeLong(1);
+
+		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_START, 0);
+		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_START, 1);
+
 		return GBResult.ok();
 	}
 
