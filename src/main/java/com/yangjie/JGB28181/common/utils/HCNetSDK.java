@@ -4423,7 +4423,7 @@ interface PlayCtrl extends Library
     boolean PlayM4_InputData(NativeLong nPort, ByteByReference pBuf, int nSize);
     boolean PlayM4_CloseStream(NativeLong nPort);
     boolean PlayM4_SetStreamOpenMode(NativeLong nPort, int nMode);
-    boolean PlayM4_Play(NativeLong nPort, WinDef.HWND hWnd);
+    boolean PlayM4_Play(NativeLong nPort, HWND hWnd);
     boolean PlayM4_Stop(NativeLong nPort);
     boolean PlayM4_SetSecretKey(NativeLong nPort, NativeLong lKeyType, String pSecretKey, NativeLong lKeyLen);
 }
