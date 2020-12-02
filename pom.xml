@@ -179,6 +179,18 @@
 			<optional>true</optional>
 		</dependency>
 
+		<jna.version>5.5.0</jna.version>
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>${jna.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna-platform</artifactId>
+			<version>${jna.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.sun.jna.examples</groupId>
 			<artifactId>test</artifactId>

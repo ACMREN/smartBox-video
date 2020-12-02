@@ -59,6 +59,7 @@
           <element id="library" level="project" name="Maven: org.bytedeco:javacpp:1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:openblas:0.3.7-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:opencv:4.1.2-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:flycapture:2.13.3.31-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:libdc1394:2.2.6-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:libfreenect:0.5.7-1.5.2" />
@@ -80,6 +81,7 @@
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:android-x86:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:android-x86_64:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-x86:4.2.1-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-x86_64:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-armhf:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-arm64:4.2.1-1.5.2" />
           <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:linux-ppc64le:4.2.1-1.5.2" />
@@ -150,6 +152,8 @@
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-freemarker:1.5.13.RELEASE" />
           <element id="library" level="project" name="Maven: org.freemarker:freemarker:2.3.28" />
           <element id="library" level="project" name="Maven: org.springframework:spring-context-support:4.3.17.RELEASE" />
+          <element id="library" level="project" name="Maven: net.java.dev.jna:jna:4.2.2" />
+          <element id="library" level="project" name="Maven: net.java.dev.jna:jna-platform:4.2.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">

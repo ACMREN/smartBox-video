@@ -27,6 +27,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: javax.sip:jain-sip-ri:1.2" level="project" />
     <orderEntry type="library" name="Maven: javax.sip:jain-sip-api:1.2" level="project" />
@@ -92,6 +93,7 @@
     <orderEntry type="library" name="Maven: org.bytedeco:javacpp:1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:openblas:0.3.7-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:opencv:4.1.2-1.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:4.2.1-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:flycapture:2.13.3.31-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:libdc1394:2.2.6-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:libfreenect:0.5.7-1.5.2" level="project" />
@@ -113,6 +115,7 @@
     <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:android-x86:4.2.1-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:android-x86_64:4.2.1-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:linux-x86:4.2.1-1.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:linux-x86_64:4.2.1-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:linux-armhf:4.2.1-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:linux-arm64:4.2.1-1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:ffmpeg:linux-ppc64le:4.2.1-1.5.2" level="project" />
@@ -184,6 +187,25 @@
     <orderEntry type="library" name="Maven: org.freemarker:freemarker:2.3.28" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:4.3.17.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.0" level="project" />
-    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.2.2" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.2.2" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.sun.jna.examples:test:1.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/src/main/resources/lib/examples.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: com.sun.jna:test:1.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/src/main/resources/lib/jna.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
