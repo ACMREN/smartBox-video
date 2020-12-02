@@ -9,9 +9,9 @@ import java.util.concurrent.*;
 import javax.sip.Dialog;
 import javax.sip.SipException;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sun.jna.NativeLong;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
+import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.common.thread.CameraThread;
 import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
@@ -20,9 +20,7 @@ import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
-import com.yangjie.JGB28181.media.server.handler.TCPHandler;
 import com.yangjie.JGB28181.service.CameraInfoService;
-import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
 import org.slf4j.Logger;
@@ -90,6 +88,8 @@ public class ActionController implements OnProcessListener {
 
 	@Value("${config.streamMediaIp}")
 	private String streamMediaIp;
+
+	HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
 	// 关闭推流的标志位
 	private static volatile Map<String, Boolean> callEndMap = new HashMap<>(20);
@@ -874,22 +874,18 @@ public class ActionController implements OnProcessListener {
 								   @RequestParam("port")Integer port,
 								   @RequestParam("userName")String userName,
 								   @RequestParam("password")String password) {
-		HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
-
 		HCNetSDK.NET_DVR_CLIENTINFO m_strClientInfo = null;
 		NativeLong lUserID;//用户句柄
 		NativeLong lPreviewHandle;//预览句柄
 
 		boolean initSuc = hcNetSDK.NET_DVR_Init();//设备初始化
 		System.out.println("initSuc:"+initSuc);
-		NativeLong lreadHandle = new NativeLong(-1);
-		lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
-		System.out.println("lUserID,"+lUserID);
+		lPreviewHandle = loginDevice(ip, port.shortValue(), userName, password);
 
 		m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
 		m_strClientInfo.lChannel = new NativeLong(-1);
 
-		boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed(lreadHandle, HCNetSDK.PAN_LEFT, 0, 1);
+		boolean result = hcNetSDK.NET_DVR_PTZControl(lPreviewHandle, HCNetSDK.PAN_LEFT, 0);
 		System.out.println("result:" + result);
 		if (!result) {
 			System.out.println("PTZ control fail,error code:" + hcNetSDK.NET_DVR_GetLastError());
@@ -898,6 +894,27 @@ public class ActionController implements OnProcessListener {
 //		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_STOP, 1);
 
 		return GBResult.ok();
+	}
+
+	private NativeLong loginDevice(String ip, short port, String userName, String password)
+	{
+		HCNetSDK.NET_DVR_USER_LOGIN_INFO struLoginInfo = new HCNetSDK.NET_DVR_USER_LOGIN_INFO();
+		HCNetSDK.NET_DVR_DEVICEINFO_V40 struDeviceInfo = new HCNetSDK.NET_DVR_DEVICEINFO_V40();
+		for (int i = 0; i < ip.length(); i++)
+		{
+			struLoginInfo.sDeviceAddress[i] = (byte) ip.charAt(i);
+		}
+		for (int i = 0; i < password.length(); i++)
+		{
+			struLoginInfo.sPassword[i] = (byte) password.charAt(i);
+		}
+		for (int i = 0; i < userName.length(); i++)
+		{
+			struLoginInfo.sUserName[i] = (byte) userName.charAt(i);
+		}
+		struLoginInfo.wPort = port;
+		struLoginInfo.write();
+		return hcNetSDK.NET_DVR_Login_V40(struLoginInfo.getPointer(), struDeviceInfo.getPointer());
 	}
 
 	@Override
