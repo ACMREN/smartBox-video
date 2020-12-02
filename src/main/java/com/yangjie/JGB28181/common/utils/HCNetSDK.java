@@ -19,9 +19,9 @@ package com.yangjie.JGB28181.common.utils;
 
 import com.sun.jna.*;
 import com.sun.jna.examples.win32.W32API;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinDef.HDC;
-import com.sun.jna.platform.win32.WinDef.HWND;
+import com.sun.jna.examples.win32.W32API;
+import com.sun.jna.examples.win32.W32API.HDC;
+import com.sun.jna.examples.win32.W32API.HWND;
 import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
