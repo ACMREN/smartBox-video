@@ -889,7 +889,7 @@ public class ActionController implements OnProcessListener {
 		m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
 		m_strClientInfo.lChannel = new NativeLong(1);
 
-		hcNetSDK.NET_DVR_PTZControl(lreadHandle, HCNetSDK.PAN_LEFT, 0);
+		hcNetSDK.NET_DVR_PTZControlWithSpeed(lreadHandle, HCNetSDK.PAN_LEFT, 0, 1);
 //		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_START, 0);
 //		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_STOP, 1);
 
