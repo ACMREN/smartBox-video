@@ -882,12 +882,12 @@ public class ActionController implements OnProcessListener {
 
 		boolean initSuc = hcNetSDK.NET_DVR_Init();//设备初始化
 		System.out.println("initSuc:"+initSuc);
-		NativeLong lreadHandle = new NativeLong(1);
+		NativeLong lreadHandle = new NativeLong(-1);
 		lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
 		System.out.println("lUserID,"+lUserID);
 
 		m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
-		m_strClientInfo.lChannel = new NativeLong(1);
+		m_strClientInfo.lChannel = new NativeLong(-1);
 
 		boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed(lreadHandle, HCNetSDK.PAN_LEFT, 0, 1);
 		System.out.println("result:" + result);
