@@ -891,6 +891,9 @@ public class ActionController implements OnProcessListener {
 
 		boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed(lreadHandle, HCNetSDK.PAN_LEFT, 0, 1);
 		System.out.println("result:" + result);
+		if (!result) {
+			System.out.println("PTZ control fail,error code:" + hcNetSDK.NET_DVR_GetLastError());
+		}
 //		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_START, 0);
 //		hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.KEY_PTZ_LEFT_STOP, 1);
 
