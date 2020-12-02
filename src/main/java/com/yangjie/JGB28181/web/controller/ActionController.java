@@ -903,6 +903,7 @@ public class ActionController implements OnProcessListener {
 			System.out.println("获取DVR参数PTZ参数失败,错误码为:    " + hcNetSDK.NET_DVR_GetLastError());
 			return GBResult.fail();
 		}
+		net_dvr_ptzpos.read();
 
 		short action = net_dvr_ptzpos.wAction;
 		short wPanPos = net_dvr_ptzpos.wPanPos;
