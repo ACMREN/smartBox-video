@@ -886,7 +886,7 @@ public class ActionController implements OnProcessListener {
 		System.out.println("lUserID,"+lUserID);
 
 		m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
-		m_strClientInfo.lChannel = new NativeLong(-1);
+		m_strClientInfo.lChannel = new NativeLong(1);
 
 		boolean result = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.PAN_LEFT, 0);
 		System.out.println("result:" + result);
