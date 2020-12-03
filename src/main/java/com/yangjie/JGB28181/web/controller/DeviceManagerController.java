@@ -7,6 +7,7 @@ import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.PageListVo;
 import com.yangjie.JGB28181.entity.TreeInfo;
+import com.yangjie.JGB28181.entity.bo.CameraConfigBo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
 import com.yangjie.JGB28181.entity.enumEntity.TreeTypeEnum;
@@ -29,10 +30,7 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -77,6 +75,8 @@ public class DeviceManagerController {
 
     public static ServerInfoBo serverInfoBo = new ServerInfoBo();
 
+    public static CameraConfigBo cameraConfigBo = new CameraConfigBo();
+
     public static List<LiveCamInfoVo> liveCamVoList = new ArrayList<>();
 
     static {
@@ -106,6 +106,24 @@ public class DeviceManagerController {
             tcpPort.put("min", 10000);
             tcpPort.put("max", 20000);
             serverInfoBo.setTcpPort(tcpPort);
+
+            cameraConfigBo.setRecordDir(properties.getProperty("config.recordDir"));
+            cameraConfigBo.setRecordStTime(properties.getProperty("config.recordStTime"));
+            cameraConfigBo.setRecordStSize(properties.getProperty("config.recordStSize"));
+            cameraConfigBo.setRecordMaxNum(properties.getProperty("config.recordMaxNum"));
+            cameraConfigBo.setRecordInterval(properties.getProperty("config.recordInterval"));
+            cameraConfigBo.setRecordMaxRate(properties.getProperty("config.recordMaxRate"));
+            cameraConfigBo.setRecordSize(properties.getProperty("config.recordSize"));
+            cameraConfigBo.setStreamMaxRate(properties.getProperty("config.streamMaxRate"));
+            cameraConfigBo.setStreamSize(properties.getProperty("config.streamSize"));
+            cameraConfigBo.setStreamInterval(properties.getProperty("config.streamInterval"));
+            cameraConfigBo.setStreamMaxNum(properties.getProperty("config.streamMaxNum"));
+            cameraConfigBo.setSnapShootDir(properties.getProperty("config.snapShootDir"));
+            cameraConfigBo.setSnapShootSize(properties.getProperty("config.snapShootSize"));
+            cameraConfigBo.setSnapShootTumbSize(properties.getProperty("config.snapShootTumbSize"));
+            cameraConfigBo.setSnapShootQual(properties.getProperty("config.snapShootQual"));
+
+            inputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -169,9 +187,90 @@ public class DeviceManagerController {
         this.udpPort = serverInfoBo.getUdpPort();
         this.tcpPort = serverInfoBo.getTcpPort();
 
+        // 写入到配置文件
+        this.rewriteServiceConfigProperties(serverInfoBo);
+
         DeviceManagerController.serverInfoBo = serverInfoBo;
 
         return GBResult.ok();
+    }
+
+    /**
+     * 获取流媒体服务器的配置
+     * @return
+     */
+    @GetMapping(value = "getCameraConfig")
+    public GBResult getCameraConfig() {
+        return GBResult.ok(cameraConfigBo);
+    }
+
+    @PostMapping(value = "setCameraConfig")
+    public GBResult setCameraConfig(CameraConfigBo cameraConfigBo) {
+        cameraConfigBo.setRecordDir(cameraConfigBo.getRecordDir());
+        cameraConfigBo.setRecordStTime(cameraConfigBo.getRecordStTime());
+        cameraConfigBo.setRecordStSize(cameraConfigBo.getRecordStSize());
+        cameraConfigBo.setRecordMaxNum(cameraConfigBo.getRecordMaxNum());
+        cameraConfigBo.setRecordInterval(cameraConfigBo.getStreamInterval());
+        cameraConfigBo.setRecordMaxRate(cameraConfigBo.getStreamMaxRate());
+        cameraConfigBo.setRecordSize(cameraConfigBo.getRecordSize());
+        cameraConfigBo.setStreamMaxRate(cameraConfigBo.getStreamMaxRate());
+        cameraConfigBo.setStreamSize(cameraConfigBo.getStreamSize());
+        cameraConfigBo.setStreamInterval(cameraConfigBo.getStreamInterval());
+        cameraConfigBo.setStreamMaxNum(cameraConfigBo.getStreamMaxNum());
+        cameraConfigBo.setSnapShootDir(cameraConfigBo.getSnapShootDir());
+        cameraConfigBo.setSnapShootSize(cameraConfigBo.getSnapShootSize());
+        cameraConfigBo.setSnapShootTumbSize(cameraConfigBo.getSnapShootTumbSize());
+        cameraConfigBo.setSnapShootQual(cameraConfigBo.getSnapShootQual());
+
+
+        return GBResult.ok();
+    }
+
+    private void rewriteCameraConfigProperties(CameraConfigBo cameraConfigBo) {
+        File file = null;
+        try {
+            file = ResourceUtils.getFile("classpath:config.properties");
+            FileInputStream inputStream = new FileInputStream(file);
+            Properties properties = new Properties();
+            properties.load(inputStream);
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 写入到配置文件
+     * @param serverInfoBo
+     */
+    private void rewriteServiceConfigProperties(ServerInfoBo serverInfoBo) {
+        try {
+            File file = ResourceUtils.getFile("classpath:config.properties");
+            Properties properties = new Properties();
+
+            properties.setProperty("config.listenPort", serverInfoBo.getPort());
+            properties.setProperty("config.password", serverInfoBo.getPw());
+            properties.setProperty("config.sipId", serverInfoBo.getId());
+            properties.setProperty("config.sipRealm", serverInfoBo.getDomain());
+            properties.setProperty("config.rtspPort", serverInfoBo.getRtspPort());
+            properties.setProperty("config.udp.min", serverInfoBo.getUdpPort().getString("min"));
+            properties.setProperty("config.udp.max", serverInfoBo.getUdpPort().getString("max"));
+            properties.setProperty("config.tcp.min", serverInfoBo.getTcpPort().getString("min"));
+            properties.setProperty("config.tcp.max", serverInfoBo.getTcpPort().getString("max"));
+
+            FileWriter fileWriter = new FileWriter(file);
+            properties.store(fileWriter, null);
+
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
