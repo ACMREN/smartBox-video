@@ -889,33 +889,19 @@ public class ActionController implements OnProcessListener {
 		m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
 		m_strClientInfo.lChannel = new NativeLong(1);
 
-//		boolean result = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.PAN_LEFT, 1);
-//		System.out.println("result:" + result);
-//		if (!result) {
-//			System.out.println("PTZ control fail,error code:" + hcNetSDK.NET_DVR_GetLastError());
-//		}
-
-		IntByReference intByReference = new IntByReference(0);
-		//创建PTZPOS参数对象
-		HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
-		Pointer pointer = net_dvr_ptzpos.getPointer();
-		if(!hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS ,new NativeLong(1),pointer,net_dvr_ptzpos.size() , intByReference)){
-			System.out.println("获取DVR参数PTZ参数失败,错误码为:    " + hcNetSDK.NET_DVR_GetLastError());
-			return GBResult.fail();
+		boolean result = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.PAN_LEFT, 0);
+		System.out.println("result:" + result);
+		if (!result) {
+			System.out.println("PTZ control fail,error code:" + hcNetSDK.NET_DVR_GetLastError());
 		}
-		net_dvr_ptzpos.read();
 
-		short action = net_dvr_ptzpos.wAction;
-		short wPanPos = net_dvr_ptzpos.wPanPos;
-		short wTiltPos = net_dvr_ptzpos.wTiltPos;
-		short wZoomPos = net_dvr_ptzpos.wZoomPos;
-		Map<String, Short> resultMap = new HashMap<>();
-		resultMap.put("action", action);
-		resultMap.put("panPos", wPanPos);
-		resultMap.put("tiltPos", wTiltPos);
-		resultMap.put("zoomPos", wZoomPos);
+		boolean result1 = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, HCNetSDK.ZOOM_IN, 0);
+		System.out.println("result:" + result1);
+		if (!result1) {
+			System.out.println("PTZ control fail,error code:" + hcNetSDK.NET_DVR_GetLastError());
+		}
 
-		return GBResult.ok(resultMap);
+		return GBResult.ok();
 	}
 
 	private NativeLong loginDevice(String ip, short port, String userName, String password)
