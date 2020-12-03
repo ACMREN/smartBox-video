@@ -249,7 +249,9 @@ public class DeviceManagerController {
     private void rewriteServiceConfigProperties(ServerInfoBo serverInfoBo) {
         try {
             File file = ResourceUtils.getFile("classpath:config.properties");
+            FileInputStream inputStream = new FileInputStream(file);
             Properties properties = new Properties();
+            properties.load(inputStream);
 
             properties.setProperty("config.listenPort", serverInfoBo.getPort());
             properties.setProperty("config.password", serverInfoBo.getPw());
@@ -266,6 +268,7 @@ public class DeviceManagerController {
 
             fileWriter.flush();
             fileWriter.close();
+            inputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
