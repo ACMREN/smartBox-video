@@ -15,6 +15,6 @@ public interface ICameraControlService {
      * @param isStop
      * @return
      */
-    GBResult cameraMove(String ip, Integer port, String userName, String password,
-                        Integer PTZCommand, Integer speed, Integer isStop);
+    GBResult cameraMove(String producer, String ip, Integer port, String userName, String password,
+                        String PTZCommand, Integer speed, Integer isStop);
 }

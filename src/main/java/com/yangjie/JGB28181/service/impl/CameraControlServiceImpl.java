@@ -3,18 +3,40 @@ package com.yangjie.JGB28181.service.impl;
 import com.sun.jna.NativeLong;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
+import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
 import com.yangjie.JGB28181.service.ICameraControlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HikVisionCameraControlServiceImpl implements ICameraControlService {
+public class CameraControlServiceImpl implements ICameraControlService {
     Logger logger = LoggerFactory.getLogger(getClass());
 
 
     @Override
-    public GBResult cameraMove(String ip, Integer port, String userName, String password, Integer PTZCommand, Integer speed, Integer isStop) {
+    public GBResult cameraMove(String producer, String ip, Integer port, String userName, String password, String PTZCommand, Integer speed, Integer isStop) {
+        if (producer.equals("hikvision")) {
+            return this.hikvisionMoveCamera(ip, port, userName, password, HikvisionPTZCommandEnum.getDataByName(PTZCommand).getCode(), speed, isStop);
+        } else if (producer.equals("dahua")) {
+
+        }
+
+        return GBResult.ok();
+    }
+
+    /**
+     * 开航摄像头云台移动
+     * @param ip
+     * @param port
+     * @param userName
+     * @param password
+     * @param PTZCommand
+     * @param speed
+     * @param isStop
+     * @return
+     */
+    private GBResult hikvisionMoveCamera(String ip, Integer port, String userName, String password, Integer PTZCommand, Integer speed, Integer isStop) {
         HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
         HCNetSDK.NET_DVR_CLIENTINFO m_strClientInfo = null;
@@ -40,7 +62,8 @@ public class HikVisionCameraControlServiceImpl implements ICameraControlService 
         // 控制云台移动
         boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed_Other(lUserID, m_strClientInfo.lChannel, PTZCommand, isStop, speed);
         if (!result) {
-            System.out.println("控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError());
+            logger.info("控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError());
+            return GBResult.build(500, "控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
 
         return GBResult.ok();

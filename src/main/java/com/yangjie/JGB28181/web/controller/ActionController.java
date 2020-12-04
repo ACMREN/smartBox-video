@@ -9,9 +9,6 @@ import java.util.concurrent.*;
 import javax.sip.Dialog;
 import javax.sip.SipException;
 
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.common.thread.CameraThread;
@@ -26,12 +23,11 @@ import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.ICameraControlService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
-import com.yangjie.JGB28181.service.impl.HikVisionCameraControlServiceImpl;
+import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -79,7 +75,7 @@ public class ActionController implements OnProcessListener {
 	private CameraInfoService cameraInfoService;
 
 	@Autowired
-	private HikVisionCameraControlServiceImpl hikVisionCameraControlService;
+	private ICameraControlService cameraControlService;
 
 	private MessageManager mMessageManager = MessageManager.getInstance();
 
@@ -874,6 +870,7 @@ public class ActionController implements OnProcessListener {
 	 */
 	@RequestMapping("PTZControlTest")
 	public GBResult PTZControlTest(@RequestBody ControlCondition controlCondition) {
+		String producer = controlCondition.getProducer();
 		String ip = controlCondition.getIp();
 		Integer port = controlCondition.getPort();
 		String userName = controlCondition.getUserName();
@@ -884,7 +881,7 @@ public class ActionController implements OnProcessListener {
 			Integer speed = PTZParam.getInteger("speed");
 			Integer isStop = PTZParam.getInteger("isStop");
 
-			hikVisionCameraControlService.cameraMove(ip, port, userName, password, HCNetSDK.PAN_LEFT, speed, isStop);
+			cameraControlService.cameraMove(producer, ip, port, userName, password, command, speed, isStop);
 		}
 
 		return GBResult.ok();

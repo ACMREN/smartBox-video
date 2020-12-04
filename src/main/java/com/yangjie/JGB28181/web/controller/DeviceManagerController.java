@@ -206,26 +206,32 @@ public class DeviceManagerController {
 
     @PostMapping(value = "setCameraConfig")
     public GBResult setCameraConfig(CameraConfigBo cameraConfigBo) {
-        cameraConfigBo.setRecordDir(cameraConfigBo.getRecordDir());
-        cameraConfigBo.setRecordStTime(cameraConfigBo.getRecordStTime());
-        cameraConfigBo.setRecordStSize(cameraConfigBo.getRecordStSize());
-        cameraConfigBo.setRecordMaxNum(cameraConfigBo.getRecordMaxNum());
-        cameraConfigBo.setRecordInterval(cameraConfigBo.getStreamInterval());
-        cameraConfigBo.setRecordMaxRate(cameraConfigBo.getStreamMaxRate());
-        cameraConfigBo.setRecordSize(cameraConfigBo.getRecordSize());
-        cameraConfigBo.setStreamMaxRate(cameraConfigBo.getStreamMaxRate());
-        cameraConfigBo.setStreamSize(cameraConfigBo.getStreamSize());
-        cameraConfigBo.setStreamInterval(cameraConfigBo.getStreamInterval());
-        cameraConfigBo.setStreamMaxNum(cameraConfigBo.getStreamMaxNum());
-        cameraConfigBo.setSnapShootDir(cameraConfigBo.getSnapShootDir());
-        cameraConfigBo.setSnapShootSize(cameraConfigBo.getSnapShootSize());
-        cameraConfigBo.setSnapShootTumbSize(cameraConfigBo.getSnapShootTumbSize());
-        cameraConfigBo.setSnapShootQual(cameraConfigBo.getSnapShootQual());
+        this.cameraConfigBo.setRecordDir(cameraConfigBo.getRecordDir());
+        this.cameraConfigBo.setRecordStTime(cameraConfigBo.getRecordStTime());
+        this.cameraConfigBo.setRecordStSize(cameraConfigBo.getRecordStSize());
+        this.cameraConfigBo.setRecordMaxNum(cameraConfigBo.getRecordMaxNum());
+        this.cameraConfigBo.setRecordInterval(cameraConfigBo.getStreamInterval());
+        this.cameraConfigBo.setRecordMaxRate(cameraConfigBo.getStreamMaxRate());
+        this.cameraConfigBo.setRecordSize(cameraConfigBo.getRecordSize());
+        this.cameraConfigBo.setStreamMaxRate(cameraConfigBo.getStreamMaxRate());
+        this.cameraConfigBo.setStreamSize(cameraConfigBo.getStreamSize());
+        this.cameraConfigBo.setStreamInterval(cameraConfigBo.getStreamInterval());
+        this.cameraConfigBo.setStreamMaxNum(cameraConfigBo.getStreamMaxNum());
+        this.cameraConfigBo.setSnapShootDir(cameraConfigBo.getSnapShootDir());
+        this.cameraConfigBo.setSnapShootSize(cameraConfigBo.getSnapShootSize());
+        this.cameraConfigBo.setSnapShootTumbSize(cameraConfigBo.getSnapShootTumbSize());
+        this.cameraConfigBo.setSnapShootQual(cameraConfigBo.getSnapShootQual());
 
+        // 修改写入配置文件
+        this.rewriteCameraConfigProperties(cameraConfigBo);
 
         return GBResult.ok();
     }
 
+    /**
+     * 修改写入配置文件
+     * @param cameraConfigBo
+     */
     private void rewriteCameraConfigProperties(CameraConfigBo cameraConfigBo) {
         File file = null;
         try {
@@ -234,6 +240,21 @@ public class DeviceManagerController {
             Properties properties = new Properties();
             properties.load(inputStream);
 
+            properties.setProperty("config.recordDir", cameraConfigBo.getRecordDir());
+            properties.setProperty("config.recordStTime", cameraConfigBo.getRecordStTime());
+            properties.setProperty("config.recordStSize", cameraConfigBo.getRecordStSize());
+            properties.setProperty("config.recordMaxNum", cameraConfigBo.getRecordMaxNum());
+            properties.setProperty("config.recordInterval", cameraConfigBo.getRecordInterval());
+            properties.setProperty("config.recordMaxRate", cameraConfigBo.getRecordMaxRate());
+            properties.setProperty("config.recordSize", cameraConfigBo.getRecordSize());
+            properties.setProperty("config.streamMaxRate", cameraConfigBo.getStreamMaxRate());
+            properties.setProperty("config.streamSize", cameraConfigBo.getStreamSize());
+            properties.setProperty("config.streamInterval", cameraConfigBo.getStreamInterval());
+            properties.setProperty("config.streamMaxNum", cameraConfigBo.getStreamMaxNum());
+            properties.setProperty("config.snapShootDir", cameraConfigBo.getSnapShootDir());
+            properties.setProperty("config.snapShootSize", cameraConfigBo.getSnapShootSize());
+            properties.setProperty("config.snapShootTumbSize", cameraConfigBo.getSnapShootTumbSize());
+            properties.setProperty("config.snapShootQual", cameraConfigBo.getSnapShootQual());
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

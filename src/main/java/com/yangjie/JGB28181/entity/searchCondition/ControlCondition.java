@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class ControlCondition {
+    private String producer;
     private String ip;
     private Integer port;
     private String userName;
