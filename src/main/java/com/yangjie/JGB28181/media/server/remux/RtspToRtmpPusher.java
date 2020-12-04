@@ -234,9 +234,7 @@ public class RtspToRtmpPusher {
         record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围
         record.setGopSize(2);
         record.setFrameRate(framerate);
-        record.setVideoCodecName("h264_nvenc");
-//        record.setVideoCodec(AV_CODEC_ID_H264);
-        record.setOption("vf", "scale_npp=1280:720");
+        record.setVideoCodec(AV_CODEC_ID_H264);
 
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
@@ -286,6 +284,9 @@ public class RtspToRtmpPusher {
                 nowThread.sleep(0);
                 Frame frame = grabber.grab();
                 if (null != frame) {
+                    if (isTest == 1) {
+                        break;
+                    }
                     record.record(frame);
                 }
 
