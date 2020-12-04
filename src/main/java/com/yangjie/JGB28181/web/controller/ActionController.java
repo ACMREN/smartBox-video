@@ -20,11 +20,15 @@ import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.ControlCondition;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
+import com.yangjie.JGB28181.media.codec.Frame;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.ICameraControlService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.FrameGrabber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +120,15 @@ public class ActionController implements OnProcessListener {
 	// 存放任务 线程
 	public static Map<String, CameraThread.MyRunnable> jobMap = new HashMap<String, CameraThread.MyRunnable>();
 
+	// 国标设备的拉流map
+	public static Map<Integer, FrameGrabber> gbDeviceGrabberMap = new HashMap<>();
+
+	// 国标设备的监听服务器map
+	public static Map<Integer, Server> gbServerMap = new HashMap<>();
+
+	// rtsp设备的拉流map
+	public static Map<Integer, FrameGrabber> rtspDeviceGrabberMap = new HashMap<>();
+
 	public static List<Integer> failCidList;
 
 	/**
@@ -202,7 +215,7 @@ public class ActionController implements OnProcessListener {
 	private GBResult playHls(CameraInfo cameraInfo, Integer deviceId) throws InterruptedException {
 		if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
 			// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
-			return this.GBPlayHls(cameraInfo.getIp());
+			return this.GBPlayHls(cameraInfo.getIp(), deviceId);
 		} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
 			// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
 			String rtspLink = cameraInfo.getRtspLink();
@@ -252,12 +265,13 @@ public class ActionController implements OnProcessListener {
 			String cameraIp = cameraInfo.getIp();
 			if (LinkTypeEnum.GB28181.getName().equals(linkType)) {
 				// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
-				return this.GBPlayRtmp(cameraIp);
+				return this.GBPlayRtmp(cameraIp, deviceId);
 			} else if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
 				// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
 				String rtspLink = cameraInfo.getRtspLink();
 				CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
 				cameraPojo.setToHls(0);
+				cameraInfo.setDeviceBaseId(deviceId);
 				return this.rtspPlayRtmp(cameraPojo);
 			}
 		}
@@ -268,7 +282,7 @@ public class ActionController implements OnProcessListener {
 	 * 国标播放rtmp
 	 * @param cameraIp
 	 */
-	private GBResult GBPlayRtmp(String cameraIp) {
+	private GBResult GBPlayRtmp(String cameraIp, Integer deviceId) {
 		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraIp);
 		String deviceStr = null;
 		String pushStreamDeviceId = null;
@@ -287,12 +301,12 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(null, pushStreamDeviceId, channelId, "TCP", 0, null, 0);
+			return this.play(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0);
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
 
-	private GBResult GBPlayHls(String cameraIp) {
+	private GBResult GBPlayHls(String cameraIp, Integer deviceId) {
 		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraIp);
 		String deviceStr = null;
 		String pushStreamDeviceId = null;
@@ -311,7 +325,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(null, pushStreamDeviceId, channelId, "TCP", 0, null, 1);
+			return this.play(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 1);
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
@@ -497,50 +511,89 @@ public class ActionController implements OnProcessListener {
 			if(StringUtils.isEmpty(deviceStr)){
 				return GBResult.build(ResultConstants.DEVICE_OFF_LINE_CODE, ResultConstants.DEVICE_OFF_LINE);
 			}
-			//2.设备在线，先检查是否正在推流
-			//如果正在推流，直接返回rtmp地址
+			// 2.设备在线，先检查是否正在推流
+			// 如果正在推流，直接返回rtmp地址
 			String streamName = StreamNameUtils.play(deviceId, channelId);
 			PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
 			if(pushStreamDevice != null){
 				return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
 			}
-			//检查通道是否存在
-			Device device = JSONObject.parseObject(deviceStr, Device.class);
-			Map<String, DeviceChannel> channelMap = device.getChannelMap();
-			if(channelMap == null || !channelMap.containsKey(channelId)){
-				return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
-			}
-			boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
-			//3.下发指令
-			String callId = IDUtils.id();
-//			callId = "abc";
-			//getPort可能耗时，在外面调用。
-			int port = mSipLayer.getPort(isTcp);
-			String ssrc = mSipLayer.getSsrc(true);
-			mSipLayer.sendInvite(device,SipLayer.SESSION_NAME_PLAY,callId,channelId,port,ssrc,isTcp);
-			//4.等待指令响应			
-			SyncFuture<?> receive = mMessageManager.receive(callId);
-			Dialog response = (Dialog) receive.get(3,TimeUnit.SECONDS);
 
-			//4.1响应成功，创建推流session
-			if(response != null ){
-				String address = pushRtmpAddress.concat(streamName);
-				// 如果是hls，则推到hls的地址
-				if (toHls == 1) {
-					address = pushHlsAddress.concat(streamName);
+			FFmpegFrameGrabber gbGrabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(deviceId);
+			if (null == gbGrabber) {
+				// 检查通道是否存在
+				Device device = JSONObject.parseObject(deviceStr, Device.class);
+				Map<String, DeviceChannel> channelMap = device.getChannelMap();
+				if(channelMap == null || !channelMap.containsKey(channelId)){
+					return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 				}
-				Server server = isTcp ? new TCPServer() : new UDPServer();
+				boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
+				// 3.下发指令
+				String callId = IDUtils.id();
+//			callId = "abc";
+				// getPort可能耗时，在外面调用。
+				int port = mSipLayer.getPort(isTcp);
+				String ssrc = mSipLayer.getSsrc(true);
+				mSipLayer.sendInvite(device,SipLayer.SESSION_NAME_PLAY,callId,channelId,port,ssrc,isTcp);
+				// 4.等待指令响应
+				SyncFuture<?> receive = mMessageManager.receive(callId);
+				Dialog response = (Dialog) receive.get(3,TimeUnit.SECONDS);
+
+				//4.1响应成功，创建推流session
+				if(response != null){
+					String address = pushRtmpAddress.concat(streamName);
+					// 如果是hls，则推到hls的地址
+					if (toHls == 1) {
+						address = pushHlsAddress.concat(streamName);
+					}
+					Server server = isTcp ? new TCPServer() : new UDPServer();
+					Observer observer = new RtmpPusher(address, callId);
+					((RtmpPusher) observer).setDeviceId(streamName);
+
+					server.subscribe(observer);
+					pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
+							observer,address);
+
+					pushStreamDevice.setDialog(response);
+					server.startServer(pushStreamDevice.getFrameDeque(),Integer.valueOf(ssrc),port,false, streamName);
+					observer.startRemux(isTest, cid, toHls, id);
+
+					observer.setOnProcessListener(this);
+					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
+					// 设置5分钟的过期时间
+					RedisUtil.set(callId, 300, "keepStreaming");
+					// 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
+					if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
+						streamingDeviceMap.put(id, pushStreamDevice);
+					}
+					if (toHls == 1) {
+						// 开启清理过期的TS索引文件的定时器
+						PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
+
+						String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
+						String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
+						String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
+						pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
+						result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
+					} else {
+						result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+					}
+				}
+				else {
+					//3.2响应失败，删除推流session
+					mMessageManager.remove(callId);
+					result =  GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
+				}
+			} else {
+				// 如果该设备的拉流器已经存在，则开启线程推流即可
+				Server server = ActionController.gbServerMap.get(deviceId);
+
+				String callId = IDUtils.id();
+				String address = pushRtmpAddress.concat(streamName);
+				String ssrc = mSipLayer.getSsrc(true);
 				Observer observer = new RtmpPusher(address, callId);
 				((RtmpPusher) observer).setDeviceId(streamName);
-				
 				server.subscribe(observer);
-				pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
-						observer,address);
-				
-				pushStreamDevice.setDialog(response);
-				server.startServer(pushStreamDevice.getFrameDeque(),Integer.valueOf(ssrc),port,false, streamName);
-				observer.startRemux(isTest, cid, toHls);
-
 				observer.setOnProcessListener(this);
 				mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				// 设置5分钟的过期时间
@@ -562,13 +615,8 @@ public class ActionController implements OnProcessListener {
 					result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
 				}
 			}
-			else {
-				//3.2响应失败，删除推流session
-				mMessageManager.remove(callId);
-				result =  GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
-			}
 
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			result = GBResult.build(ResultConstants.SYSTEM_ERROR_CODE, ResultConstants.SYSTEM_ERROR);
 		}
@@ -745,6 +793,7 @@ public class ActionController implements OnProcessListener {
 		cameraPojo.setToken(token);
 		cameraPojo.setCid(cid);
 		cameraPojo.setToHls(toHls);
+		cameraPojo.setDeviceId(deviceId);
 
 		// 执行任务
 		CameraThread.MyRunnable job = new CameraThread.MyRunnable(cameraPojo);
@@ -868,8 +917,8 @@ public class ActionController implements OnProcessListener {
 	 * 测试云台控制
 	 * @return
 	 */
-	@RequestMapping("PTZControlTest")
-	public GBResult PTZControlTest(@RequestBody ControlCondition controlCondition) {
+	@RequestMapping("PTZMoveControl")
+	public GBResult PTZMoveControl(@RequestBody ControlCondition controlCondition) {
 		String producer = controlCondition.getProducer();
 		String ip = controlCondition.getIp();
 		Integer port = controlCondition.getPort();

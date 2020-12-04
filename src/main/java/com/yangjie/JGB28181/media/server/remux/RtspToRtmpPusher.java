@@ -162,7 +162,6 @@ public class RtspToRtmpPusher {
             // 使用硬件加速
             grabber.setOption("hwaccel", "cuvid");
             grabber.setVideoCodecName("h264_cuvid");
-            grabber.setOption("gpu", "gpu");
             grabber.setVideoOption("resize", "1280x720");
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
         }
@@ -181,6 +180,7 @@ public class RtspToRtmpPusher {
             } else {
                 grabber.start(config.getSub_code());
             }
+            ActionController.rtspDeviceGrabberMap.put(Integer.valueOf(cameraPojo.getDeviceId()), grabber);
 
 
             logger.debug("******   grabber.start()    END     ******");
@@ -236,9 +236,7 @@ public class RtspToRtmpPusher {
         record.setFrameRate(framerate);
         record.setVideoCodecName("h264_nvenc");
 //        record.setVideoCodec(AV_CODEC_ID_H264);
-        record.setVideoBitrate(20000);
-        record.setOption("gpu", "gpu");
-        record.setOption("vf", "scale_cuda=1280:720");
+        record.setOption("vf", "scale_npp=1280:720");
 
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
@@ -251,7 +249,7 @@ public class RtspToRtmpPusher {
             fc = grabber.getFormatContext();
         }
         try {
-            record.start(fc);
+            record.start();
         } catch (Exception e) {
             logger.error(cameraPojo.getRtsp() + "  推流异常！");
             logger.error("ffmpeg错误信息：", e);

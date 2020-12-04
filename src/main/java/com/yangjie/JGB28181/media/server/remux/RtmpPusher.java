@@ -39,14 +39,16 @@ public class RtmpPusher extends Observer{
 
 	private String deviceId;
 
+	private Integer deviceBaseId;
+
 	private Integer isTest;
 
 	private Integer cid;
 
 	private Integer toHls;
 
-	FFmpegFrameGrabber grabber = null;
-	FFmpegFrameGrabber recorder = null;
+	public FFmpegFrameGrabber grabber = null;
+	public FFmpegFrameGrabber recorder = null;
 
 	public String getDeviceId() {
 		return deviceId;
@@ -115,6 +117,7 @@ public class RtmpPusher extends Observer{
 				grabber.setOption("re", "");
 			}
 			grabber.start();
+			ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 
@@ -209,10 +212,11 @@ public class RtmpPusher extends Observer{
 		this.mRunning = false;
 	}
 	@Override
-	public void startRemux(Integer isTest, Integer cid, Integer toHls) {
+	public void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId) {
 		this.cid = cid;
 		this.isTest = isTest;
 		this.toHls = toHls;
+		this.deviceBaseId = deviceId;
 		this.start();
 	}
 
