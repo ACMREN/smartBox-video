@@ -140,8 +140,6 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 			e.printStackTrace();
 			if (!(e instanceof ArrayIndexOutOfBoundsException)) {
 				PushStreamDeviceManager.mainMap.remove(deviceId);
-				ActionController.gbServerMap.remove(deviceBaseId);
-				ActionController.gbDeviceGrabberMap.remove(deviceBaseId);
 				ctx.close();
 			}
 			log.error("TCPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));

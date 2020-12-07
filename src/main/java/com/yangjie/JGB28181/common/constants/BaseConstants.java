@@ -22,4 +22,6 @@ public interface BaseConstants {
 
     String PUSH_STREAM_FLV = "flv";
 
+    String PUSH_STREAM_RECORD = "record";
+
 }

@@ -238,10 +238,10 @@ public class RtspToRtmpPusher {
                 record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), 1280, 720);
             }
         } else {
-            record = new FFmpegFrameRecorder("/tmp/" + StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1") + "/record1.flv", 1280, 720, 0);
+            record = new FFmpegFrameRecorder(cameraPojo.getRecordDir(), 1280, 720, 0);
         }
 
-        record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围
+//        record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围
         record.setGopSize(2);
         record.setFrameRate(framerate);
         record.setVideoCodec(AV_CODEC_ID_H264);
@@ -249,6 +249,7 @@ public class RtspToRtmpPusher {
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
         record.setSampleRate(sampleRate);
+        record.setOption("maxrate", "2k");
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
             // 封装格式flv

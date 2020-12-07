@@ -8,6 +8,7 @@ import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.global.avcodec;
+import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
@@ -101,23 +102,21 @@ public class RtmpPusher extends Observer{
 	public void run() {
 		Long pts  = 0L;
 		try{
+			//pis = new PipedInputStream(pos,1024*1024);
 			pis = new PipedInputStream(pos, 1024);
-			grabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(deviceBaseId);
-			if (null == grabber) {
-				grabber = new FFmpegFrameGrabber(pis,0);
-				//阻塞式，直到通道有数据
-				grabber.setOption("stimeout", "200000");
-				grabber.setOption("y", "");
-				grabber.setOption("vsync", "0");
-				// 使用硬件加速
-				grabber.setOption("hwaccel", "cuvid");
-				grabber.setVideoCodecName("h264_cuvid");
-				if (toHls == 1) {
-					grabber.setOption("re", "");
-				}
-				grabber.start();
-				ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
+			grabber = new FFmpegFrameGrabber(pis,0);
+			//阻塞式，直到通道有数据
+			grabber.setOption("stimeout", "200000");
+			grabber.setOption("y", "");
+			grabber.setOption("vsync", "0");
+			// 使用硬件加速
+			grabber.setOption("hwaccel", "cuvid");
+			grabber.setVideoCodecName("h264_cuvid");
+			avutil.av_log_set_level(avutil.AV_LOG_ERROR);
+			if (toHls == 1) {
+				grabber.setOption("re", "");
 			}
+			grabber.start();
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 

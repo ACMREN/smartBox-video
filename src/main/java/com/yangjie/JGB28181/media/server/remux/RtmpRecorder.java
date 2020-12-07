@@ -96,23 +96,18 @@ public class RtmpRecorder extends Observer {
         try{
             //pis = new PipedInputStream(pos,1024*1024);
             pis = new PipedInputStream(pos, 1024);
-            if (null == grabber) {
-                grabber = new FFmpegFrameGrabber(pis,0);
-                //阻塞式，直到通道有数据
-                grabber.setOption("stimeout", "200000");
-                grabber.setOption("y", "");
-                grabber.setOption("vsync", "0");
-                // 使用硬件加速
-                grabber.setOption("hwaccel", "cuvid");
-                grabber.setVideoCodecName("h264_cuvid");
-                if (toHls == 1) {
-                    grabber.setOption("re", "");
-                }
-                grabber.start();
-                ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
-            } else {
-                grabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(deviceBaseId);
+            grabber = new FFmpegFrameGrabber(pis,0);
+            //阻塞式，直到通道有数据
+            grabber.setOption("stimeout", "200000");
+            grabber.setOption("y", "");
+            grabber.setOption("vsync", "0");
+            // 使用硬件加速
+            grabber.setOption("hwaccel", "cuvid");
+            grabber.setVideoCodecName("h264_cuvid");
+            if (toHls == 1) {
+                grabber.setOption("re", "");
             }
+            grabber.start();
 
             recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 
