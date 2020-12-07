@@ -2,6 +2,7 @@ package com.yangjie.JGB28181.media.server.remux;
 
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.utils.IpUtil;
+import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.common.utils.TimerUtil;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
@@ -124,8 +125,12 @@ public class RtspToRtmpPusher {
      */
     public RtspToRtmpPusher from() throws Exception {
         // 采集/抓取器
-        grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
-
+        if (null == grabber) {
+            grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
+            ActionController.rtspDeviceGrabberMap.put(Integer.valueOf(cameraPojo.getDeviceId()), grabber);
+        } else {
+            grabber = (CustomFFmpegFrameGrabber) ActionController.rtspDeviceGrabberMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+        }
 
 
         // 解决ip输入错误时，grabber.start();出现阻塞无法释放grabber而导致后续推流无法进行；
@@ -160,8 +165,9 @@ public class RtspToRtmpPusher {
             grabber.setOption("y", "");
             grabber.setOption("vsync", "0");
             // 使用硬件加速
-            grabber.setOption("hwaccel", "cuvid");
-            grabber.setVideoCodecName("h264_cuvid");
+//            grabber.setOption("hwaccel", "cuvid");
+//            grabber.setVideoCodecName("h264_cuvid");
+            grabber.setVideoCodec(AV_CODEC_ID_H264);
             grabber.setVideoOption("resize", "1280x720");
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
         }
@@ -225,10 +231,14 @@ public class RtspToRtmpPusher {
      */
     public RtspToRtmpPusher to() throws Exception {
         // 录制/推流器
-        if (cameraPojo.getToHls() == 1) {
-            record = new FFmpegFrameRecorder(cameraPojo.getHls(), 1280, 720);
+        if (cameraPojo.getIsRecord() == 0) {
+            if (cameraPojo.getToHls() == 1) {
+                record = new FFmpegFrameRecorder(cameraPojo.getHls(), 1280, 720);
+            } else {
+                record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), 1280, 720);
+            }
         } else {
-            record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), 1280, 720);
+            record = new FFmpegFrameRecorder("/tmp/" + StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1") + "/record1.flv", 1280, 720, 0);
         }
 
         record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围

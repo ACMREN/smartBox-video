@@ -49,7 +49,13 @@ public class CameraThread {
                 nowThread = Thread.currentThread();
                 CacheUtil.STREAMMAP.put(cameraPojo.getToken(), cameraPojo);
                 // 执行转流推流任务
-                RtspToRtmpPusher push = new RtspToRtmpPusher(cameraPojo).from();
+                Integer deviceId  = Integer.valueOf(cameraPojo.getDeviceId());
+                RtspToRtmpPusher push;
+                if (null != ActionController.rtspPusherMap.get(deviceId)) {
+                    push = ActionController.rtspPusherMap.get(deviceId);
+                } else {
+                    push = new RtspToRtmpPusher(cameraPojo).from();
+                }
                 if (push != null) {
                     push.to().go(nowThread);
                 }

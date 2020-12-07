@@ -10,5 +10,5 @@ public class DeviceBaseCondition {
     // 推流方式
     private String type;
     // 是否开启推流
-    private Integer isRecord;
+    private Integer isSwitch;
 }

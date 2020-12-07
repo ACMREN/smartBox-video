@@ -1,7 +1,10 @@
 package com.yangjie.JGB28181.entity.bo;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 public class CameraPojo implements Serializable {
 	private static final long serialVersionUID = 8183688502930584159L;
 	private String username;// 摄像头账号
@@ -23,6 +26,9 @@ public class CameraPojo implements Serializable {
 	private String token;
 	private Integer toHls;
 	private String deviceId;// 设备的基础id
+	private Integer isRecord;// 是否录像功能
+	private Integer isSwitch;// 是否开启录像功能：0-关闭，1-开启
+	private String recordDir;// 录像路径
 
 	public String getUsername() {
 		return username;

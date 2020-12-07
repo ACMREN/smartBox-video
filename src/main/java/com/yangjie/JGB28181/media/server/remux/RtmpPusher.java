@@ -48,7 +48,7 @@ public class RtmpPusher extends Observer{
 	private Integer toHls;
 
 	public FFmpegFrameGrabber grabber = null;
-	public FFmpegFrameGrabber recorder = null;
+	public CustomFFmpegFrameRecorder recorder = null;
 
 	public String getDeviceId() {
 		return deviceId;
@@ -99,33 +99,33 @@ public class RtmpPusher extends Observer{
 	}
 	@Override
 	public void run() {
-		FFmpegFrameGrabber grabber = null;
-		CustomFFmpegFrameRecorder recorder = null;
 		Long pts  = 0L;
 		try{
-			//pis = new PipedInputStream(pos,1024*1024);
 			pis = new PipedInputStream(pos, 1024);
-			grabber = new FFmpegFrameGrabber(pis,0);
-			//阻塞式，直到通道有数据
-			grabber.setOption("stimeout", "200000");
-			grabber.setOption("y", "");
-			grabber.setOption("vsync", "0");
-			// 使用硬件加速
-			grabber.setOption("hwaccel", "cuvid");
-			grabber.setVideoCodecName("h264_cuvid");
-			if (toHls == 1) {
-				grabber.setOption("re", "");
+			if (null == grabber) {
+				grabber = new FFmpegFrameGrabber(pis,0);
+				//阻塞式，直到通道有数据
+				grabber.setOption("stimeout", "200000");
+				grabber.setOption("y", "");
+				grabber.setOption("vsync", "0");
+				// 使用硬件加速
+				grabber.setOption("hwaccel", "cuvid");
+				grabber.setVideoCodecName("h264_cuvid");
+				if (toHls == 1) {
+					grabber.setOption("re", "");
+				}
+				grabber.start();
+				ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
+			} else {
+				grabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(deviceBaseId);
 			}
-			grabber.start();
-			ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 
 			// 推流rtmp的参数
 			if (toHls == 0) {
 				recorder.setInterleaved(true);
-				recorder.setVideoCodecName("h264_nvenc");
-//				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 				recorder.setFormat("flv");
 				recorder.setFrameRate(25);
 			}
@@ -133,34 +133,24 @@ public class RtmpPusher extends Observer{
 			// 推流hls的参数
 			if (toHls == 1) {
 				recorder.setInterleaved(true);
-				recorder.setVideoCodecName("h264_nvenc");
-//				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 				recorder.setFormat("flv");
 				recorder.setFrameRate(25);
 				recorder.setOption("loglevel", "quiet");
 			}
-
-
 			recorder.start();
 			AVPacket avPacket;
-
+			Frame frame;
 
 			grabber.flush();
-			Runtime rt = Runtime.getRuntime();
-			int byteToMb = 1024 * 1024;
-			long vmFree = 0;
 			while(mRunning){
-				avPacket=grabber.grabPacket();
-				if (avPacket != null && avPacket.size() >0 && avPacket.data() != null) {
+				frame=grabber.grab();
+				if (frame != null) {
 					if (isTest == 1) {
 						break;
 					}
 					pts = mPtsQueue.pop();
-					//pts+=40;
-//					vmFree = rt.freeMemory() / byteToMb;
-//					System.out.println("JVM内存的空闲空间为：" + vmFree + " MB");
-					recorder.recordPacket(avPacket,pts,pts);
-//					recorder.recordPacket(avPacket);
+					recorder.record(frame);
 				} else if (isTest == 1){
 					ActionController.failCidList.add(cid);
 				}
