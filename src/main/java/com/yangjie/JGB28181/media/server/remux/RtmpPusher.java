@@ -102,6 +102,7 @@ public class RtmpPusher extends Observer{
 		Long pts  = 0L;
 		try{
 			pis = new PipedInputStream(pos, 1024);
+			grabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(deviceBaseId);
 			if (null == grabber) {
 				grabber = new FFmpegFrameGrabber(pis,0);
 				//阻塞式，直到通道有数据
@@ -116,8 +117,6 @@ public class RtmpPusher extends Observer{
 				}
 				grabber.start();
 				ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
-			} else {
-				grabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(deviceBaseId);
 			}
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
@@ -142,7 +141,6 @@ public class RtmpPusher extends Observer{
 			AVPacket avPacket;
 			Frame frame;
 
-			grabber.flush();
 			while(mRunning){
 				frame=grabber.grab();
 				if (frame != null) {

@@ -32,7 +32,7 @@ public class TCPServer extends Server implements OnChannelStatusListener{
 
 	private String callId;
 
-	public void bind(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId) throws Exception {
+	public void bind(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId, Integer deviceBaseId) throws Exception {
 		EventLoopGroup group = new NioEventLoopGroup();
 		ServerBootstrap serverBootstrap = new ServerBootstrap();
 		serverBootstrap.group(group)//
@@ -42,7 +42,7 @@ public class TCPServer extends Server implements OnChannelStatusListener{
 			public void initChannel(SocketChannel ch) throws Exception {
 				//解决TCP粘包问题
 				ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024*1024,0,2));
-				TCPHandler tcpHandler = new TCPHandler(frameDeque,ssrc,checkSsrc, deviceId, TCPServer.this);
+				TCPHandler tcpHandler = new TCPHandler(frameDeque,ssrc,checkSsrc, deviceId, deviceBaseId, TCPServer.this);
 				tcpHandler.setOnChannelStatusListener(TCPServer.this);
 				ch.pipeline().addLast(tcpHandler);
 			}
@@ -53,10 +53,10 @@ public class TCPServer extends Server implements OnChannelStatusListener{
 		channelFuture.channel().closeFuture().sync();
 	}
 
-	public  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId) {
+	public  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId, Integer deviceBaseId) {
 		new Thread(() -> {
 			try {
-				bind(frameDeque,ssrc,port,checkSsrc, deviceId);
+				bind(frameDeque,ssrc,port,checkSsrc, deviceId, deviceBaseId);
 			} catch (Exception e) {
 				this.log.info("{}服务启动出错:{}", TAG,e.getMessage());
 				e.printStackTrace();

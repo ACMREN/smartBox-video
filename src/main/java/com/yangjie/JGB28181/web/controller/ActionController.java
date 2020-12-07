@@ -553,11 +553,13 @@ public class ActionController implements OnProcessListener {
 			// 如果正在推流，直接返回rtmp地址
 			String streamName = StreamNameUtils.play(deviceId, channelId);
 			PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
-			if(pushStreamDevice != null){
+			if(pushStreamDevice != null && isRecord == 0){
 				return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
 			}
 
-			FFmpegFrameGrabber gbGrabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(deviceId);
+			boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
+			int port = mSipLayer.getPort(isTcp);
+			FFmpegFrameGrabber gbGrabber = (FFmpegFrameGrabber) ActionController.gbDeviceGrabberMap.get(id);
 			if (null == gbGrabber) {
 				// 检查通道是否存在
 				Device device = JSONObject.parseObject(deviceStr, Device.class);
@@ -565,11 +567,14 @@ public class ActionController implements OnProcessListener {
 				if(channelMap == null || !channelMap.containsKey(channelId)){
 					return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 				}
-				boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
 				// 3.下发指令
-				String callId = IDUtils.id();
+				String callId = null;
+				if (isRecord == 0) {
+					callId = IDUtils.id();
+				} else {
+					callId = "record_" + IDUtils.id();
+				}
 				// getPort可能耗时，在外面调用。
-				int port = mSipLayer.getPort(isTcp);
 				String ssrc = mSipLayer.getSsrc(true);
 				mSipLayer.sendInvite(device,SipLayer.SESSION_NAME_PLAY,callId,channelId,port,ssrc,isTcp);
 				// 4.等待指令响应
@@ -587,21 +592,23 @@ public class ActionController implements OnProcessListener {
 					Observer observer;
 					if (isRecord == 0) {
 						observer = new RtmpPusher(address, callId);
+						((RtmpPusher) observer).setDeviceId(streamName);
+						// 保存推流信息
+						pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
+								observer,address);
+						pushStreamDevice.setDialog(response);
+						mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 					} else {
-						observer = new RtmpRecorder("/data/record/", callId);
+						observer = new RtmpRecorder("/tmp/" + streamName + "/record2.flv", callId);
+						((RtmpRecorder) observer).setDeviceId(streamName);
 					}
-					((RtmpPusher) observer).setDeviceId(streamName);
 
+					ActionController.gbServerMap.put(id, server);
 					server.subscribe(observer);
-					pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
-							observer,address);
-
-					pushStreamDevice.setDialog(response);
-					server.startServer(pushStreamDevice.getFrameDeque(),Integer.valueOf(ssrc),port,false, streamName);
+					server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName, id);
 					observer.startRemux(isTest, cid, toHls, id);
 
 					observer.setOnProcessListener(this);
-					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 					if (isRecord == 0) {
 						// 设置5分钟的过期时间
 						RedisUtil.set(callId, 300, "keepStreaming");
@@ -632,37 +639,57 @@ public class ActionController implements OnProcessListener {
 				}
 			} else {
 				// 如果该设备的拉流器已经存在，则开启线程推流即可
-				Server server = ActionController.gbServerMap.get(deviceId);
+				Server server = ActionController.gbServerMap.get(id);
 
-				String callId = IDUtils.id();
+				String callId = null;
+				if (isRecord == 0) {
+					callId = IDUtils.id();
+				} else {
+					callId = "record_" + IDUtils.id();
+				}
 				String address = pushRtmpAddress.concat(streamName);
 				// 如果是hls，则推到hls的地址
 				if (toHls == 1) {
 					address = pushHlsAddress.concat(streamName);
 				}
 				String ssrc = mSipLayer.getSsrc(true);
-				Observer observer = new RtmpPusher(address, callId);
-				((RtmpPusher) observer).setDeviceId(streamName);
-				server.subscribe(observer);
-				observer.setOnProcessListener(this);
-				mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
-				// 设置5分钟的过期时间
-				RedisUtil.set(callId, 300, "keepStreaming");
-				// 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
-				if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
-					streamingDeviceMap.put(id, pushStreamDevice);
-				}
-				if (toHls == 1) {
-					// 开启清理过期的TS索引文件的定时器
-					PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
 
-					String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
-					String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
-					String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
-					pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
-					result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
+				Observer observer;
+				if (isRecord == 0) {
+					observer = new RtmpPusher(address, callId);
+					((RtmpPusher) observer).setDeviceId(streamName);
+					// 保存推流信息
+					pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
+							observer,address);
+					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				} else {
-					result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+					observer = new RtmpRecorder("/tmp/" + streamName + "/record2.flv", callId);
+					((RtmpRecorder) observer).setDeviceId(streamName);
+				}
+				server.subscribe(observer);
+				observer.startRemux(isTest, cid, toHls, id);
+				observer.setOnProcessListener(this);
+				// 设置5分钟的过期时间
+				if (isRecord == 0) {
+					RedisUtil.set(callId, 300, "keepStreaming");
+					// 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
+					if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
+						streamingDeviceMap.put(id, pushStreamDevice);
+					}
+					if (toHls == 1) {
+						// 开启清理过期的TS索引文件的定时器
+						PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
+
+						String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
+						String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
+						String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
+						pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
+						result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
+					} else {
+						result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+					}
+				} else {
+					result = GBResult.ok();
 				}
 			}
 

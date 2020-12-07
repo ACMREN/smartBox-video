@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import com.yangjie.JGB28181.media.server.TCPServer;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.message.SipLayer;
+import com.yangjie.JGB28181.web.controller.ActionController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,15 +49,18 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 
 	private String callId;
 
+	private Integer deviceBaseId;
+
 
 	public void setOnChannelStatusListener(OnChannelStatusListener onChannelStatusListener) {
 		this.onChannelStatusListener = onChannelStatusListener;
 	}
-	public TCPHandler(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc, boolean checkSsrc, String deviceId,
+	public TCPHandler(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc, boolean checkSsrc, String deviceId, Integer deviceBaseId,
 			Parser parser) {
 		this.mFrameDeque =frameDeque;
 		this.mSsrc = ssrc;
 		this.mParser = parser;
+		this.deviceBaseId = deviceBaseId;
 		this.deviceId = deviceId;
 	}
 	@Override
@@ -136,6 +140,8 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 			e.printStackTrace();
 			if (!(e instanceof ArrayIndexOutOfBoundsException)) {
 				PushStreamDeviceManager.mainMap.remove(deviceId);
+				ActionController.gbServerMap.remove(deviceBaseId);
+				ActionController.gbDeviceGrabberMap.remove(deviceBaseId);
 				ctx.close();
 			}
 			log.error("TCPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));

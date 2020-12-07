@@ -136,7 +136,6 @@ public class RtmpRecorder extends Observer {
             AVPacket avPacket;
             Frame frame;
 
-            grabber.flush();
             while(mRunning){
                 frame=grabber.grab();
                 if (frame != null) {
