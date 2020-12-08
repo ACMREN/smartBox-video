@@ -138,6 +138,8 @@ public class ActionController implements OnProcessListener {
 
 	public static List<Integer> failCidList = new ArrayList<>(20);
 
+	public static int i = 0;
+
 	@PostMapping(value = "switchRecord")
 	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
@@ -607,6 +609,7 @@ public class ActionController implements OnProcessListener {
 			@RequestParam(value = "isSwitch", required = false)Integer isSwitch){
 		GBResult result = null;
 		try{
+			i++;
 			int pushPort = 1935;
 			//1.从redis查找设备，如果不存在，返回离线
 			String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + deviceId);
@@ -615,15 +618,15 @@ public class ActionController implements OnProcessListener {
 			}
 			// 2.设备在线，先检查是否正在推流
 			// 如果正在推流，直接返回rtmp地址
-			String streamName = StreamNameUtils.play(deviceId, channelId);
+			String streamName = StreamNameUtils.play(deviceId, channelId) + i;
 			PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
 			RecordStreamDevice recordStreamDevice = ActionController.deviceRecordMap.get(id);
 			if(pushStreamDevice != null && isRecord == 0){
 				return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
 			}
-			if (recordStreamDevice != null && isRecord == 1) {
-				return GBResult.build(201, "已经正在录像，请勿重复请求", null);
-			}
+//			if (recordStreamDevice != null && isRecord == 1) {
+//				return GBResult.build(201, "已经正在录像，请勿重复请求", null);
+//			}
 			boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
 			int port = mSipLayer.getPort(isTcp);
 			// 检查通道是否存在
@@ -664,7 +667,8 @@ public class ActionController implements OnProcessListener {
 					pushStreamDevice.setDialog(response);
 					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				} else {
-					String recordAddress = "/tmp/" + streamName + "/record2.flv";
+					String fileName = "record" + i;
+					String recordAddress = "/tmp/" + streamName + "/" + fileName + ".flv";
 					observer = new RtmpRecorder(recordAddress, callId);
 					((RtmpRecorder) observer).setDeviceId(streamName);
 					recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
