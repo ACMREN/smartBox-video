@@ -3,6 +3,7 @@ package com.yangjie.JGB28181.service;
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
@@ -44,6 +45,20 @@ public interface IDeviceManagerService {
      * @return
      */
     List<LiveCamInfoVo> getLiveCamDetailInfo(List<LiveCamInfoVo> liveCamInfoVos);
+
+    /**
+     * 获取设备的基本信息
+     * @param deviceBaseIds
+     * @return
+     */
+    List<DeviceBaseInfo> getDeviceBaseInfoList(List<Integer> deviceBaseIds);
+
+    /**
+     * 获取摄像头的信息
+     * @param deviceBaseIds
+     * @return
+     */
+    List<CameraInfo> getCameraInfoList(List<Integer> deviceBaseIds);
 
     /**
      * 包装摄像头设备的详细VO

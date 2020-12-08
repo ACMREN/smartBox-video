@@ -5,18 +5,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.sip.Dialog;
 import javax.sip.SipException;
 
-import com.yangjie.JGB28181.bean.RecordStreamDevice;
+import com.yangjie.JGB28181.bean.*;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.common.thread.CameraThread;
 import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
+import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
+import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
 import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.ControlCondition;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
@@ -42,9 +47,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.fastjson.JSONObject;
-import com.yangjie.JGB28181.bean.Device;
-import com.yangjie.JGB28181.bean.DeviceChannel;
-import com.yangjie.JGB28181.bean.PushStreamDevice;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.result.MediaData;
 import com.yangjie.JGB28181.common.constants.ResultConstants;
@@ -137,8 +139,6 @@ public class ActionController implements OnProcessListener {
 	public static Map<String, Observer> gbServerMap = new HashMap<>(20);
 
 	public static List<Integer> failCidList = new ArrayList<>(20);
-
-	public static int i = 0;
 
 	@PostMapping(value = "switchRecord")
 	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) {
@@ -609,7 +609,6 @@ public class ActionController implements OnProcessListener {
 			@RequestParam(value = "isSwitch", required = false)Integer isSwitch){
 		GBResult result = null;
 		try{
-			i++;
 			int pushPort = 1935;
 			//1.从redis查找设备，如果不存在，返回离线
 			String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + deviceId);
@@ -618,15 +617,15 @@ public class ActionController implements OnProcessListener {
 			}
 			// 2.设备在线，先检查是否正在推流
 			// 如果正在推流，直接返回rtmp地址
-			String streamName = StreamNameUtils.play(deviceId, channelId) + i;
+			String streamName = StreamNameUtils.play(deviceId, channelId);
 			PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
 			RecordStreamDevice recordStreamDevice = ActionController.deviceRecordMap.get(id);
 			if(pushStreamDevice != null && isRecord == 0){
 				return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
 			}
-//			if (recordStreamDevice != null && isRecord == 1) {
-//				return GBResult.build(201, "已经正在录像，请勿重复请求", null);
-//			}
+			if (recordStreamDevice != null && isRecord == 1) {
+				return GBResult.build(201, "已经正在录像，请勿重复请求", null);
+			}
 			boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
 			int port = mSipLayer.getPort(isTcp);
 			// 检查通道是否存在
@@ -667,7 +666,7 @@ public class ActionController implements OnProcessListener {
 					pushStreamDevice.setDialog(response);
 					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				} else {
-					String fileName = "record" + i;
+					String fileName = "record";
 					String recordAddress = "/tmp/" + streamName + "/" + fileName + ".flv";
 					observer = new RtmpRecorder(recordAddress, callId);
 					((RtmpRecorder) observer).setDeviceId(streamName);
@@ -1038,8 +1037,8 @@ public class ActionController implements OnProcessListener {
 	 * 测试云台控制
 	 * @return
 	 */
-	@RequestMapping("PTZMoveControl")
-	public GBResult PTZMoveControl(@RequestBody ControlCondition controlCondition) {
+	@RequestMapping("PTZMoveControlTest")
+	public GBResult PTZMoveControlTest(@RequestBody ControlCondition controlCondition) {
 		String producer = controlCondition.getProducer();
 		String ip = controlCondition.getIp();
 		Integer port = controlCondition.getPort();
@@ -1047,13 +1046,79 @@ public class ActionController implements OnProcessListener {
 		String password = controlCondition.getPassword();
 		List<JSONObject> PTZParams = controlCondition.getPTZParams();
 		for (JSONObject PTZParam : PTZParams) {
-			String command = PTZParam.getString("command");
+			Integer command = PTZParam.getInteger("command");
 			Integer speed = PTZParam.getInteger("speed");
 			Integer isStop = PTZParam.getInteger("isStop");
 
 			cameraControlService.cameraMove(producer, ip, port, userName, password, command, speed, isStop);
 		}
 
+		return GBResult.ok();
+	}
+
+	/**
+	 * 已注册的设备进行云台操作
+	 * @param controlCondition
+	 * @return
+	 */
+	@RequestMapping("PTZMoveControl")
+	public GBResult PTZMoveControl(@RequestBody ControlCondition controlCondition) {
+		List<Integer> deviceIds = controlCondition.getDeviceId();
+		JSONObject controls = controlCondition.getControls();
+
+		List<Integer> failDeviceBaseId = new ArrayList<>();
+		List<DeviceBaseInfo> deviceBaseInfoList = deviceManagerService.getDeviceBaseInfoList(deviceIds);
+		List<CameraInfo> cameraInfoList = deviceManagerService.getCameraInfoList(deviceIds);
+		Map<Integer, CameraInfo> cameraInfoMap = cameraInfoList.stream().collect(Collectors.toMap(CameraInfo::getDeviceBaseId, Function.identity()));
+		for (DeviceBaseInfo item : deviceBaseInfoList) {
+			Integer deviceBaseId = item.getId();
+			String specification = item.getSpecification();
+			// 验证设备是否具有具体型号
+			if (!StringUtils.isEmpty(specification)) {
+				failDeviceBaseId.add(deviceBaseId);
+				continue;
+			}
+			// 验证设备是否通过rtsp方式进行注册
+			CameraInfo cameraInfo = cameraInfoMap.get(deviceBaseId);
+			if (LinkTypeEnum.RTSP.getCode() != cameraInfo.getLinkType().intValue()) {
+				failDeviceBaseId.add(deviceBaseId);
+				continue;
+			}
+
+			// 根据不同的型号进行云台操作
+			String rtspLink = cameraInfo.getRtspLink();
+			CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+			List<ControlParam> controlParams = this.parseControlsToParam(specification, controls);
+			for (ControlParam param : controlParams) {
+				if (specification.equals("hikvision")) {
+					HikvisionPTZCommandEnum command = ((HikvisionControlParam) param).getCommand();
+					Integer speed = ((HikvisionControlParam) param).getSpeed();
+					Integer isStop = ((HikvisionControlParam) param).getIsStop();
+					cameraControlService.cameraMove(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), command.getCode(), speed, isStop);
+				}
+			}
+		}
+
+		if (CollectionUtils.isEmpty(failDeviceBaseId)) {
+			return GBResult.ok();
+		} else {
+			return GBResult.build(500, "部分设备无法进行操作，请查看是否没有设置型号或rtsp链接", null);
+		}
+	}
+
+	private List<ControlParam> parseControlsToParam(String specification, JSONObject controls) {
+		List<HikvisionControlParam> params = new ArrayList<>();
+		if (null != controls) {
+			List<ControlParam> controlParamList = cameraControlService.getControlParams(specification, controls);
+			return controlParamList;
+		}
+		return null;
+	}
+
+	@RequestMapping("PTZInformation")
+	public GBResult PTZInformation(@RequestBody ControlCondition controlCondition) {
+
+		// TODO
 		return GBResult.ok();
 	}
 

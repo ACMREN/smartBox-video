@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.constants.DeviceConstants;
@@ -216,6 +217,24 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
         }
 
         return liveCamInfoVos;
+    }
+
+    @Override
+    public List<DeviceBaseInfo> getDeviceBaseInfoList(List<Integer> deviceBaseIds) {
+        if (!CollectionUtils.isEmpty(deviceBaseIds)) {
+            List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceBaseIds);
+            return deviceBaseInfos;
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<CameraInfo> getCameraInfoList(List<Integer> deviceBaseIds) {
+        if (!CollectionUtils.isEmpty(deviceBaseIds)) {
+            List<CameraInfo> cameraInfos = cameraInfoService.getBaseMapper().selectList(new QueryWrapper<CameraInfo>().eq("device_base_id", deviceBaseIds));
+            return cameraInfos;
+        }
+        return new ArrayList<>();
     }
 
     @Override
