@@ -170,12 +170,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
             controlParamList.add(pParam);
             controlParamList.add(tParam);
             controlParamList.add(zParam);
-            // 如果有任意一个方向需要动，则最后一个方向参数的isStop一定为0
-            if ((pParam.getIsStop() & tParam.getIsStop() & zParam.getIsStop()) == 0) {
-                zParam.setIsStop(0);
-            } else {
-                zParam.setIsStop(1);
-            }
         }
 
         return controlParamList;
