@@ -23,6 +23,8 @@ public class CameraControlServiceImpl implements ICameraControlService {
 
     private NativeLong lUserID = new NativeLong(0);
 
+    private Integer isStop = 0;
+
 
     @Override
     public GBResult cameraMove(String producer, String ip, Integer port, String userName, String password,
@@ -178,13 +180,11 @@ public class CameraControlServiceImpl implements ICameraControlService {
 
     private HikvisionControlParam packageHikvisionParam(String speed) {
         HikvisionControlParam param = new HikvisionControlParam();
-        if (!speed.contains("-")) {
-            param.setSpeed(Math.abs(Integer.valueOf(speed)));
-            if (speed.contains("0")) {
-                param.setIsStop(1);
-            } else {
-                param.setIsStop(0);
-            }
+        param.setSpeed(Math.abs(Integer.valueOf(speed)));
+        if (speed.contains("0")) {
+            param.setIsStop(1);
+        } else {
+            param.setIsStop(0);
         }
         return param;
     }
