@@ -95,6 +95,7 @@ public class TimerUtil implements CommandLineRunner {
 					}
 				}
 
+				// 关闭超过5分钟没有人观看的推流
 				Map<Integer, JSONObject> baseDeviceIdCallIdMap = ActionController.baseDeviceIdCallIdMap;
 				for (Integer deviceBaseId : baseDeviceIdCallIdMap.keySet()) {
 					JSONObject streamJson = baseDeviceIdCallIdMap.get(deviceBaseId);
@@ -144,6 +145,9 @@ public class TimerUtil implements CommandLineRunner {
 						}
 					}
 				}
+
+				// TODO 监听是否已经超过晚上12点，如果超过，则对应录像线程需重新进行录像
+
 				logger.info("******   执行定时任务       END     ******");
 			}
 		}, 1, 1000 * 30);

@@ -231,7 +231,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     @Override
     public List<CameraInfo> getCameraInfoList(List<Integer> deviceBaseIds) {
         if (!CollectionUtils.isEmpty(deviceBaseIds)) {
-            List<CameraInfo> cameraInfos = cameraInfoService.getBaseMapper().selectList(new QueryWrapper<CameraInfo>().eq("device_base_id", deviceBaseIds));
+            List<CameraInfo> cameraInfos = cameraInfoService.getBaseMapper().selectList(new QueryWrapper<CameraInfo>().in("device_base_id", deviceBaseIds));
             return cameraInfos;
         }
         return new ArrayList<>();

@@ -1074,7 +1074,7 @@ public class ActionController implements OnProcessListener {
 			Integer deviceBaseId = item.getId();
 			String specification = item.getSpecification();
 			// 验证设备是否具有具体型号
-			if (!StringUtils.isEmpty(specification)) {
+			if (StringUtils.isEmpty(specification)) {
 				failDeviceBaseId.add(deviceBaseId);
 				continue;
 			}
@@ -1090,7 +1090,7 @@ public class ActionController implements OnProcessListener {
 			CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
 			List<ControlParam> controlParams = this.parseControlsToParam(specification, controls);
 			for (ControlParam param : controlParams) {
-				if (specification.equals("hikvision")) {
+				if (specification.equals("hikvision") && !CollectionUtils.isEmpty(controlParams)) {
 					HikvisionPTZCommandEnum command = ((HikvisionControlParam) param).getCommand();
 					Integer speed = ((HikvisionControlParam) param).getSpeed();
 					Integer isStop = ((HikvisionControlParam) param).getIsStop();
@@ -1106,13 +1106,19 @@ public class ActionController implements OnProcessListener {
 		}
 	}
 
+	/**
+	 * 将前端传入的json数据转换成对应的控制参数数组
+	 * @param specification
+	 * @param controls
+	 * @return
+	 */
 	private List<ControlParam> parseControlsToParam(String specification, JSONObject controls) {
-		List<HikvisionControlParam> params = new ArrayList<>();
+		List<ControlParam> params = new ArrayList<>();
 		if (null != controls) {
-			List<ControlParam> controlParamList = cameraControlService.getControlParams(specification, controls);
-			return controlParamList;
+			params = cameraControlService.getControlParams(specification, controls);
+			return params;
 		}
-		return null;
+		return params;
 	}
 
 	@RequestMapping("PTZInformation")

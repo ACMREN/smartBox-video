@@ -295,6 +295,7 @@ public class RtspToRtmpPusher {
                 nowThread.sleep(0);
                 Frame frame = grabber.grab();
                 if (null != frame) {
+                    Long timeStamp = frame.timestamp;
                     if (isTest == 1) {
                         break;
                     }
