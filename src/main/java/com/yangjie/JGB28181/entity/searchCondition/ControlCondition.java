@@ -20,4 +20,6 @@ public class ControlCondition {
     private List<Integer> deviceId;
     // 控制参数
     private JSONObject controls;
+    // 是否停止
+    private Integer isStop;
 }

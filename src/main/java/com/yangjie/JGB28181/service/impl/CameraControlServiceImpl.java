@@ -138,9 +138,9 @@ public class CameraControlServiceImpl implements ICameraControlService {
 
     public List<ControlParam> getControlParams(String specification, JSONObject controls) {
         List<ControlParam> controlParamList = new ArrayList<>();
-        String pSpeed = controls.getString("pSpeed");
-        String tSpeed = controls.getString("tSpeed");
-        String zSpeed = controls.getString("zSpeed");
+        Integer pSpeed = controls.getInteger("pSpeed");
+        Integer tSpeed = controls.getInteger("tSpeed");
+        Integer zSpeed = controls.getInteger("zSpeed");
         ControlParam pParam;
         ControlParam tParam;
         ControlParam zParam;
@@ -150,21 +150,21 @@ public class CameraControlServiceImpl implements ICameraControlService {
             tParam = new HikvisionControlParam();
             zParam = new HikvisionControlParam();
             pParam = this.packageHikvisionParam(pSpeed);
-            if (pSpeed.contains("-")) {
+            if (pSpeed < 0) {
                 ((HikvisionControlParam) pParam).setCommand(HikvisionPTZCommandEnum.RIGHT);
-            } else {
+            } else if (pSpeed > 0){
                 ((HikvisionControlParam) pParam).setCommand(HikvisionPTZCommandEnum.LEFT);
             }
             tParam = this.packageHikvisionParam(tSpeed);
-            if (tSpeed.contains("-")) {
+            if (tSpeed < 0) {
                 ((HikvisionControlParam) tParam).setCommand(HikvisionPTZCommandEnum.DOWN);
-            } else {
+            } else if (tSpeed > 0){
                 ((HikvisionControlParam) tParam).setCommand(HikvisionPTZCommandEnum.UP);
             }
             zParam = this.packageHikvisionParam(zSpeed);
-            if (zSpeed.contains("-")) {
+            if (zSpeed < 0) {
                 ((HikvisionControlParam) zParam).setCommand(HikvisionPTZCommandEnum.ZOOM_OUT);
-            } else {
+            } else if (zSpeed > 0){
                 ((HikvisionControlParam) zParam).setCommand(HikvisionPTZCommandEnum.ZOOM_IN);
             }
             controlParamList.add(pParam);
@@ -181,10 +181,10 @@ public class CameraControlServiceImpl implements ICameraControlService {
         return controlParamList;
     }
 
-    private HikvisionControlParam packageHikvisionParam(String speed) {
+    private HikvisionControlParam packageHikvisionParam(Integer speed) {
         HikvisionControlParam param = new HikvisionControlParam();
         param.setSpeed(Math.abs(Integer.valueOf(speed)));
-        if (speed.contains("0")) {
+        if (speed == 0) {
             param.setIsStop(1);
         } else {
             param.setIsStop(0);
