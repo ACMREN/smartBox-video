@@ -65,12 +65,14 @@ public class CameraControlServiceImpl implements ICameraControlService {
         //初始化sdk
         boolean initSuc = hcNetSDK.NET_DVR_Init();
         if (!initSuc) {
+            System.out.println("初始化sdk失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             logger.info("初始化sdk失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             return GBResult.build(500, "初始化设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
         // 登录设备
         lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
         if (lUserID.intValue() < 0) {
+            System.out.println("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
             return GBResult.build(500, "登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
