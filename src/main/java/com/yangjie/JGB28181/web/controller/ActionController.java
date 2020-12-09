@@ -1111,6 +1111,13 @@ public class ActionController implements OnProcessListener {
 
 	@RequestMapping("PTZInformation")
 	public GBResult PTZInformation(@RequestBody ControlCondition controlCondition) {
+		String producer = controlCondition.getProducer();
+		String ip = controlCondition.getIp();
+		Integer port = controlCondition.getPort();
+		String userName = controlCondition.getUserName();
+		String password = controlCondition.getPassword();
+
+		cameraControlService.getDVRConfig(producer, ip, port, userName, password, HCNetSDK.NET_DVR_SET_PTZPOS);
 
 		// TODO
 		return GBResult.ok();
