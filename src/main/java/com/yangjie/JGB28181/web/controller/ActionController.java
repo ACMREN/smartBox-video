@@ -1044,14 +1044,20 @@ public class ActionController implements OnProcessListener {
 		Integer port = controlCondition.getPort();
 		String userName = controlCondition.getUserName();
 		String password = controlCondition.getPassword();
-		List<JSONObject> PTZParams = controlCondition.getPTZParams();
-		for (JSONObject PTZParam : PTZParams) {
-			Integer command = PTZParam.getInteger("command");
-			Integer speed = PTZParam.getInteger("speed");
-			Integer isStop = PTZParam.getInteger("isStop");
+		JSONObject controls = controlCondition.getControls();
 
-			cameraControlService.cameraMove(producer, ip, port, userName, password, command, speed, isStop);
-		}
+		cameraControlService.cameraMove(producer, ip, 8000, userName, password, HikvisionPTZCommandEnum.LEFT.getCode(), 1, 0);
+
+//		List<ControlParam> controlParams = this.parseControlsToParam(producer, controls);
+//		for (ControlParam param : controlParams) {
+//			if (producer.equals("hikvision") && !CollectionUtils.isEmpty(controlParams)) {
+//				HikvisionPTZCommandEnum command = ((HikvisionControlParam) param).getCommand();
+//				Integer speed = ((HikvisionControlParam) param).getSpeed();
+//				Integer isStop = ((HikvisionControlParam) param).getIsStop();
+//			}
+//		}
+
+
 
 		return GBResult.ok();
 	}

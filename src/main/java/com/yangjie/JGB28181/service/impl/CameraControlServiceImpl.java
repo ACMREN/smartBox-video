@@ -21,6 +21,8 @@ import java.util.List;
 public class CameraControlServiceImpl implements ICameraControlService {
     Logger logger = LoggerFactory.getLogger(getClass());
 
+    private NativeLong lUserID = new NativeLong(0);
+
 
     @Override
     public GBResult cameraMove(String producer, String ip, Integer port, String userName, String password,
@@ -59,8 +61,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
         HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
         HCNetSDK.NET_DVR_CLIENTINFO m_strClientInfo = null;
-        NativeLong lUserID;//用户句柄
-        NativeLong lPreviewHandle;//预览句柄
 
         //初始化sdk
         boolean initSuc = hcNetSDK.NET_DVR_Init();
@@ -70,11 +70,13 @@ public class CameraControlServiceImpl implements ICameraControlService {
             return GBResult.build(500, "初始化设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
         // 登录设备
-        lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
-        if (lUserID.intValue() < 0) {
-            System.out.println("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
-            logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
-            return GBResult.build(500, "登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
+        if (lUserID.intValue() == 0) {
+            this.lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
+            if (lUserID.intValue() < 0) {
+                System.out.println("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+                logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+                return GBResult.build(500, "登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
+            }
         }
 
         m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数

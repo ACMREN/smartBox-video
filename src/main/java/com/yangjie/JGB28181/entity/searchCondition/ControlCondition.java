@@ -13,7 +13,7 @@ public class ControlCondition {
     private Integer port;
     private String userName;
     private String password;
-    private List<JSONObject> PTZParams;
+    private JSONObject PTZParams;
 
     /****************  对已注册设备进行控制  ****************/
     // 设备基础id
