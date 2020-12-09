@@ -83,7 +83,8 @@ public class CameraControlServiceImpl implements ICameraControlService {
 
         // 控制云台移动
         System.out.println("lUserID:" + lUserID + ", lChannel:" + m_strClientInfo.lChannel + ", PTZCommand:" + PTZCommand + ", isStop:" + isStop + ", speed:" + speed);
-        boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed_Other(lUserID, m_strClientInfo.lChannel, PTZCommand, isStop, speed);
+//        boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed_Other(lUserID, m_strClientInfo.lChannel, PTZCommand, isStop, speed);
+        boolean result = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, PTZCommand, isStop);
         if (!result) {
             logger.info("控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError());
             return GBResult.build(500, "控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError(), null);
