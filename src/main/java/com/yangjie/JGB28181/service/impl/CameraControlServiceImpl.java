@@ -178,6 +178,8 @@ public class CameraControlServiceImpl implements ICameraControlService {
             param.setSpeed(Math.abs(Integer.valueOf(speed)));
             if (speed.contains("0")) {
                 param.setIsStop(1);
+            } else {
+                param.setIsStop(0);
             }
         }
         return param;
