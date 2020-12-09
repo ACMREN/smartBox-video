@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <properties>
-        <property name="LOG_HOME">./log/</property>
-        <property name="LOG_NAME">JGB28181</property>
+        <property name="LOG_HOME">/usr/local/project/log</property>
+        <property name="LOG_NAME">smartBox</property>
     </properties>
 
     <Appenders>
