@@ -1082,11 +1082,13 @@ public class ActionController implements OnProcessListener {
 		// 3. 获取rtsp链接并转成对象
 		String rtspLink = cameraInfo.getRtspLink();
 		CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
-		// 如果速度为0，则相当于停止
+
+		// 4. 如果速度为0，则相当于停止
 		Integer isStop = 0;
 		if (speed == 0) {
 			isStop = 1;
 		}
+
 		cameraControlService.cameraMove(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), direction, speed, isStop);
 
 		return GBResult.ok();
