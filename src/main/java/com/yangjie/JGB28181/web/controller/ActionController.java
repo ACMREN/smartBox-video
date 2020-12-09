@@ -1099,7 +1099,7 @@ public class ActionController implements OnProcessListener {
 			CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
 			List<ControlParam> controlParams = this.parseControlsToParam(specification, controls);
 			// 先把之前所有的操作停下
-			cameraControlService.cameraMove(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HikvisionPTZCommandEnum.LEFT.getCode(), 0, 1)
+			cameraControlService.cameraMove(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HikvisionPTZCommandEnum.LEFT.getCode(), 0, 1);
 			for (ControlParam param : controlParams) {
 				if (specification.equals("hikvision") && !CollectionUtils.isEmpty(controlParams)) {
 					HikvisionPTZCommandEnum command = ((HikvisionControlParam) param).getCommand();
