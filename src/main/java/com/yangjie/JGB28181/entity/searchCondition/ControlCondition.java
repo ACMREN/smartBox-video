@@ -17,9 +17,9 @@ public class ControlCondition {
 
     /****************  对已注册设备进行控制  ****************/
     // 设备基础id
-    private List<Integer> deviceId;
+    private Integer deviceId;
     // 控制参数
-    private JSONObject controls;
-    // 是否停止
-    private Integer isStop;
+    private String direction;
+    // 移动速度
+    private Integer speed;
 }

@@ -25,9 +25,9 @@ public class CameraControlServiceImpl implements ICameraControlService {
 
     @Override
     public GBResult cameraMove(String producer, String ip, Integer port, String userName, String password,
-                               Integer PTZCommand, Integer speed, Integer isStop) {
+                               String PTZCommand, Integer speed, Integer isStop) {
         if (producer.equals("hikvision")) {
-            return this.hikvisionMoveCamera(ip, port, userName, password, PTZCommand, speed, isStop);
+            return this.hikvisionMoveCamera(ip, port, userName, password, HikvisionPTZCommandEnum.getDataByName(PTZCommand).getCode(), speed, isStop);
         } else if (producer.equals("dahua")) {
 
         }

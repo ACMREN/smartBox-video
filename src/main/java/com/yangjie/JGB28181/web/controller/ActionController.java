@@ -1044,23 +1044,12 @@ public class ActionController implements OnProcessListener {
 		Integer port = controlCondition.getPort();
 		String userName = controlCondition.getUserName();
 		String password = controlCondition.getPassword();
-		JSONObject controls = controlCondition.getControls();
-		Integer command = controls.getInteger("command");
-		Integer speed = controls.getInteger("speed");
-		Integer isStop = controls.getInteger("isStop");
+		JSONObject PTZParams = controlCondition.getPTZParams();
+		String command = PTZParams.getString("command");
+		Integer speed = PTZParams.getInteger("speed");
+		Integer isStop = PTZParams.getInteger("isStop");
 
 		cameraControlService.cameraMove(producer, ip, 8000, userName, password, command, speed, isStop);
-
-//		List<ControlParam> controlParams = this.parseControlsToParam(producer, controls);
-//		for (ControlParam param : controlParams) {
-//			if (producer.equals("hikvision") && !CollectionUtils.isEmpty(controlParams)) {
-//				HikvisionPTZCommandEnum command = ((HikvisionControlParam) param).getCommand();
-//				Integer speed = ((HikvisionControlParam) param).getSpeed();
-//				Integer isStop = ((HikvisionControlParam) param).getIsStop();
-//			}
-//		}
-
-
 
 		return GBResult.ok();
 	}
@@ -1072,53 +1061,35 @@ public class ActionController implements OnProcessListener {
 	 */
 	@RequestMapping("PTZMoveControl")
 	public GBResult PTZMoveControl(@RequestBody ControlCondition controlCondition) {
-		List<Integer> deviceIds = controlCondition.getDeviceId();
-		JSONObject controls = controlCondition.getControls();
+		Integer deviceId = controlCondition.getDeviceId();
+		String direction = controlCondition.getDirection();
+		Integer speed = controlCondition.getSpeed();
+		List<Integer> deviceIds = new ArrayList<>();
+		deviceIds.add(deviceId);
 
-		List<Integer> failDeviceBaseId = new ArrayList<>();
-		List<DeviceBaseInfo> deviceBaseInfoList = deviceManagerService.getDeviceBaseInfoList(deviceIds);
-		List<CameraInfo> cameraInfoList = deviceManagerService.getCameraInfoList(deviceIds);
-		Map<Integer, CameraInfo> cameraInfoMap = cameraInfoList.stream().collect(Collectors.toMap(CameraInfo::getDeviceBaseId, Function.identity()));
-		for (DeviceBaseInfo item : deviceBaseInfoList) {
-			Integer deviceBaseId = item.getId();
-			String specification = item.getSpecification();
-			// 验证设备是否具有具体型号
-			if (StringUtils.isEmpty(specification)) {
-				failDeviceBaseId.add(deviceBaseId);
-				continue;
-			}
-			// 验证设备是否通过rtsp方式进行注册
-			CameraInfo cameraInfo = cameraInfoMap.get(deviceBaseId);
-			if (LinkTypeEnum.RTSP.getCode() != cameraInfo.getLinkType().intValue()) {
-				failDeviceBaseId.add(deviceBaseId);
-				continue;
-			}
-
-			// 根据不同的型号进行云台操作
-			String rtspLink = cameraInfo.getRtspLink();
-			CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
-			List<ControlParam> controlParams = this.parseControlsToParam(specification, controls);
-			// 先把之前所有的操作停下
-			cameraControlService.cameraMove(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HikvisionPTZCommandEnum.LEFT.getCode(), 0, 1);
-			for (ControlParam param : controlParams) {
-				if (specification.equals("hikvision") && !CollectionUtils.isEmpty(controlParams)) {
-					HikvisionPTZCommandEnum command = ((HikvisionControlParam) param).getCommand();
-					Integer speed = ((HikvisionControlParam) param).getSpeed();
-					Integer isStop = ((HikvisionControlParam) param).getIsStop();
-					// 如果该方向是停止操作，则跳过这个命令
-					if (isStop == 1) {
-						continue;
-					}
-					cameraControlService.cameraMove(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), command.getCode(), speed, isStop);
-				}
-			}
+		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
+		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
+		String specification = deviceBaseInfo.getSpecification();
+		// 1. 验证设备是否具有具体型号
+		if (StringUtils.isEmpty(specification)) {
+			return GBResult.build(500, "设备无法进行操作，原因：设备没有具体型号", null);
+		}
+		// 2. 验证设备是否通过rtsp方式进行注册
+		if (LinkTypeEnum.RTSP.getCode() != cameraInfo.getLinkType().intValue()) {
+			return GBResult.build(500, "设备无法进行操作，原因：设备没有设置rtsp链接", null);
 		}
 
-		if (CollectionUtils.isEmpty(failDeviceBaseId)) {
-			return GBResult.ok();
-		} else {
-			return GBResult.build(500, "部分设备无法进行操作，请查看是否没有设置型号或rtsp链接", null);
+		// 3. 获取rtsp链接并转成对象
+		String rtspLink = cameraInfo.getRtspLink();
+		CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+		// 如果速度为0，则相当于停止
+		Integer isStop = 0;
+		if (speed == 0) {
+			isStop = 1;
 		}
+		cameraControlService.cameraMove(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), direction, speed, isStop);
+
+		return GBResult.ok();
 	}
 
 	/**

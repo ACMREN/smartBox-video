@@ -21,7 +21,7 @@ public interface ICameraControlService {
      * @return
      */
     GBResult cameraMove(String producer, String ip, Integer port, String userName, String password,
-                        Integer PTZCommand, Integer speed, Integer isStop);
+                        String PTZCommand, Integer speed, Integer isStop);
 
     GBResult getDVRConfig(String producer, String ip, Integer port, String userName, String password,
                           Integer command);
