@@ -1096,21 +1096,6 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
-	/**
-	 * 将前端传入的json数据转换成对应的控制参数数组
-	 * @param specification
-	 * @param controls
-	 * @return
-	 */
-	private List<ControlParam> parseControlsToParam(String specification, JSONObject controls) {
-		List<ControlParam> params = new ArrayList<>();
-		if (null != controls) {
-			params = cameraControlService.getControlParams(specification, controls);
-			return params;
-		}
-		return params;
-	}
-
 	@RequestMapping("getPTZStatus")
 	public GBResult getPTZStatus(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
