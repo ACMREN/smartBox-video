@@ -120,33 +120,27 @@ public class CameraControlServiceImpl implements ICameraControlService {
         HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
         Pointer pos = net_dvr_ptzpos.getPointer();
         // 创建PTZSCPOPE参数对象
-        HCNetSDK.NET_DVR_PTZSCOPE net_dvr_ptzscope = new HCNetSDK.NET_DVR_PTZSCOPE();
-        Pointer scope = net_dvr_ptzscope.getPointer();
+//        HCNetSDK.NET_DVR_PTZSCOPE net_dvr_ptzscope = new HCNetSDK.NET_DVR_PTZSCOPE();
+//        Pointer scope = net_dvr_ptzscope.getPointer();
 
         // 获取PTZPOS参数
         hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
-        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZSCOPE, new NativeLong(1), scope, net_dvr_ptzscope.size(), new IntByReference(0));
+//        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZSCOPE, new NativeLong(1), scope, net_dvr_ptzscope.size(), new IntByReference(0));
 //        hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
         net_dvr_ptzpos.read();
-        net_dvr_ptzscope.read();
+//        net_dvr_ptzscope.read();
 
         JSONObject resultJson = new JSONObject();
         resultJson.put("p", this.HexToDecMa(net_dvr_ptzpos.wPanPos));
-        resultJson.put("pMax", net_dvr_ptzscope.wPanPosMax);
-        resultJson.put("pMin", net_dvr_ptzscope.wPanPosMin);
         resultJson.put("t", this.HexToDecMa(net_dvr_ptzpos.wTiltPos));
-        resultJson.put("tMax", net_dvr_ptzscope.wTiltPosMax);
-        resultJson.put("tMin", net_dvr_ptzscope.wTiltPosMin);
         resultJson.put("z", this.HexToDecMa(net_dvr_ptzpos.wZoomPos));
-        resultJson.put("zMax", net_dvr_ptzscope.wZoomPosMax);
-        resultJson.put("zMin", net_dvr_ptzscope.wZoomPosMin);
 
         return GBResult.ok(resultJson);
     }
 
     private Double HexToDecMa(short pos) {
-        return Double.valueOf((pos / 4096) * 1000 + ((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16));
+        return Double.valueOf(((pos / 4096) * 1000 + ((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16)) / 10);
     }
 
     public List<ControlParam> getControlParams(String specification, JSONObject controls) {
