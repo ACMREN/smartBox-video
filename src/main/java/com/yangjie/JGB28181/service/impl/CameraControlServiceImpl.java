@@ -69,7 +69,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
             return GBResult.build(500, "初始化设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
         // 登录设备
-        if (lUserID.intValue() == 0) {
+        if (lUserID.intValue() <= 0) {
             this.lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
             if (lUserID.intValue() < 0) {
                 System.out.println("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
@@ -84,7 +84,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
         // 控制云台移动
         System.out.println("lUserID:" + lUserID + ", lChannel:" + m_strClientInfo.lChannel + ", PTZCommand:" + PTZCommand + ", isStop:" + isStop + ", speed:" + speed);
         boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed_Other(lUserID, m_strClientInfo.lChannel, PTZCommand, isStop, speed);
-//        boolean result = hcNetSDK.NET_DVR_PTZControl_Other(lUserID, m_strClientInfo.lChannel, PTZCommand, isStop);
         if (!result) {
             logger.info("控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError());
             return GBResult.build(500, "控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError(), null);
@@ -98,8 +97,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
         HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
         HCNetSDK.NET_DVR_CLIENTINFO m_strClientInfo = null;
-        NativeLong lUserID;//用户句柄
-        NativeLong lPreviewHandle;//预览句柄
 
         //初始化sdk
         boolean initSuc = hcNetSDK.NET_DVR_Init();
@@ -108,10 +105,12 @@ public class CameraControlServiceImpl implements ICameraControlService {
             return GBResult.build(500, "初始化设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
         // 登录设备
-        lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
-        if (lUserID.intValue() < 0) {
-            logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
-            return GBResult.build(500, "登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
+        if (lUserID.intValue() <= 0) {
+            lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
+            if (lUserID.intValue() < 0) {
+                logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+                return GBResult.build(500, "登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
+            }
         }
 
         m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
@@ -126,14 +125,23 @@ public class CameraControlServiceImpl implements ICameraControlService {
         Pointer scope = net_dvr_ptzscope.getPointer();
 
         // 获取PTZPOS参数
-        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size(), intByReference);
+        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), intByReference);
+        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZSCOPE, new NativeLong(1), scope, net_dvr_ptzscope.size(), intByReference);
 //        hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
         net_dvr_ptzpos.read();
+        net_dvr_ptzscope.read();
+
         JSONObject resultJson = new JSONObject();
-        resultJson.put("panPos", net_dvr_ptzpos.wPanPos);
-        resultJson.put("tiltPos", net_dvr_ptzpos.wTiltPos);
-        resultJson.put("zoomPos", net_dvr_ptzpos.wZoomPos);
+        resultJson.put("p", net_dvr_ptzpos.wPanPos);
+        resultJson.put("pMax", net_dvr_ptzscope.wPanPosMax);
+        resultJson.put("pMin", net_dvr_ptzscope.wPanPosMin);
+        resultJson.put("t", net_dvr_ptzpos.wTiltPos);
+        resultJson.put("tMax", net_dvr_ptzscope.wTiltPosMax);
+        resultJson.put("tMin", net_dvr_ptzscope.wTiltPosMin);
+        resultJson.put("z", net_dvr_ptzpos.wZoomPos);
+        resultJson.put("zMax", net_dvr_ptzscope.wZoomPosMax);
+        resultJson.put("zMin", net_dvr_ptzscope.wZoomPosMin);
 
         return GBResult.ok(resultJson);
     }

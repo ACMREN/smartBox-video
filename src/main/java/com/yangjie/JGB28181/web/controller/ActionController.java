@@ -1109,18 +1109,29 @@ public class ActionController implements OnProcessListener {
 		return params;
 	}
 
-	@RequestMapping("PTZInformation")
-	public GBResult PTZInformation(@RequestBody ControlCondition controlCondition) {
-		String producer = controlCondition.getProducer();
-		String ip = controlCondition.getIp();
-		Integer port = controlCondition.getPort();
-		String userName = controlCondition.getUserName();
-		String password = controlCondition.getPassword();
+	@RequestMapping("getPTZStatus")
+	public GBResult getPTZStatus(@RequestBody ControlCondition controlCondition) {
+		Integer deviceBaseId = controlCondition.getDeviceId();
+		List<Integer> deviceIds = new ArrayList<>();
+		deviceIds.add(deviceBaseId);
 
-		cameraControlService.getDVRConfig(producer, ip, port, userName, password, HCNetSDK.NET_DVR_SET_PTZPOS);
+		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
+		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
+		String specification = deviceBaseInfo.getSpecification();
+		// 1. 验证设备是否具有具体型号
+		if (StringUtils.isEmpty(specification)) {
+			return GBResult.build(500, "设备无法进行操作，原因：设备没有具体型号", null);
+		}
+		// 2. 验证设备是否通过rtsp方式进行注册
+		if (LinkTypeEnum.RTSP.getCode() != cameraInfo.getLinkType().intValue()) {
+			return GBResult.build(500, "设备无法进行操作，原因：设备没有设置rtsp链接", null);
+		}
 
-		// TODO
-		return GBResult.ok();
+		// 3. 获取rtsp链接并转成对象
+		String rtspLink = cameraInfo.getRtspLink();
+		CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+
+		return cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
 	}
 
 	@Override
