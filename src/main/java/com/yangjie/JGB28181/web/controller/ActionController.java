@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import javax.sip.Dialog;
 import javax.sip.SipException;
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.bean.*;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
@@ -20,6 +22,7 @@ import com.yangjie.JGB28181.common.thread.CameraThread;
 import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
+import com.yangjie.JGB28181.entity.PresetInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
@@ -33,6 +36,7 @@ import com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.ICameraControlService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
+import com.yangjie.JGB28181.service.PresetInfoService;
 import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -87,6 +91,9 @@ public class ActionController implements OnProcessListener {
 
 	@Autowired
 	private ICameraControlService cameraControlService;
+
+	@Autowired
+	private PresetInfoService presetInfoService;
 
 	private MessageManager mMessageManager = MessageManager.getInstance();
 
@@ -1070,18 +1077,13 @@ public class ActionController implements OnProcessListener {
 		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
 		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
 		String specification = deviceBaseInfo.getSpecification();
-		// 1. 验证设备是否具有具体型号
-		if (StringUtils.isEmpty(specification)) {
-			return GBResult.build(500, "设备无法进行操作，原因：设备没有具体型号", null);
+		// 1. 验证设备信息
+		GBResult verifyResult = this.verifyDeviceInfo(specification, cameraInfo);
+		int verifyCode = verifyResult.getCode();
+		if (verifyCode != 200) {
+			return verifyResult;
 		}
-		// 2. 验证设备是否通过rtsp方式进行注册
-		if (LinkTypeEnum.RTSP.getCode() != cameraInfo.getLinkType().intValue()) {
-			return GBResult.build(500, "设备无法进行操作，原因：设备没有设置rtsp链接", null);
-		}
-
-		// 3. 获取rtsp链接并转成对象
-		String rtspLink = cameraInfo.getRtspLink();
-		CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+		CameraPojo rtspPojo = (CameraPojo) verifyResult.getData();
 
 		// 4. 如果速度为0，则相当于停止
 		Integer isStop = 0;
@@ -1118,6 +1120,119 @@ public class ActionController implements OnProcessListener {
 		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
 		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
 		String specification = deviceBaseInfo.getSpecification();
+		// 1. 验证设备信息
+		GBResult verifyResult = this.verifyDeviceInfo(specification, cameraInfo);
+		int verifyCode = verifyResult.getCode();
+		if (verifyCode != 200) {
+			return verifyResult;
+		}
+		CameraPojo rtspPojo = (CameraPojo) verifyResult.getData();
+
+		return cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
+	}
+
+	/**
+	 * 插入/更新预置点
+	 * @param controlCondition
+	 * @return
+	 */
+	@RequestMapping("setPTZPreset")
+	public GBResult setPTZPreset(@RequestBody ControlCondition controlCondition) {
+		Integer deviceBaseId = controlCondition.getDeviceId();
+		JSONObject psConfig = controlCondition.getPsConfig();
+		List<Integer> deviceIds = new ArrayList<>();
+		deviceIds.add(deviceBaseId);
+
+		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
+		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
+		String specification = deviceBaseInfo.getSpecification();
+		// 1. 验证设备信息
+		GBResult verifyResult = this.verifyDeviceInfo(specification, cameraInfo);
+		int verifyCode = verifyResult.getCode();
+		if (verifyCode != 200) {
+			return verifyResult;
+		}
+		CameraPojo rtspPojo = (CameraPojo) verifyResult.getData();
+
+		Integer psId = psConfig.getInteger("psId");
+		String psName = psConfig.getString("psName");
+
+		// 2. 获取当前点位信息
+		GBResult posResult = cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
+		JSONObject posJson = (JSONObject) posResult.getData();
+		Integer pPos = posJson.getInteger("p");
+		Integer tPos = posJson.getInteger("t");
+		Integer zPos = posJson.getInteger("z");
+		JSONObject presetPos = new JSONObject();
+		presetPos.put("pPos", pPos);
+		presetPos.put("tPos", tPos);
+		presetPos.put("zPos", zPos);
+
+		// 5. 插入或更新数据库
+		PresetInfo presetInfo = new PresetInfo();
+		presetInfo.setId(psId);
+		presetInfo.setDeviceBaseId(deviceBaseId);
+		presetInfo.setPresetName(psName);
+		presetInfo.setPresetPos(presetPos.toJSONString());
+		presetInfoService.saveOrUpdate(presetInfo);
+
+		return GBResult.ok();
+	}
+
+	/**
+	 * 删除预置点
+	 * @param controlCondition
+	 * @return
+	 */
+	@RequestMapping("delPTZPerset")
+	public GBResult delPTZPerset(@RequestBody ControlCondition controlCondition) {
+		Integer deviceBaseId = controlCondition.getDeviceId();
+		List<Integer> presetIds = controlCondition.getPsIds();
+		List<Integer> deviceIds = new ArrayList<>();
+		deviceIds.add(deviceBaseId);
+
+		presetInfoService.removeByIds(presetIds);
+
+		return GBResult.ok();
+	}
+
+	/**
+	 * 获取设备对应的预置点
+	 * @param controlCondition
+	 * @return
+	 */
+	@RequestMapping("getPTZPerset")
+	public GBResult getPTZPerset(@RequestBody ControlCondition controlCondition) {
+		Integer deviceBaseId = controlCondition.getDeviceId();
+		List<Integer> deviceIds = new ArrayList<>();
+		deviceIds.add(deviceBaseId);
+
+		List<JSONObject> resultList = new ArrayList<>();
+		List<PresetInfo> presetInfoList = presetInfoService.list(new QueryWrapper<PresetInfo>().in("device_base_id", deviceIds));
+		if (!CollectionUtils.isEmpty(presetInfoList)) {
+			for (PresetInfo item : presetInfoList) {
+				JSONObject data = new JSONObject();
+				data.put("psId", item.getId());
+				data.put("deviceId", item.getDeviceBaseId());
+				data.put("psName", item.getPresetName());
+				JSONObject posJson = JSONObject.parseObject(item.getPresetPos());
+				data.put("p", posJson.getString("pPos"));
+				data.put("t", posJson.getString("tPos"));
+				data.put("z", posJson.getString("zPos"));
+				resultList.add(data);
+			}
+		}
+
+		return GBResult.ok(resultList);
+	}
+
+	/**
+	 * 验证设备的信息
+	 * @param specification
+	 * @param cameraInfo
+	 * @return
+	 */
+	private GBResult verifyDeviceInfo(String specification, CameraInfo cameraInfo) {
 		// 1. 验证设备是否具有具体型号
 		if (StringUtils.isEmpty(specification)) {
 			return GBResult.build(500, "设备无法进行操作，原因：设备没有具体型号", null);
@@ -1126,12 +1241,11 @@ public class ActionController implements OnProcessListener {
 		if (LinkTypeEnum.RTSP.getCode() != cameraInfo.getLinkType().intValue()) {
 			return GBResult.build(500, "设备无法进行操作，原因：设备没有设置rtsp链接", null);
 		}
-
 		// 3. 获取rtsp链接并转成对象
 		String rtspLink = cameraInfo.getRtspLink();
 		CameraPojo rtspPojo = this.parseRtspLinkToCameraPojo(rtspLink);
 
-		return cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
+		return GBResult.ok(rtspPojo);
 	}
 
 	@Override

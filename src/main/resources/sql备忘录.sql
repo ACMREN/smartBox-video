@@ -33,3 +33,11 @@ CREATE TABLE `tree_info` (
     tree_type TINYINT(2) DEFAULT 0 COMMENT '树状图类型：0-摄像头',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='树状图表';
+
+CREATE TABLE `preset_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    device_base_id INT(10) NOT NULL COMMENT '基础设备id',
+    preset_name VARCHAR(20) NOT NULL DEFAULT '' COMMENT '预置点名称',
+    preset_pos TEXT COMMENT '预置点点位信息',
+    PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='预置点信息表';

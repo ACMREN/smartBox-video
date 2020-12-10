@@ -3,6 +3,7 @@ package com.yangjie.JGB28181.entity.searchCondition;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -22,4 +23,8 @@ public class ControlCondition {
     private String direction;
     // 移动速度
     private Integer speed;
+    // 云台预置点参数
+    private JSONObject psConfig;
+    // 预置点id列表
+    private List<Integer> psIds = new ArrayList<>();
 }
