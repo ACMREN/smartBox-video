@@ -116,7 +116,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
         m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();//预览参数 用户参数
         m_strClientInfo.lChannel = new NativeLong(1);
 
-        IntByReference intByReference = new IntByReference(0);
         //创建PTZPOS参数对象
         HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
         Pointer pos = net_dvr_ptzpos.getPointer();
@@ -125,8 +124,8 @@ public class CameraControlServiceImpl implements ICameraControlService {
         Pointer scope = net_dvr_ptzscope.getPointer();
 
         // 获取PTZPOS参数
-        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), intByReference);
-        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZSCOPE, new NativeLong(1), scope, net_dvr_ptzscope.size(), intByReference);
+        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
+        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZSCOPE, new NativeLong(1), scope, net_dvr_ptzscope.size(), new IntByReference(0));
 //        hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
         net_dvr_ptzpos.read();
