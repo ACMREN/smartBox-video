@@ -124,11 +124,11 @@ public class CameraControlServiceImpl implements ICameraControlService {
         Pointer scope = net_dvr_ptzscope.getPointer();
 
         // 获取PTZPOS参数
-//        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
+        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
         hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZSCOPE, new NativeLong(1), scope, net_dvr_ptzscope.size(), new IntByReference(0));
 //        hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
-//        net_dvr_ptzpos.read();
+        net_dvr_ptzpos.read();
         net_dvr_ptzscope.read();
 
         JSONObject resultJson = new JSONObject();

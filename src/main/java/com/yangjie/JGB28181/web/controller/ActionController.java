@@ -1226,6 +1226,15 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok(resultList);
 	}
 
+	@RequestMapping("setPTZZoom")
+	public GBResult setPTZZoom(@RequestBody ControlCondition controlCondition) {
+		Integer deviceBaseId = controlCondition.getDeviceId();
+		List<Integer> deviceIds = new ArrayList<>();
+		deviceIds.add(deviceBaseId);
+
+		return GBResult.ok();
+	}
+
 	/**
 	 * 验证设备的信息
 	 * @param specification
