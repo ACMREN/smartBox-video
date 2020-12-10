@@ -1226,6 +1226,41 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok(resultList);
 	}
 
+	/**
+	 * 把云台移动对应的预置点
+	 * @param controlCondition
+	 * @return
+	 */
+	@RequestMapping
+	public GBResult toPTZPreset(@RequestBody ControlCondition controlCondition) {
+		Integer deviceBaseId = controlCondition.getDeviceId();
+		Integer psId = controlCondition.getPsIds().get(0);
+		List<Integer> deviceIds = new ArrayList<>();
+		deviceIds.add(deviceBaseId);
+
+		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
+		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
+		String specification = deviceBaseInfo.getSpecification();
+		// 1. 验证设备信息
+		GBResult verifyResult = this.verifyDeviceInfo(specification, cameraInfo);
+		int verifyCode = verifyResult.getCode();
+		if (verifyCode != 200) {
+			return verifyResult;
+		}
+		CameraPojo rtspPojo = (CameraPojo) verifyResult.getData();
+
+		// 2. 控制云台移动到指定的预置点
+		PresetInfo presetInfo = presetInfoService.getById(psId);
+		if (null != presetInfo) {
+			String presetPos = presetInfo.getPresetPos();
+			JSONObject presetPosJson = JSONObject.parseObject(presetPos);
+
+			cameraControlService.setDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(),
+					rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS, presetPosJson);
+		}
+		return GBResult.ok();
+	}
+
 	@RequestMapping("setPTZZoom")
 	public GBResult setPTZZoom(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();

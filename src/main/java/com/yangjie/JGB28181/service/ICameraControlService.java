@@ -26,5 +26,6 @@ public interface ICameraControlService {
     GBResult getDVRConfig(String producer, String ip, Integer port, String userName, String password,
                           Integer command);
 
-    List<ControlParam> getControlParams(String specification, JSONObject controls);
+    GBResult setDVRConfig(String producer, String ip, Integer port, String userName, String password,
+                          Integer command, JSONObject settingJson);
 }
