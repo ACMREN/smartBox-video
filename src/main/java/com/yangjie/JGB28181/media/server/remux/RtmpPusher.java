@@ -48,6 +48,8 @@ public class RtmpPusher extends Observer{
 
 	private Integer toHls;
 
+	private String steamName;
+
 	public FFmpegFrameGrabber grabber = null;
 	public CustomFFmpegFrameRecorder recorder = null;
 
@@ -199,11 +201,12 @@ public class RtmpPusher extends Observer{
 		this.mRunning = false;
 	}
 	@Override
-	public void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId) {
+	public void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId, String streamName) {
 		this.cid = cid;
 		this.isTest = isTest;
 		this.toHls = toHls;
 		this.deviceBaseId = deviceId;
+		this.steamName = streamName;
 		this.start();
 	}
 

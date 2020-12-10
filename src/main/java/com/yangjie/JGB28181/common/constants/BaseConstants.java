@@ -24,4 +24,19 @@ public interface BaseConstants {
 
     String PUSH_STREAM_RECORD = "record";
 
+    /**
+     * 一天的毫秒数
+     */
+    Long MS_OF_DAY = 86400000L; // 24 * 60 * 60 * 1000
+
+    /**
+     * 一小时的毫秒数
+     */
+    Long MS_OF_HOUR = 3600000L; // 60 * 60 * 1000
+
+    /**
+     * 一分钟的毫秒数
+     */
+    Long MS_OF_MINUTE = 60000L; // 60 * 1000
+
 }

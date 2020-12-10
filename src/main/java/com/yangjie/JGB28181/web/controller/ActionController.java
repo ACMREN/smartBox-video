@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.web.controller;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -666,9 +667,8 @@ public class ActionController implements OnProcessListener {
 					pushStreamDevice.setDialog(response);
 					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				} else {
-					String fileName = "record";
-					String recordAddress = "/tmp/" + streamName + "/" + fileName + ".flv";
-					observer = new RtmpRecorder(recordAddress, callId);
+					String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
+					observer = new RtmpRecorder("/tmp/test/record1.flv", callId);
 					((RtmpRecorder) observer).setDeviceId(streamName);
 					recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
 							observer, recordAddress);
@@ -677,7 +677,7 @@ public class ActionController implements OnProcessListener {
 
 				server.subscribe(observer);
 				server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName, id);
-				observer.startRemux(isTest, cid, toHls, id);
+				observer.startRemux(isTest, cid, toHls, id, streamName);
 				ActionController.gbServerMap.put(callId, observer);
 
 				observer.setOnProcessListener(this);
