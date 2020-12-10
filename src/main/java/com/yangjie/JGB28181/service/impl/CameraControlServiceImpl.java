@@ -132,13 +132,13 @@ public class CameraControlServiceImpl implements ICameraControlService {
         net_dvr_ptzscope.read();
 
         JSONObject resultJson = new JSONObject();
-        resultJson.put("p", net_dvr_ptzpos.wPanPos);
+        resultJson.put("p", this.HexToDecMa(net_dvr_ptzpos.wPanPos));
         resultJson.put("pMax", net_dvr_ptzscope.wPanPosMax);
         resultJson.put("pMin", net_dvr_ptzscope.wPanPosMin);
-        resultJson.put("t", net_dvr_ptzpos.wTiltPos);
+        resultJson.put("t", this.HexToDecMa(net_dvr_ptzpos.wTiltPos));
         resultJson.put("tMax", net_dvr_ptzscope.wTiltPosMax);
         resultJson.put("tMin", net_dvr_ptzscope.wTiltPosMin);
-        resultJson.put("z", net_dvr_ptzpos.wZoomPos);
+        resultJson.put("z", this.HexToDecMa(net_dvr_ptzpos.wZoomPos));
         resultJson.put("zMax", net_dvr_ptzscope.wZoomPosMax);
         resultJson.put("zMin", net_dvr_ptzscope.wZoomPosMin);
 
