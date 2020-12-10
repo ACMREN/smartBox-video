@@ -107,9 +107,9 @@ public class CameraControlServiceImpl implements ICameraControlService {
             net_dvr_ptzpos.read();
 
             JSONObject resultJson = new JSONObject();
-            resultJson.put("p", this.HexToDecMa(net_dvr_ptzpos.wPanPos));
-            resultJson.put("t", this.HexToDecMa(net_dvr_ptzpos.wTiltPos));
-            resultJson.put("z", this.HexToDecMa(net_dvr_ptzpos.wZoomPos));
+            resultJson.put("p", net_dvr_ptzpos.wPanPos);
+            resultJson.put("t", net_dvr_ptzpos.wTiltPos);
+            resultJson.put("z", net_dvr_ptzpos.wZoomPos);
             return GBResult.ok(resultJson);
         }
         // 如果是设置云台位置
@@ -151,7 +151,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
         return GBResult.ok();
     }
 
-    private Double HexToDecMa(short pos) {
+    public static Double HexToDecMa(short pos) {
         return Double.valueOf((pos / 4096) * 1000 + ((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16));
     }
 }

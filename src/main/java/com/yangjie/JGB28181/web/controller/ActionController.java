@@ -1096,6 +1096,11 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	/**
+	 * 获取云台位置
+	 * @param controlCondition
+	 * @return
+	 */
 	@RequestMapping("getPTZStatus")
 	public GBResult getPTZStatus(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
@@ -1149,9 +1154,9 @@ public class ActionController implements OnProcessListener {
 		Integer tPos = posJson.getInteger("t");
 		Integer zPos = posJson.getInteger("z");
 		JSONObject presetPos = new JSONObject();
-		presetPos.put("pPos", pPos);
-		presetPos.put("tPos", tPos);
-		presetPos.put("zPos", zPos);
+		presetPos.put("pPos", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
+		presetPos.put("tPos", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
+		presetPos.put("zPos", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
 
 		// 5. 插入或更新数据库
 		PresetInfo presetInfo = new PresetInfo();
@@ -1216,7 +1221,7 @@ public class ActionController implements OnProcessListener {
 	 * @param controlCondition
 	 * @return
 	 */
-	@RequestMapping
+	@RequestMapping("toPTZPreset")
 	public GBResult toPTZPreset(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
 		Integer psId = controlCondition.getPsIds().get(0);
