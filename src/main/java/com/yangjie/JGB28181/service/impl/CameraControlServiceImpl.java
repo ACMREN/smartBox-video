@@ -124,7 +124,11 @@ public class CameraControlServiceImpl implements ICameraControlService {
 //        Pointer scope = net_dvr_ptzscope.getPointer();
 
         // 获取PTZPOS参数
+        Long startTime = System.currentTimeMillis();
         hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
+        Long endTime = System.currentTimeMillis();
+        Long useTime = endTime - startTime;
+        System.out.println(useTime);
 //        hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZSCOPE, new NativeLong(1), scope, net_dvr_ptzscope.size(), new IntByReference(0));
 //        hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
@@ -140,7 +144,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
     }
 
     private Double HexToDecMa(short pos) {
-        return Double.valueOf(((pos / 4096) * 1000 + ((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16)) / 10);
+        return Double.valueOf((pos / 4096) * 1000 + ((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16));
     }
 
     public List<ControlParam> getControlParams(String specification, JSONObject controls) {
