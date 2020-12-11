@@ -27,4 +27,6 @@ public class ControlCondition {
     private JSONObject psConfig;
     // 预置点id列表
     private List<Integer> psIds = new ArrayList<>();
+    // 放大的区域参数
+    private JSONObject region;
 }

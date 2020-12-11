@@ -1266,7 +1266,22 @@ public class ActionController implements OnProcessListener {
 	public GBResult setPTZZoom(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
 		List<Integer> deviceIds = new ArrayList<>();
+		JSONObject region = controlCondition.getRegion();
 		deviceIds.add(deviceBaseId);
+
+		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
+		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
+		String specification = deviceBaseInfo.getSpecification();
+		// 1. 验证设备信息
+		GBResult verifyResult = this.verifyDeviceInfo(specification, cameraInfo);
+		int verifyCode = verifyResult.getCode();
+		if (verifyCode != 200) {
+			return verifyResult;
+		}
+		CameraPojo rtspPojo = (CameraPojo) verifyResult.getData();
+
+		// 2. 控制云台指定区域放大
+		cameraControlService.NET_DVR_PTZSelZoomIn(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), region);
 
 		return GBResult.ok();
 	}

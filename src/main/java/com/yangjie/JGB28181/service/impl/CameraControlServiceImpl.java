@@ -54,6 +54,15 @@ public class CameraControlServiceImpl implements ICameraControlService {
         return GBResult.ok();
     }
 
+    @Override
+    public GBResult NET_DVR_PTZSelZoomIn(String producer, String ip, Integer port, String userName, String password, JSONObject framePos) {
+        if (producer.equals("hikvision")) {
+            return this.hikvisionSetZoomIn(producer, ip, port, userName, password, framePos);
+        }
+
+        return GBResult.ok();
+    }
+
     /**
      * 开航摄像头云台移动
      * @param ip
@@ -132,6 +141,28 @@ public class CameraControlServiceImpl implements ICameraControlService {
             hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
             return GBResult.ok();
         }
+
+        return GBResult.ok();
+    }
+
+    private GBResult hikvisionSetZoomIn(String producer, String ip, Integer port, String userName, String password, JSONObject framePos) {
+        HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+
+        // 1.初始化sdk并登录设备
+        GBResult initResult = this.initAndLoginSDK(hcNetSDK, ip, port, userName, password);
+        int initCode = initResult.getCode();
+        if (initCode != 200) {
+            return initResult;
+        }
+
+        HCNetSDK.NET_DVR_POINT_FRAME net_dvr_point_frame = new HCNetSDK.NET_DVR_POINT_FRAME();
+        net_dvr_point_frame.xTop = framePos.getInteger("left");
+        net_dvr_point_frame.xBottom = framePos.getInteger("right");
+        net_dvr_point_frame.yTop = framePos.getInteger("top");
+        net_dvr_point_frame.yBottom = framePos.getInteger("bottom");
+        net_dvr_point_frame.write();
+
+        hcNetSDK.NET_DVR_PTZSelZoomIn_EX(lUserID, new NativeLong(1), net_dvr_point_frame);
 
         return GBResult.ok();
     }

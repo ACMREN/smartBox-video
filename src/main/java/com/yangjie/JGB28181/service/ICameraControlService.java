@@ -28,4 +28,7 @@ public interface ICameraControlService {
 
     GBResult setDVRConfig(String producer, String ip, Integer port, String userName, String password,
                           Integer command, JSONObject settingJson);
+
+    GBResult NET_DVR_PTZSelZoomIn(String producer, String ip, Integer port, String userName, String password,
+                                  JSONObject framePos);
 }
