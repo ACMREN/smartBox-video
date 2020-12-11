@@ -230,9 +230,15 @@ public class RtmpRecorder extends Observer {
      */
     private void saveRecordFileInfo(RecordVideoInfo recordVideoInfo) {
         this.recordVideoInfo = recordVideoInfo;
-        this.recordVideoInfo.setDeviceBaseId(deviceBaseId);
-        this.recordVideoInfo.setStartTime(LocalDateTime.now());
-        this.recordVideoInfo.setFilePath(address);
+        if (null == recordVideoInfo.getDeviceBaseId()) {
+            this.recordVideoInfo.setDeviceBaseId(deviceBaseId);
+        }
+        if (null == recordVideoInfo.getStartTime()) {
+            this.recordVideoInfo.setStartTime(LocalDateTime.now());
+        }
+        if (null == recordVideoInfo.getFilePath()) {
+            this.recordVideoInfo.setFilePath(address);
+        }
         recordVideoInfoService.saveOrUpdate(recordVideoInfo);
     }
 

@@ -27,8 +27,8 @@ public class RecordNameUtils {
     private static String getRecordFileName(String filePath) {
         calendar.setTime(new Date());
 
-        String fileName = "record_" + calendar.getTimeInMillis();
-        String recordAddress = filePath + fileName + ".flv";
+        String fileName = "record_" + calendar.getTimeInMillis() + ".flv";
+        String recordAddress = filePath + fileName;
         File recordFile = new File(recordAddress);
         if (recordFile.exists()) {
             getRecordFileName(filePath);
