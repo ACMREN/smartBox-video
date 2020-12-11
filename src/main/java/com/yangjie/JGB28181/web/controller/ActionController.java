@@ -1312,7 +1312,7 @@ public class ActionController implements OnProcessListener {
 		Integer offset = (pageNo - 1) * pageSize;
 
 		List<RecordVideoInfo> recordVideoInfos = recordVideoInfoService.getBaseMapper().selectList(new QueryWrapper<RecordVideoInfo>().in("device_base_id", deviceBaseIds)
-				.gt("start_time", beginTime).lt("end_time", endTime).last("limit" + offset + "," + pageSize));
+				.gt("start_time", beginTime).lt("end_time", endTime).last("limit " + offset + "," + pageSize));
 
 		return GBResult.ok(recordVideoInfos);
 	}
