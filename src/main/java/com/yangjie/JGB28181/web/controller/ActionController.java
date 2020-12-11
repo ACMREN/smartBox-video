@@ -1118,7 +1118,17 @@ public class ActionController implements OnProcessListener {
 		}
 		CameraPojo rtspPojo = (CameraPojo) verifyResult.getData();
 
-		return cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
+		GBResult posResult = cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
+		JSONObject posJson = (JSONObject) posResult.getData();
+		Integer pPos = posJson.getInteger("p");
+		Integer tPos = posJson.getInteger("t");
+		Integer zPos = posJson.getInteger("z");
+		// 转换结果
+		posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
+		posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
+		posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
+
+		return GBResult.ok(posJson);
 	}
 
 	/**
@@ -1154,9 +1164,9 @@ public class ActionController implements OnProcessListener {
 		Integer tPos = posJson.getInteger("t");
 		Integer zPos = posJson.getInteger("z");
 		JSONObject presetPos = new JSONObject();
-		presetPos.put("pPos", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
-		presetPos.put("tPos", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
-		presetPos.put("zPos", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
+		presetPos.put("pPos", pPos.shortValue());
+		presetPos.put("tPos", tPos.shortValue());
+		presetPos.put("zPos", zPos.shortValue());
 
 		// 5. 插入或更新数据库
 		PresetInfo presetInfo = new PresetInfo();
