@@ -120,6 +120,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
             Integer tPos = settingJson.getInteger("tPos");
             Integer zPos = settingJson.getInteger("zPos");
 
+            net_dvr_ptzpos.wAction = 1;
             net_dvr_ptzpos.wPanPos = pPos.shortValue();
             net_dvr_ptzpos.wTiltPos = tPos.shortValue();
             net_dvr_ptzpos.wZoomPos = zPos.shortValue();
