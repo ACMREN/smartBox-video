@@ -3,7 +3,9 @@ package com.yangjie.JGB28181.media.server.remux;
 import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.utils.RecordNameUtils;
 import com.yangjie.JGB28181.common.utils.StreamNameUtils;
+import com.yangjie.JGB28181.entity.RecordVideoInfo;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
+import com.yangjie.JGB28181.service.RecordVideoInfoService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
@@ -14,13 +16,17 @@ import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+@Component
 public class RtmpRecorder extends Observer {
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -54,8 +60,13 @@ public class RtmpRecorder extends Observer {
 
     private LocalDate localDate;
 
+    private RecordVideoInfo recordVideoInfo;
+
     public FFmpegFrameGrabber grabber = null;
     public CustomFFmpegFrameRecorder recorder = null;
+
+    @Autowired
+    private RecordVideoInfoService recordVideoInfoService;
 
     public String getDeviceId() {
         return deviceId;
@@ -71,6 +82,9 @@ public class RtmpRecorder extends Observer {
         this.address = address;
         this.callId = callId;
     }
+
+    public RtmpRecorder() {}
+
     @Override
     public void onMediaStream(byte[] data, int offset,int length,boolean isAudio) throws Exception{
         if(!isAudio){
@@ -129,6 +143,9 @@ public class RtmpRecorder extends Observer {
             // 设置recorder的参数
             this.setRecorderOption();
             recorder.start();
+            // 在数据库新建录像文件的信息
+            this.saveRecordFileInfo(new RecordVideoInfo());
+
             AVPacket avPacket;
             Frame frame;
 
@@ -208,6 +225,18 @@ public class RtmpRecorder extends Observer {
     }
 
     /**
+     * 在数据库新建录像文件的信息
+     * @param recordVideoInfo
+     */
+    private void saveRecordFileInfo(RecordVideoInfo recordVideoInfo) {
+        this.recordVideoInfo = recordVideoInfo;
+        this.recordVideoInfo.setDeviceBaseId(deviceBaseId);
+        this.recordVideoInfo.setStartTime(LocalDateTime.now());
+        this.recordVideoInfo.setFilePath(address);
+        recordVideoInfoService.saveOrUpdate(recordVideoInfo);
+    }
+
+    /**
      * 超过单个文件最长时间则进行重新录像
      * @throws FrameRecorder.Exception
      */
@@ -215,11 +244,20 @@ public class RtmpRecorder extends Observer {
         long timestamp = recorder.getTimestamp();
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
             recorder.stop();
+
+            recordVideoInfo.setEndTime(LocalDateTime.now());
+            recordVideoInfo.setFileSize(file.length());
+            // 更新原有的录像文件信息
+            this.saveRecordFileInfo(recordVideoInfo);
+
             address = RecordNameUtils.recordVideoFileAddress(streamName);
             file = new File(address);
             recorder = new CustomFFmpegFrameRecorder(address, 1280, 720);
             this.setRecorderOption();
             recorder.start();
+
+            // 新建一条录像文件信息
+            this.saveRecordFileInfo(new RecordVideoInfo());
         }
     }
 
@@ -230,11 +268,20 @@ public class RtmpRecorder extends Observer {
     private void restartRecorderWithMaxSize() throws FrameRecorder.Exception {
         if (file.length() > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordStSize())) {
             recorder.stop();
+
+            recordVideoInfo.setEndTime(LocalDateTime.now());
+            recordVideoInfo.setFileSize(file.length());
+            // 更新原有的录像文件信息
+            this.saveRecordFileInfo(recordVideoInfo);
+
             address = RecordNameUtils.recordVideoFileAddress(streamName);
             file = new File(address);
             recorder = new CustomFFmpegFrameRecorder(address, 1280, 720);
             this.setRecorderOption();
             recorder.start();
+
+            // 新建一条录像文件信息
+            this.saveRecordFileInfo(new RecordVideoInfo());
         }
     }
 

@@ -41,3 +41,13 @@ CREATE TABLE `preset_info` (
     preset_pos TEXT COMMENT '预置点点位信息',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='预置点信息表';
+
+CREATE TABLE `record_video_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    device_base_id INT(10) NOT NULL COMMENT '基础设备id',
+    file_path VARCHAR(500) NOT NULL COMMENT '文件路径',
+    start_time DATETIME NOT NULL COMMENT '开始时间',
+    end_time DATETIME DEFAULT NULL COMMENT '结束时间',
+    file_size BIGINT(20) DEFAULT NULL COMMENT '文件大小',
+    PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='录像文件信息表';

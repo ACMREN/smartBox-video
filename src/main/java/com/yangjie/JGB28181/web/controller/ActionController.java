@@ -675,7 +675,7 @@ public class ActionController implements OnProcessListener {
 					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				} else {
 					String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
-					observer = new RtmpRecorder("/tmp/test/record1.flv", callId);
+					observer = new RtmpRecorder(recordAddress, callId);
 					((RtmpRecorder) observer).setDeviceId(streamName);
 					recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
 							observer, recordAddress);
@@ -1262,6 +1262,11 @@ public class ActionController implements OnProcessListener {
 		return GBResult.fail();
 	}
 
+	/**
+	 * 控制云台图像放大
+	 * @param controlCondition
+	 * @return
+	 */
 	@RequestMapping("setPTZZoom")
 	public GBResult setPTZZoom(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
