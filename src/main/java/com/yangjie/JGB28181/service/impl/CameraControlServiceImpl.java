@@ -114,6 +114,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
         }
         // 如果是设置云台位置
         if (HCNetSDK.NET_DVR_SET_PTZPOS == command) {
+            System.out.println("=============开始写入位置参数=============");
             // 3.设置PTZPOS参数
             Integer pPos = settingJson.getInteger("pPos");
             Integer tPos = settingJson.getInteger("tPos");
@@ -124,6 +125,8 @@ public class CameraControlServiceImpl implements ICameraControlService {
             net_dvr_ptzpos.wZoomPos = zPos.shortValue();
 
             net_dvr_ptzpos.write();
+            System.out.println("=============结束写入位置参数=============");
+            System.out.println("=============位置参数：p:" + pPos + ",t:" + tPos + ", z:" + zPos + "=============");
 
             hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
             return GBResult.ok();

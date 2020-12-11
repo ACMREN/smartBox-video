@@ -1237,6 +1237,7 @@ public class ActionController implements OnProcessListener {
 		Integer psId = controlCondition.getPsIds().get(0);
 		List<Integer> deviceIds = new ArrayList<>();
 		deviceIds.add(deviceBaseId);
+		System.out.println("psId : " + psId);
 
 		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
 		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
@@ -1255,10 +1256,10 @@ public class ActionController implements OnProcessListener {
 			String presetPos = presetInfo.getPresetPos();
 			JSONObject presetPosJson = JSONObject.parseObject(presetPos);
 
-			cameraControlService.setDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(),
+			return cameraControlService.setDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(),
 					rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS, presetPosJson);
 		}
-		return GBResult.ok();
+		return GBResult.fail();
 	}
 
 	@RequestMapping("setPTZZoom")
