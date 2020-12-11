@@ -6,6 +6,7 @@ import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.entity.RecordVideoInfo;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.service.RecordVideoInfoService;
+import com.yangjie.JGB28181.service.impl.RecordVideoInfoServiceImpl;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
@@ -17,8 +18,11 @@ import org.bytedeco.javacv.FrameRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -65,8 +69,7 @@ public class RtmpRecorder extends Observer {
     public FFmpegFrameGrabber grabber = null;
     public CustomFFmpegFrameRecorder recorder = null;
 
-    @Autowired
-    private RecordVideoInfoService recordVideoInfoService;
+    private static ApplicationContext applicationContext;
 
     public String getDeviceId() {
         return deviceId;
@@ -84,6 +87,11 @@ public class RtmpRecorder extends Observer {
     }
 
     public RtmpRecorder() {}
+
+    // 通过applicationContext上下文获取Config类
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+        RtmpRecorder.applicationContext = applicationContext;
+    }
 
     @Override
     public void onMediaStream(byte[] data, int offset,int length,boolean isAudio) throws Exception{
@@ -122,6 +130,8 @@ public class RtmpRecorder extends Observer {
     public void run() {
         Long pts  = 0L;
         try{
+            this.saveRecordFileInfo(new RecordVideoInfo());
+
             //pis = new PipedInputStream(pos,1024*1024);
             pis = new PipedInputStream(pos, 1024);
             grabber = new FFmpegFrameGrabber(pis,0);
@@ -144,7 +154,6 @@ public class RtmpRecorder extends Observer {
             this.setRecorderOption();
             recorder.start();
             // 在数据库新建录像文件的信息
-            this.saveRecordFileInfo(new RecordVideoInfo());
 
             AVPacket avPacket;
             Frame frame;
@@ -239,6 +248,7 @@ public class RtmpRecorder extends Observer {
         if (null == recordVideoInfo.getFilePath()) {
             this.recordVideoInfo.setFilePath(address);
         }
+        RecordVideoInfoServiceImpl recordVideoInfoService = (RecordVideoInfoServiceImpl) applicationContext.getBean("recordVideoInfoServiceImpl");
         recordVideoInfoService.saveOrUpdate(this.recordVideoInfo);
     }
 

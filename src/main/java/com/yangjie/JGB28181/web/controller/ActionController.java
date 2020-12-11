@@ -675,7 +675,7 @@ public class ActionController implements OnProcessListener {
 					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				} else {
 					String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
-					observer = new RtmpRecorder(recordAddress, callId);
+					observer = new RtmpRecorder("/tmp/record1.flv", callId);
 					((RtmpRecorder) observer).setDeviceId(streamName);
 					recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
 							observer, recordAddress);
