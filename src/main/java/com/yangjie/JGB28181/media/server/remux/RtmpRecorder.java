@@ -239,7 +239,7 @@ public class RtmpRecorder extends Observer {
         if (null == recordVideoInfo.getFilePath()) {
             this.recordVideoInfo.setFilePath(address);
         }
-        recordVideoInfoService.saveOrUpdate(recordVideoInfo);
+        recordVideoInfoService.saveOrUpdate(this.recordVideoInfo);
     }
 
     /**
