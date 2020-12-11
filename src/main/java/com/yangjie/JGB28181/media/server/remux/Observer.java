@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.media.server.remux;
 
 import com.yangjie.JGB28181.media.callback.OnProcessListener;
+import org.springframework.context.ApplicationContext;
 
 public abstract class Observer  extends Thread{
 
@@ -10,7 +11,7 @@ public abstract class Observer  extends Thread{
 
 	public abstract void onPts(long pts,boolean isAudio); 
 
-	public abstract void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId, String streamName);
+	public abstract void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId, String streamName, ApplicationContext applicationContext);
 
 	public abstract void stopRemux();
 

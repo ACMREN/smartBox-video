@@ -66,10 +66,10 @@ public class RtmpRecorder extends Observer {
 
     private RecordVideoInfo recordVideoInfo;
 
+    private ApplicationContext applicationContext;
+
     public FFmpegFrameGrabber grabber = null;
     public CustomFFmpegFrameRecorder recorder = null;
-
-    private static ApplicationContext applicationContext;
 
     public String getDeviceId() {
         return deviceId;
@@ -87,11 +87,6 @@ public class RtmpRecorder extends Observer {
     }
 
     public RtmpRecorder() {}
-
-    // 通过applicationContext上下文获取Config类
-    public static void setApplicationContext(ApplicationContext applicationContext) {
-        RtmpRecorder.applicationContext = applicationContext;
-    }
 
     @Override
     public void onMediaStream(byte[] data, int offset,int length,boolean isAudio) throws Exception{
@@ -130,8 +125,6 @@ public class RtmpRecorder extends Observer {
     public void run() {
         Long pts  = 0L;
         try{
-            this.saveRecordFileInfo(new RecordVideoInfo());
-
             //pis = new PipedInputStream(pos,1024*1024);
             pis = new PipedInputStream(pos, 1024);
             grabber = new FFmpegFrameGrabber(pis,0);
@@ -154,6 +147,7 @@ public class RtmpRecorder extends Observer {
             this.setRecorderOption();
             recorder.start();
             // 在数据库新建录像文件的信息
+            this.saveRecordFileInfo(new RecordVideoInfo());
 
             AVPacket avPacket;
             Frame frame;
@@ -320,12 +314,13 @@ public class RtmpRecorder extends Observer {
         this.mRunning = false;
     }
     @Override
-    public void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId, String streamName) {
+    public void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId, String streamName, ApplicationContext applicationContext) {
         this.cid = cid;
         this.isTest = isTest;
         this.toHls = toHls;
         this.deviceBaseId = deviceId;
         this.streamName = streamName;
+        this.applicationContext = applicationContext;
         this.start();
     }
 }

@@ -14,6 +14,7 @@ import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * rtmp 推流器
@@ -49,6 +50,8 @@ public class RtmpPusher extends Observer{
 	private Integer toHls;
 
 	private String steamName;
+
+	private ApplicationContext applicationContext;
 
 	public FFmpegFrameGrabber grabber = null;
 	public CustomFFmpegFrameRecorder recorder = null;
@@ -201,12 +204,13 @@ public class RtmpPusher extends Observer{
 		this.mRunning = false;
 	}
 	@Override
-	public void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId, String streamName) {
+	public void startRemux(Integer isTest, Integer cid, Integer toHls, Integer deviceId, String streamName, ApplicationContext applicationContext) {
 		this.cid = cid;
 		this.isTest = isTest;
 		this.toHls = toHls;
 		this.deviceBaseId = deviceId;
 		this.steamName = streamName;
+		this.applicationContext = applicationContext;
 		this.start();
 	}
 

@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -94,6 +95,9 @@ public class ActionController implements OnProcessListener {
 
 	@Autowired
 	private PresetInfoService presetInfoService;
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	private MessageManager mMessageManager = MessageManager.getInstance();
 
@@ -684,7 +688,7 @@ public class ActionController implements OnProcessListener {
 
 				server.subscribe(observer);
 				server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName, id);
-				observer.startRemux(isTest, cid, toHls, id, streamName);
+				observer.startRemux(isTest, cid, toHls, id, streamName, applicationContext);
 				ActionController.gbServerMap.put(callId, observer);
 
 				observer.setOnProcessListener(this);
