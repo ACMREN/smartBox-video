@@ -23,6 +23,7 @@ import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.PresetInfo;
+import com.yangjie.JGB28181.entity.RecordVideoInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
@@ -33,10 +34,7 @@ import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.media.codec.Frame;
 import com.yangjie.JGB28181.media.server.remux.RtmpRecorder;
 import com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher;
-import com.yangjie.JGB28181.service.CameraInfoService;
-import com.yangjie.JGB28181.service.ICameraControlService;
-import com.yangjie.JGB28181.service.IDeviceManagerService;
-import com.yangjie.JGB28181.service.PresetInfoService;
+import com.yangjie.JGB28181.service.*;
 import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -98,6 +96,9 @@ public class ActionController implements OnProcessListener {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+
+	@Autowired
+	private RecordVideoInfoService recordVideoInfoService;
 
 	private MessageManager mMessageManager = MessageManager.getInstance();
 
@@ -1291,6 +1292,20 @@ public class ActionController implements OnProcessListener {
 
 		// 2. 控制云台指定区域放大
 		cameraControlService.NET_DVR_PTZSelZoomIn(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), region);
+
+		return GBResult.ok();
+	}
+
+	@RequestMapping("listFileByDate")
+	public GBResult listFileByDate(@RequestBody ControlCondition controlCondition) {
+		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
+		String beginTime = controlCondition.getBegin();
+		String endTime = controlCondition.getEnd();
+		Integer pageSize = controlCondition.getPageSize();
+		Integer pageNo = controlCondition.getPageNo();
+
+		recordVideoInfoService.getBaseMapper().selectList(new QueryWrapper<RecordVideoInfo>().in("device_base_id", deviceBaseIds)
+				.gt("start_time", beginTime).lt("end_time", endTime));
 
 		return GBResult.ok();
 	}

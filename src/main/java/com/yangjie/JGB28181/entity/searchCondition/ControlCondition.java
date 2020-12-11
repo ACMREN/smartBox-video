@@ -19,6 +19,8 @@ public class ControlCondition {
     /****************  对已注册设备进行控制  ****************/
     // 设备基础id
     private Integer deviceId;
+    // 设备基础id数组
+    private List<Integer> deviceIds = new ArrayList<>();
     // 控制参数
     private String direction;
     // 移动速度
@@ -29,4 +31,13 @@ public class ControlCondition {
     private List<Integer> psIds = new ArrayList<>();
     // 放大的区域参数
     private JSONObject region;
+    // 开始时间
+    private String begin;
+    // 结束时间
+    private String end;
+
+
+
+    private Integer pageSize;
+    private Integer pageNo;
 }

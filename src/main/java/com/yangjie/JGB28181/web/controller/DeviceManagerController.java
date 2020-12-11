@@ -205,7 +205,7 @@ public class DeviceManagerController {
     }
 
     @PostMapping(value = "setCameraConfig")
-    public GBResult setCameraConfig(CameraConfigBo cameraConfigBo) {
+    public GBResult setCameraConfig(@RequestBody CameraConfigBo cameraConfigBo) {
         this.cameraConfigBo.setRecordDir(cameraConfigBo.getRecordDir());
         this.cameraConfigBo.setRecordStTime(cameraConfigBo.getRecordStTime());
         this.cameraConfigBo.setRecordStSize(cameraConfigBo.getRecordStSize());

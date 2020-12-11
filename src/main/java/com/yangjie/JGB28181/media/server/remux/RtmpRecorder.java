@@ -254,7 +254,6 @@ public class RtmpRecorder extends Observer {
         long timestamp = recorder.getTimestamp();
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
             recorder.stop();
-
             recordVideoInfo.setEndTime(LocalDateTime.now());
             recordVideoInfo.setFileSize(file.length());
             // 更新原有的录像文件信息
