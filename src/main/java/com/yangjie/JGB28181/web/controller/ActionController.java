@@ -1296,6 +1296,11 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	/**
+	 * 根据日期查询录像
+	 * @param controlCondition
+	 * @return
+	 */
 	@RequestMapping("listFileByDate")
 	public GBResult listFileByDate(@RequestBody ControlCondition controlCondition) {
 		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
@@ -1304,10 +1309,12 @@ public class ActionController implements OnProcessListener {
 		Integer pageSize = controlCondition.getPageSize();
 		Integer pageNo = controlCondition.getPageNo();
 
-		recordVideoInfoService.getBaseMapper().selectList(new QueryWrapper<RecordVideoInfo>().in("device_base_id", deviceBaseIds)
-				.gt("start_time", beginTime).lt("end_time", endTime));
+		Integer offset = (pageNo - 1) * pageSize;
 
-		return GBResult.ok();
+		List<RecordVideoInfo> recordVideoInfos = recordVideoInfoService.getBaseMapper().selectList(new QueryWrapper<RecordVideoInfo>().in("device_base_id", deviceBaseIds)
+				.gt("start_time", beginTime).lt("end_time", endTime).last("limit" + offset + "," + pageSize));
+
+		return GBResult.ok(recordVideoInfos);
 	}
 
 	/**
