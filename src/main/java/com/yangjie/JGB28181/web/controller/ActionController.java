@@ -904,7 +904,7 @@ public class ActionController implements OnProcessListener {
 			}
 		}
 
-		String recordDir = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
+		String recordDir = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1"));
 		cameraPojo.setUsername(pojo.getUsername());
 		cameraPojo.setPassword(pojo.getPassword());
 		cameraPojo.setIp(IP);
