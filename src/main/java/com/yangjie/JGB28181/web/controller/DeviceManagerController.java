@@ -256,6 +256,12 @@ public class DeviceManagerController {
             properties.setProperty("config.snapShootTumbSize", cameraConfigBo.getSnapShootTumbSize());
             properties.setProperty("config.snapShootQual", cameraConfigBo.getSnapShootQual());
 
+            FileWriter fileWriter = new FileWriter(file);
+            properties.store(fileWriter, null);
+
+            fileWriter.flush();
+            fileWriter.close();
+            inputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
