@@ -1,5 +1,6 @@
 package com.yangjie.JGB28181.web.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.text.ParseException;
@@ -10,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
 import javax.sip.Dialog;
 import javax.sip.SipException;
 
@@ -31,15 +33,12 @@ import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.ControlCondition;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
-import com.yangjie.JGB28181.media.codec.Frame;
-import com.yangjie.JGB28181.media.server.remux.RtmpRecorder;
-import com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher;
+import com.yangjie.JGB28181.media.server.remux.*;
+import com.yangjie.JGB28181.media.server.remux.Observer;
 import com.yangjie.JGB28181.service.*;
 import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +57,6 @@ import com.yangjie.JGB28181.media.callback.OnProcessListener;
 import com.yangjie.JGB28181.media.server.Server;
 import com.yangjie.JGB28181.media.server.TCPServer;
 import com.yangjie.JGB28181.media.server.UDPServer;
-import com.yangjie.JGB28181.media.server.remux.Observer;
-import com.yangjie.JGB28181.media.server.remux.RtmpPusher;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.message.config.ConfigProperties;
@@ -141,6 +138,9 @@ public class ActionController implements OnProcessListener {
 
 	// rtsp设备的拉流map
 	public static Map<Integer, FrameGrabber> rtspDeviceGrabberMap = new HashMap<>(20);
+
+	// 国标设备拉流器map
+	public static Map<Integer, FrameGrabber> gbDeviceGrabberMap = new HashMap<>(20);
 
 	// rtsp设备的线程处理器map
 	public static Map<Integer, RtspToRtmpPusher> rtspPusherMap = new HashMap<>(20);
@@ -904,7 +904,7 @@ public class ActionController implements OnProcessListener {
 			}
 		}
 
-		String recordDir = "/tmp/" + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1") + "/record1.flv";
+		String recordDir = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
 		cameraPojo.setUsername(pojo.getUsername());
 		cameraPojo.setPassword(pojo.getPassword());
 		cameraPojo.setIp(IP);
@@ -924,6 +924,7 @@ public class ActionController implements OnProcessListener {
 		cameraPojo.setIsRecord(pojo.getIsRecord());
 		cameraPojo.setIsSwitch(pojo.getIsSwitch());
 		cameraPojo.setRecordDir(recordDir);
+		cameraPojo.setApplicationContext(applicationContext);
 
 		// 执行任务
 		CameraThread.MyRunnable job = new CameraThread.MyRunnable(cameraPojo);
@@ -1315,6 +1316,33 @@ public class ActionController implements OnProcessListener {
 				.gt("start_time", beginTime).lt("end_time", endTime).last("limit " + offset + "," + pageSize));
 
 		return GBResult.ok(recordVideoInfos);
+	}
+
+	/**
+	 * 视频截图
+	 * @param controlCondition
+	 * @return
+	 */
+	@RequestMapping("grabSnapshot")
+	public GBResult grabSnapShot(@RequestBody ControlCondition controlCondition) {
+		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
+
+		for (Integer deviceBaseId : deviceBaseIds) {
+			FFmpegFrameGrabber grabber = (FFmpegFrameGrabber) gbDeviceGrabberMap.get(deviceBaseId);
+			try {
+				Frame frame = grabber.grab();
+				Java2DFrameConverter converter = new Java2DFrameConverter();
+				BufferedImage image = converter.convert(frame);
+				ImageIO.write(image, "jpg", new File("/tmp/" + System.currentTimeMillis() + ".jpg"));
+				System.out.println(frame);
+			} catch (FrameGrabber.Exception e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return GBResult.ok();
 	}
 
 	/**

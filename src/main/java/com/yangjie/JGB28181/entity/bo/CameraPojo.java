@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.entity.bo;
 
 import lombok.Data;
+import org.springframework.context.ApplicationContext;
 
 import java.io.Serializable;
 
@@ -29,6 +30,8 @@ public class CameraPojo implements Serializable {
 	private Integer isRecord;// 是否录像功能
 	private Integer isSwitch;// 是否开启录像功能：0-关闭，1-开启
 	private String recordDir;// 录像路径
+
+	private ApplicationContext applicationContext;
 
 	public String getUsername() {
 		return username;

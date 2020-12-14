@@ -122,6 +122,7 @@ public class RtmpPusher extends Observer{
 				grabber.setOption("re", "");
 			}
 			grabber.start();
+			ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 

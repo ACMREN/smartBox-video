@@ -63,6 +63,9 @@ public class CameraThread {
                 CacheUtil.STREAMMAP.remove(cameraPojo.getToken());
                 ActionController.jobMap.remove(cameraPojo.getToken());
             } catch (Exception e) {
+                // 清除缓存
+                CacheUtil.STREAMMAP.remove(cameraPojo.getToken());
+                ActionController.jobMap.remove(cameraPojo.getToken());
                 e.printStackTrace();
                 logger.error("当前任务： " + cameraPojo.getRtsp() + "停止...");
             }
