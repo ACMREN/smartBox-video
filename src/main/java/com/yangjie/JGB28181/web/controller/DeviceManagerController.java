@@ -210,7 +210,7 @@ public class DeviceManagerController {
         this.cameraConfigBo.setRecordStTime(cameraConfigBo.getRecordStTime());
         this.cameraConfigBo.setRecordStSize(cameraConfigBo.getRecordStSize());
         this.cameraConfigBo.setRecordMaxNum(cameraConfigBo.getRecordMaxNum());
-        this.cameraConfigBo.setRecordInterval(cameraConfigBo.getStreamInterval());
+        this.cameraConfigBo.setRecordInterval(cameraConfigBo.getRecordInterval());
         this.cameraConfigBo.setRecordMaxRate(cameraConfigBo.getStreamMaxRate());
         this.cameraConfigBo.setRecordSize(cameraConfigBo.getRecordSize());
         this.cameraConfigBo.setStreamMaxRate(cameraConfigBo.getStreamMaxRate());
