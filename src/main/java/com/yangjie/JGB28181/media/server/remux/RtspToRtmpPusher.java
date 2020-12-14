@@ -254,7 +254,6 @@ public class RtspToRtmpPusher {
             record = new FFmpegFrameRecorder(cameraPojo.getRecordDir(), 1280, 720, 0);
         }
 
-//        record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围
         this.setRecorderOption();
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
@@ -382,7 +381,7 @@ public class RtspToRtmpPusher {
         record.setAudioChannels(audioChannels);
         record.setAudioBitrate(audioBitrate);
         record.setSampleRate(sampleRate);
-        record.setOption("maxrate", DeviceManagerController.cameraConfigBo.getRecordMaxRate());
+//        record.setOption("maxrate", DeviceManagerController.cameraConfigBo.getRecordMaxRate());
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
             // 封装格式flv
