@@ -255,14 +255,7 @@ public class RtspToRtmpPusher {
         }
 
 //        record.setVideoOption("crf", "40");// 画面质量参数，0~51；18~28是一个合理范围
-        record.setGopSize(2);
-        record.setFrameRate(framerate);
-        record.setVideoCodec(AV_CODEC_ID_H264);
-
-        record.setAudioChannels(audioChannels);
-        record.setAudioBitrate(audioBitrate);
-        record.setSampleRate(sampleRate);
-        record.setOption("maxrate", "2k");
+        this.setRecorderOption();
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
             // 封装格式flv
