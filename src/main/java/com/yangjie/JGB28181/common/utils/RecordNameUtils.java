@@ -35,4 +35,23 @@ public class RecordNameUtils {
         }
         return fileName;
     }
+
+    /**
+     * 获取截图地址
+     * @param streamName
+     * @return
+     */
+    public static String snapshotFileAddress(String streamName) {
+        String baseRecordDir = DeviceManagerController.cameraConfigBo.getSnapShootDir();
+        String dateDir = String.valueOf(calendar.get(Calendar.YEAR)) + String.valueOf(calendar.get(Calendar.MONTH) + 1) + String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        String snapshotDir = baseRecordDir + "/" + streamName + "/" + dateDir + "/";
+        File filePath = new File(snapshotDir);
+        if (!filePath.exists()) {
+            filePath.mkdirs();
+        }
+        calendar.setTime(new Date());
+        String snapshotName = "snap_" + calendar.getTimeInMillis() + ".jpg";
+
+        return snapshotDir + snapshotName;
+    }
 }

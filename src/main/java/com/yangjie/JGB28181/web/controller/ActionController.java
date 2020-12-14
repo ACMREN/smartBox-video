@@ -1328,13 +1328,19 @@ public class ActionController implements OnProcessListener {
 		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
 
 		for (Integer deviceBaseId : deviceBaseIds) {
-			FFmpegFrameGrabber grabber = (FFmpegFrameGrabber) gbDeviceGrabberMap.get(deviceBaseId);
+			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
+			String snapshotAddress = RecordNameUtils.snapshotFileAddress(StreamNameUtils.rtspPlay(String.valueOf(deviceBaseId), "1"));
 			try {
+				FrameGrabber grabber = null;
+				if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
+					grabber = (FFmpegFrameGrabber) gbDeviceGrabberMap.get(deviceBaseId);
+				} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
+					grabber = (CustomFFmpegFrameGrabber) rtspDeviceGrabberMap.get(deviceBaseId);
+				}
 				Frame frame = grabber.grab();
 				Java2DFrameConverter converter = new Java2DFrameConverter();
 				BufferedImage image = converter.convert(frame);
-				ImageIO.write(image, "jpg", new File("/tmp/" + System.currentTimeMillis() + ".jpg"));
-				System.out.println(frame);
+				ImageIO.write(image, "jpg", new File(snapshotAddress));
 			} catch (FrameGrabber.Exception e) {
 				e.printStackTrace();
 			} catch (IOException e) {
