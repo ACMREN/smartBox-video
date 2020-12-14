@@ -181,11 +181,10 @@ public class RtspToRtmpPusher {
 //            grabber.setOption("hwaccel", "cuvid");
 //            grabber.setVideoCodecName("h264_cuvid");
             grabber.setVideoCodec(AV_CODEC_ID_H264);
-            grabber.setVideoOption("resize", "1280x720");
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
         }
 
-        avutil.av_log_set_level(avutil.AV_LOG_ERROR);
+        avutil.av_log_set_level(avutil.AV_LOG_INFO);
         FFmpegLogCallback.set();
         // 设置采集器构造超时时间
         grabber.setOption("stimeout", "2000000");
@@ -205,8 +204,6 @@ public class RtspToRtmpPusher {
             logger.debug("******   grabber.start()    END     ******");
 
             // 开始之后ffmpeg会采集视频信息，之后就可以获取音视频信息
-            width = grabber.getImageWidth();
-            height = grabber.getImageHeight();
             // 若视频像素值为0，说明拉流异常，程序结束
             if (width == 0 && height == 0) {
                 logger.error(cameraPojo.getRtsp() + "  拉流异常！");
@@ -372,15 +369,12 @@ public class RtspToRtmpPusher {
         String recordSize = DeviceManagerController.cameraConfigBo.getRecordSize();
         Integer width = Integer.valueOf(recordSize.split("x")[0]);
         Integer height = Integer.valueOf(recordSize.split("x")[1]);
-        record.setGopSize(2);
+
         record.setFrameRate(framerate);
         record.setVideoCodec(AV_CODEC_ID_H264);
         record.setImageHeight(height);
         record.setImageWidth(width);
 
-        record.setAudioChannels(audioChannels);
-        record.setAudioBitrate(audioBitrate);
-        record.setSampleRate(sampleRate);
 //        record.setOption("maxrate", DeviceManagerController.cameraConfigBo.getRecordMaxRate());
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
