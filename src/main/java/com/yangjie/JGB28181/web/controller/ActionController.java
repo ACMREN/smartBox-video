@@ -1207,8 +1207,8 @@ public class ActionController implements OnProcessListener {
 	 * @param controlCondition
 	 * @return
 	 */
-	@RequestMapping("getPTZPerset")
-	public GBResult getPTZPerset(@RequestBody ControlCondition controlCondition) {
+	@RequestMapping("getPTZPreset")
+	public GBResult getPTZPreset(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
 		List<Integer> deviceIds = new ArrayList<>();
 		deviceIds.add(deviceBaseId);
