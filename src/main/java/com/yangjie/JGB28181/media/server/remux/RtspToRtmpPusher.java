@@ -185,7 +185,7 @@ public class RtspToRtmpPusher {
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
         }
 
-        avutil.av_log_set_level(avutil.AV_LOG_INFO);
+        avutil.av_log_set_level(avutil.AV_LOG_ERROR);
         FFmpegLogCallback.set();
         // 设置采集器构造超时时间
         grabber.setOption("stimeout", "2000000");
