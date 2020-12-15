@@ -14,9 +14,9 @@ public class RecordVideoInfoVo {
     private String endTime;
     private Long fileSize;
 
-    private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public RecordVideoInfoVo(RecordVideoInfo recordVideoInfo) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.id = recordVideoInfo.getId();
         this.deviceBaseId = recordVideoInfo.getDeviceBaseId();
         this.filePath = recordVideoInfo.getFilePath();

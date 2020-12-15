@@ -18,9 +18,9 @@ public class SnapshotInfoVo {
     private String type;
     private String alarmType;
 
-    private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public SnapshotInfoVo(SnapshotInfo snapshotInfo) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.id = snapshotInfo.getId();
         this.deviceBaseId = snapshotInfo.getDeviceBaseId();
         this.filePath = snapshotInfo.getFilePath();
