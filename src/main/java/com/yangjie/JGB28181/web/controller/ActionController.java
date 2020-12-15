@@ -1369,6 +1369,7 @@ public class ActionController implements OnProcessListener {
 			}
 
 			// 2. 保存到数据库
+			File snapshotFile = new File(snapshotAddress);
 			SnapshotInfo snapshotInfo = new SnapshotInfo();
 			snapshotInfo.setDeviceBaseId(deviceBaseId);
 			snapshotInfo.setFilePath(snapshotAddress);
@@ -1376,6 +1377,7 @@ public class ActionController implements OnProcessListener {
 			snapshotInfo.setCreateTime(LocalDateTime.now());
 			snapshotInfo.setType(3);
 			snapshotInfo.setAlarmType(0);
+			snapshotInfo.setFileSize(snapshotFile.length());
 			snapshotInfoService.save(snapshotInfo);
 		}
 

@@ -56,6 +56,7 @@ CREATE TABLE `snapshot_info` (
     id INT(10) AUTO_INCREMENT COMMENT '自增id',
     device_base_id INT(10) NOT NULL COMMENT '基础设备id',
     file_path VARCHAR(500) NOT NULL COMMENT '文件路径',
+    file_size BIGINT(20) DEFAULT NULL COMMENT '文件大小',
     thumbnail_path VARCHAR(500) NOT NULL COMMENT '缩略图路径',
     create_time DATETIME DEFAULT NULL COMMENT '截图时间',
     `type` TINYINT(2) NOT NULL COMMENT '截图类型：1-报警截图，2-AI截图，3-人工截图',

@@ -38,6 +38,11 @@ public class SnapshotInfo implements Serializable {
     private String filePath;
 
     /**
+     * 文件大小
+     */
+    private Long fileSize;
+
+    /**
      * 缩略图路径
      */
     private String thumbnailPath;

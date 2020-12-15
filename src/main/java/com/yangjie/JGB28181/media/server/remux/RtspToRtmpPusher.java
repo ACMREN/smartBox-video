@@ -86,11 +86,11 @@ public class RtspToRtmpPusher {
     // 设备信息
     private CameraPojo cameraPojo;
     // 录像信息
-    private RecordVideoInfo recordVideoInfo;
+    public RecordVideoInfo recordVideoInfo;
     // spring的上下文管理器
     private ApplicationContext applicationContext;
     // 录像文件
-    private File file;
+    public File file;
 
     public RtspToRtmpPusher() {
         super();
@@ -348,6 +348,12 @@ public class RtspToRtmpPusher {
                 grabber.close();
                 record.stop();
                 record.close();
+                // 如果是正在录像，则把录像信息保存一下
+                if (cameraPojo.getIsRecord() == 1) {
+                    recordVideoInfo.setEndTime(LocalDateTime.now());
+                    recordVideoInfo.setFileSize(file.length());
+                    this.saveRecordFileInfo(recordVideoInfo);
+                }
                 logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
                 break;
             } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {

@@ -306,6 +306,9 @@ public class RtmpRecorder extends Observer {
                 recorder.stop();
                 recorder.close();
             }
+            recordVideoInfo.setEndTime(LocalDateTime.now());
+            recordVideoInfo.setFileSize(file.length());
+            this.saveRecordFileInfo(recordVideoInfo);
         } catch (Exception e) {
             log.info(e.getMessage());
             e.printStackTrace();
