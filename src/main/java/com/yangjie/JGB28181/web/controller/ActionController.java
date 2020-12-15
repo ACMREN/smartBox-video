@@ -31,6 +31,7 @@ import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.ControlCondition;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
+import com.yangjie.JGB28181.entity.vo.RecordVideoInfoVo;
 import com.yangjie.JGB28181.media.server.remux.*;
 import com.yangjie.JGB28181.media.server.remux.Observer;
 import com.yangjie.JGB28181.service.*;
@@ -1327,7 +1328,13 @@ public class ActionController implements OnProcessListener {
 		List<RecordVideoInfo> recordVideoInfos = recordVideoInfoService.getBaseMapper().selectList(new QueryWrapper<RecordVideoInfo>().in("device_base_id", deviceBaseIds)
 				.gt("start_time", beginTime).lt("end_time", endTime).last("limit " + offset + "," + pageSize));
 
-		return GBResult.ok(recordVideoInfos);
+		List<RecordVideoInfoVo> resultList = new ArrayList<>();
+		for (RecordVideoInfo item : recordVideoInfos) {
+			RecordVideoInfoVo data = new RecordVideoInfoVo(item);
+			resultList.add(data);
+		}
+
+		return GBResult.ok(resultList);
 	}
 
 	/**
