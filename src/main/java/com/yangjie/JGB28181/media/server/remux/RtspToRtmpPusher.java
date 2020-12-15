@@ -385,6 +385,11 @@ public class RtspToRtmpPusher {
         record.setImageWidth(width);
         record.setVideoBitrate(Integer.valueOf(DeviceManagerController.cameraConfigBo.getRecordMaxRate()));
 
+        // 设置分片时间
+        if (cameraPojo.getToHls() == 1) {
+            record.setOption("hls_time", "10");
+        }
+
 //        record.setOption("maxrate", DeviceManagerController.cameraConfigBo.getRecordMaxRate());
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
@@ -419,6 +424,7 @@ public class RtspToRtmpPusher {
      */
     private void restartRecorderWithMaxTime() throws FrameRecorder.Exception {
         long timestamp = record.getTimestamp();
+        System.out.println(DeviceManagerController.cameraConfigBo.getRecordInterval());
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
             record.stop();
             recordVideoInfo.setEndTime(LocalDateTime.now());

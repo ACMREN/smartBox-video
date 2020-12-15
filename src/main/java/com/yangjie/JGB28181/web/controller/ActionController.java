@@ -159,7 +159,7 @@ public class ActionController implements OnProcessListener {
 
 	@PostMapping(value = "switchRecord")
 	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) {
-		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+		List<Integer> deviceIds = deviceBaseCondition.getDeviceIds();
 		Integer isSwitch = deviceBaseCondition.getIsSwitch();
 
 		// 关闭录像
@@ -187,6 +187,11 @@ public class ActionController implements OnProcessListener {
 					String callId = mediaData.getCallId();
 					data.put("deviceId", deviceId);
 					data.put("source", address);
+					// 如果是hls推流，则等待m3u8文件生成再返回
+					if (address.contains("m3u8")) {
+						File indexFile = new File(address);
+						FileUtils.waitFileMade(indexFile);
+					}
 					resultList.add(data);
 					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
 				} else {
@@ -209,6 +214,11 @@ public class ActionController implements OnProcessListener {
 					String callId = mediaData.getCallId();
 					data.put("deviceId", deviceId);
 					data.put("source", address);
+					// 如果是hls推流，则等待m3u8文件生成再返回
+					if (address.contains("m3u8")) {
+						File indexFile = new File(address);
+						FileUtils.waitFileMade(indexFile);
+					}
 					resultList.add(data);
 					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
 				} else {
@@ -1301,6 +1311,11 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	/**
+	 * 按照日期统计录像/截图数量和文件大小
+	 * @param controlCondition
+	 * @return
+	 */
 	@RequestMapping("countFileByDate")
 	public GBResult countFileByDate(@RequestBody ControlCondition controlCondition) {
 		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();

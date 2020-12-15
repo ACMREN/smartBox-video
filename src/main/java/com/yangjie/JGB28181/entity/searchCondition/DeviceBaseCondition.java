@@ -11,4 +11,6 @@ public class DeviceBaseCondition {
     private String type;
     // 是否开启推流
     private Integer isSwitch;
+    // 兼容参数
+    private List<Integer> deviceIds;
 }
