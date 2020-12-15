@@ -5,6 +5,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -22,10 +23,7 @@ import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.common.thread.CameraThread;
 import com.yangjie.JGB28181.common.utils.*;
-import com.yangjie.JGB28181.entity.CameraInfo;
-import com.yangjie.JGB28181.entity.DeviceBaseInfo;
-import com.yangjie.JGB28181.entity.PresetInfo;
-import com.yangjie.JGB28181.entity.RecordVideoInfo;
+import com.yangjie.JGB28181.entity.*;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
@@ -96,6 +94,9 @@ public class ActionController implements OnProcessListener {
 
 	@Autowired
 	private RecordVideoInfoService recordVideoInfoService;
+
+	@Autowired
+	private SnapshotInfoService snapshotInfoService;
 
 	private MessageManager mMessageManager = MessageManager.getInstance();
 
@@ -1297,13 +1298,24 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	@RequestMapping("getSnapshot")
+	public GBResult getSnapshot(@RequestBody ControlCondition controlCondition) {
+		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
+		String beginTime = controlCondition.getBegin();
+		String endTime = controlCondition.getEnd();
+		Integer pageSize = controlCondition.getPageSize();
+		Integer pageNo = controlCondition.getPageNo();
+
+		return GBResult.ok();
+	}
+
 	/**
 	 * 根据日期查询录像
 	 * @param controlCondition
 	 * @return
 	 */
-	@RequestMapping("listFileByDate")
-	public GBResult listFileByDate(@RequestBody ControlCondition controlCondition) {
+	@RequestMapping("getRecord")
+	public GBResult getRecord(@RequestBody ControlCondition controlCondition) {
 		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
 		String beginTime = controlCondition.getBegin();
 		String endTime = controlCondition.getEnd();
@@ -1326,10 +1338,15 @@ public class ActionController implements OnProcessListener {
 	@RequestMapping("grabSnapshot")
 	public GBResult grabSnapShot(@RequestBody ControlCondition controlCondition) {
 		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
+		String thumbnailSize = DeviceManagerController.cameraConfigBo.getSnapShootTumbSize();
+		Integer thumbnailWidth = Integer.valueOf(thumbnailSize.split("x")[0]);
+		Integer thumbnailHeight = Integer.valueOf(thumbnailSize.split("x")[1]);
 
 		for (Integer deviceBaseId : deviceBaseIds) {
+			// 1. 截图并生成缩略图，写入文件路径
 			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
 			String snapshotAddress = RecordNameUtils.snapshotFileAddress(StreamNameUtils.rtspPlay(String.valueOf(deviceBaseId), "1"));
+			String thumbnailAddress = RecordNameUtils.thumbnailFileAddress(StreamNameUtils.rtspPlay(String.valueOf(deviceBaseId), "1"));
 			try {
 				FrameGrabber grabber = null;
 				if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
@@ -1340,12 +1357,26 @@ public class ActionController implements OnProcessListener {
 				Frame frame = grabber.grab();
 				Java2DFrameConverter converter = new Java2DFrameConverter();
 				BufferedImage image = converter.convert(frame);
+				BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
+				thumbnailImage.getGraphics().drawImage(image, 0, 0, thumbnailWidth, thumbnailHeight, null);
+
+				ImageIO.write(thumbnailImage, "jpg", new File(thumbnailAddress));
 				ImageIO.write(image, "jpg", new File(snapshotAddress));
 			} catch (FrameGrabber.Exception e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
+			// 2. 保存到数据库
+			SnapshotInfo snapshotInfo = new SnapshotInfo();
+			snapshotInfo.setDeviceBaseId(deviceBaseId);
+			snapshotInfo.setFilePath(snapshotAddress);
+			snapshotInfo.setThumbnailPath(thumbnailAddress);
+			snapshotInfo.setCreateTime(LocalDateTime.now());
+			snapshotInfo.setType(3);
+			snapshotInfo.setAlarmType(0);
+			snapshotInfoService.save(snapshotInfo);
 		}
 
 		return GBResult.ok();
