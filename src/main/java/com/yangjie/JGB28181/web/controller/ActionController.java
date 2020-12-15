@@ -30,8 +30,10 @@ import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
 import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.searchCondition.ControlCondition;
 import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
+import com.yangjie.JGB28181.entity.vo.FileCountInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.entity.vo.RecordVideoInfoVo;
+import com.yangjie.JGB28181.entity.vo.SnapshotInfoVo;
 import com.yangjie.JGB28181.media.server.remux.*;
 import com.yangjie.JGB28181.media.server.remux.Observer;
 import com.yangjie.JGB28181.service.*;
@@ -1299,6 +1301,59 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	@RequestMapping("countFileByDate")
+	public GBResult countFileByDate(@RequestBody ControlCondition controlCondition) {
+		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
+		String beginTime = controlCondition.getBegin();
+		String endTime = controlCondition.getEnd();
+
+		// 1. 找出数据并进行组装
+		List<FileCountInfoVo> resultList = new ArrayList<>();
+		Map<String, FileCountInfoVo> resultMap = new HashMap<>();
+		for (Integer deviceBaseId : deviceBaseIds) {
+			// 1.1. 数据库找出数据
+			List<FileCountInfo> recordCountInfos = recordVideoInfoService.countDataByDate(deviceBaseId, beginTime, endTime);
+			List<FileCountInfo> snapshotCountInfos = snapshotInfoService.countDataByDate(deviceBaseId, beginTime, endTime);
+
+
+			// 1.2. 找出的数据转化成日期和数据的map
+			Map<String, FileCountInfo> recordCountInfoMap = recordCountInfos.stream().collect(Collectors.toMap(FileCountInfo::getDate, Function.identity()));
+			Map<String, FileCountInfo> snapshotCountInfoMap = snapshotCountInfos.stream().collect(Collectors.toMap(FileCountInfo::getDate, Function.identity()));
+
+			// 1.3. 把录像文件的信息放入到结果map中
+			for (String key : recordCountInfoMap.keySet()) {
+				FileCountInfoVo data = new FileCountInfoVo();
+				data.setRecord(recordCountInfoMap.get(key).getCount());
+				data.setRecordSize(recordCountInfoMap.get(key).getFileSize());
+				data.setTimestamp(key);
+				resultMap.put(recordCountInfoMap.get(key).getDate(), data);
+			}
+
+			// 1.4. 把截图文件的信息放入到结果map中
+			for (String key : snapshotCountInfoMap.keySet()) {
+				FileCountInfoVo data = resultMap.get(key);
+				if (null == data) {
+					data = new FileCountInfoVo();
+					data.setTimestamp(key);
+				}
+				data.setSnapshotCount(snapshotCountInfoMap.get(key).getCount());
+				data.setSnapshotSize(snapshotCountInfoMap.get(key).getFileSize());
+			}
+		}
+
+		// 2. 放入结果列表
+		for (String key : resultMap.keySet()) {
+			resultList.add(resultMap.get(key));
+		}
+
+		return GBResult.ok(resultList);
+	}
+
+	/**
+	 * 根据日期查询截图
+	 * @param controlCondition
+	 * @return
+	 */
 	@RequestMapping("getSnapshot")
 	public GBResult getSnapshot(@RequestBody ControlCondition controlCondition) {
 		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
@@ -1307,7 +1362,22 @@ public class ActionController implements OnProcessListener {
 		Integer pageSize = controlCondition.getPageSize();
 		Integer pageNo = controlCondition.getPageNo();
 
-		return GBResult.ok();
+		Integer offset = (pageNo - 1) * pageSize;
+
+		List<SnapshotInfo> snapshotInfos = snapshotInfoService.getBaseMapper()
+				.selectList(new QueryWrapper<SnapshotInfo>()
+						.in("device_base_id", deviceBaseIds)
+						.gt("create_time", beginTime)
+						.lt("create_time", endTime)
+						.last("limit " + offset + ", " + pageSize));
+
+		List<SnapshotInfoVo> resultList = new ArrayList<>();
+		for (SnapshotInfo snapshotInfo : snapshotInfos) {
+			SnapshotInfoVo snapshotInfoVo = new SnapshotInfoVo(snapshotInfo);
+			resultList.add(snapshotInfoVo);
+		}
+
+		return GBResult.ok(resultList);
 	}
 
 	/**
@@ -1325,8 +1395,12 @@ public class ActionController implements OnProcessListener {
 
 		Integer offset = (pageNo - 1) * pageSize;
 
-		List<RecordVideoInfo> recordVideoInfos = recordVideoInfoService.getBaseMapper().selectList(new QueryWrapper<RecordVideoInfo>().in("device_base_id", deviceBaseIds)
-				.gt("start_time", beginTime).lt("end_time", endTime).last("limit " + offset + "," + pageSize));
+		List<RecordVideoInfo> recordVideoInfos = recordVideoInfoService.getBaseMapper()
+				.selectList(new QueryWrapper<RecordVideoInfo>()
+						.in("device_base_id", deviceBaseIds)
+						.gt("start_time", beginTime)
+						.lt("end_time", endTime)
+						.last("limit " + offset + "," + pageSize));
 
 		List<RecordVideoInfoVo> resultList = new ArrayList<>();
 		for (RecordVideoInfo item : recordVideoInfos) {

@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yangjie.JGB28181.mapper.SnapshotInfoMapper">
 
+    <select id="countDataByDate" resultType="com.yangjie.JGB28181.entity.FileCountInfo">
+        select count(*) count, sum(file_size) fileSize, date_format(create_time, '%Y-%m-%d') date
+         from snapshot_info
+         where device_base_id = #{deviceBaseId}
+         and create_time >= #{startTime}
+         and create_time &lt;= #{endTime}
+         group by date_format(create_time, '%Y-%m-%d');
+    </select>
 </mapper>
