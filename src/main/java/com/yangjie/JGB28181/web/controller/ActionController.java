@@ -1386,13 +1386,21 @@ public class ActionController implements OnProcessListener {
 						.lt("create_time", endTime)
 						.last("limit " + offset + ", " + pageSize));
 
+		Integer total = snapshotInfoService.getBaseMapper()
+				.selectCount(new QueryWrapper<SnapshotInfo>()
+						.in("device_base_id", deviceBaseIds)
+						.gt("create_time", beginTime)
+						.lt("create_time", endTime));
+
 		List<SnapshotInfoVo> resultList = new ArrayList<>();
 		for (SnapshotInfo snapshotInfo : snapshotInfos) {
 			SnapshotInfoVo snapshotInfoVo = new SnapshotInfoVo(snapshotInfo);
 			resultList.add(snapshotInfoVo);
 		}
 
-		return GBResult.ok(resultList);
+		PageListVo pageListVo = new PageListVo(resultList, pageNo, pageSize, total);
+
+		return GBResult.ok(pageListVo);
 	}
 
 	/**
@@ -1417,13 +1425,21 @@ public class ActionController implements OnProcessListener {
 						.lt("end_time", endTime)
 						.last("limit " + offset + "," + pageSize));
 
+		Integer total = recordVideoInfoService.getBaseMapper()
+				.selectCount(new QueryWrapper<RecordVideoInfo>()
+						.in("device_base_id", deviceBaseIds)
+						.gt("start_time", beginTime)
+						.lt("end_time", endTime));
+
 		List<RecordVideoInfoVo> resultList = new ArrayList<>();
 		for (RecordVideoInfo item : recordVideoInfos) {
 			RecordVideoInfoVo data = new RecordVideoInfoVo(item);
 			resultList.add(data);
 		}
 
-		return GBResult.ok(resultList);
+		PageListVo pageListVo = new PageListVo(resultList, pageNo, pageSize, total);
+
+		return GBResult.ok(pageListVo);
 	}
 
 	/**

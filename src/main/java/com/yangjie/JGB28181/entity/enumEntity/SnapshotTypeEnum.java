@@ -21,8 +21,8 @@ public enum SnapshotTypeEnum {
         return name;
     }
 
-    public static TreeTypeEnum getDataByCode(int code) {
-        for (TreeTypeEnum item : TreeTypeEnum.values()) {
+    public static SnapshotTypeEnum getDataByCode(int code) {
+        for (SnapshotTypeEnum item : SnapshotTypeEnum.values()) {
             int itemCode = item.getCode();
             if (code == itemCode) {
                 return item;
@@ -31,8 +31,8 @@ public enum SnapshotTypeEnum {
         return null;
     }
 
-    public static TreeTypeEnum getDataByName(String name) {
-        for (TreeTypeEnum item : TreeTypeEnum.values()) {
+    public static SnapshotTypeEnum getDataByName(String name) {
+        for (SnapshotTypeEnum item : SnapshotTypeEnum.values()) {
             String itemName = item.getName();
             if (name.equals(itemName)) {
                 return item;

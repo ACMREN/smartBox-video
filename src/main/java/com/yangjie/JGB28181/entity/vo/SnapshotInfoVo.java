@@ -15,7 +15,7 @@ public class SnapshotInfoVo {
     private Long fileSize;
     private String thumbnailPath;
     private String createTime;
-    private String type;
+    private String remark;
     private String alarmType;
 
 
@@ -27,7 +27,9 @@ public class SnapshotInfoVo {
         this.fileSize = snapshotInfo.getFileSize();
         this.thumbnailPath = snapshotInfo.getThumbnailPath();
         this.createTime = df.format(snapshotInfo.getCreateTime());
-        this.type = SnapshotTypeEnum.getDataByCode(snapshotInfo.getType()).getName();
-        this.alarmType = AlarmTypeEnum.getDataByCode(snapshotInfo.getAlarmType()).getName();
+        this.remark = SnapshotTypeEnum.getDataByCode(snapshotInfo.getType()).getName();
+        if (snapshotInfo.getAlarmType().intValue() != 0) {
+            this.alarmType = AlarmTypeEnum.getDataByCode(snapshotInfo.getAlarmType()).getName();
+        }
     }
 }

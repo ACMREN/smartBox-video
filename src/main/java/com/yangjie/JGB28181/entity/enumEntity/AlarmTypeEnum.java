@@ -30,8 +30,8 @@ public enum AlarmTypeEnum {
         return name;
     }
 
-    public static TreeTypeEnum getDataByCode(int code) {
-        for (TreeTypeEnum item : TreeTypeEnum.values()) {
+    public static AlarmTypeEnum getDataByCode(int code) {
+        for (AlarmTypeEnum item : AlarmTypeEnum.values()) {
             int itemCode = item.getCode();
             if (code == itemCode) {
                 return item;
@@ -40,8 +40,8 @@ public enum AlarmTypeEnum {
         return null;
     }
 
-    public static TreeTypeEnum getDataByName(String name) {
-        for (TreeTypeEnum item : TreeTypeEnum.values()) {
+    public static AlarmTypeEnum getDataByName(String name) {
+        for (AlarmTypeEnum item : AlarmTypeEnum.values()) {
             String itemName = item.getName();
             if (name.equals(itemName)) {
                 return item;
