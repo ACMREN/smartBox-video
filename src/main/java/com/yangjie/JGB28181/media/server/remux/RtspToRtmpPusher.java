@@ -424,7 +424,6 @@ public class RtspToRtmpPusher {
      */
     private void restartRecorderWithMaxTime() throws FrameRecorder.Exception {
         long timestamp = record.getTimestamp();
-        System.out.println(DeviceManagerController.cameraConfigBo.getRecordInterval());
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
             record.stop();
             recordVideoInfo.setEndTime(LocalDateTime.now());

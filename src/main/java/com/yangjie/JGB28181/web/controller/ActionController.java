@@ -187,11 +187,6 @@ public class ActionController implements OnProcessListener {
 					String callId = mediaData.getCallId();
 					data.put("deviceId", deviceId);
 					data.put("source", address);
-					// 如果是hls推流，则等待m3u8文件生成再返回
-					if (address.contains("m3u8")) {
-						File indexFile = new File(address);
-						FileUtils.waitFileMade(indexFile);
-					}
 					resultList.add(data);
 					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
 				} else {
@@ -214,11 +209,6 @@ public class ActionController implements OnProcessListener {
 					String callId = mediaData.getCallId();
 					data.put("deviceId", deviceId);
 					data.put("source", address);
-					// 如果是hls推流，则等待m3u8文件生成再返回
-					if (address.contains("m3u8")) {
-						File indexFile = new File(address);
-						FileUtils.waitFileMade(indexFile);
-					}
 					resultList.add(data);
 					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
 				} else {
@@ -294,6 +284,11 @@ public class ActionController implements OnProcessListener {
 					String callId = mediaData.getCallId();
 					data.put("deviceId", deviceId);
 					data.put("source", address);
+					// 如果是hls推流，则等待m3u8文件生成再返回
+					if (address.contains("m3u8")) {
+						File indexFile = new File("/tmp/hls/" + address.split("/")[4] + "/index.m3u8");
+						FileUtils.waitFileMade(indexFile);
+					}
 					resultList.add(data);
 
 					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_HLS);

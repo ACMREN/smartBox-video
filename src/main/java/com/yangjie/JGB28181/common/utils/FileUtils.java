@@ -4,7 +4,9 @@ import java.io.File;
 
 public class FileUtils {
 
-    public static void waitFileMade(File file) {
+    public static void waitFileMade(File file) throws InterruptedException {
+        // 先休眠3s
+        Thread.sleep(3000);
         if (file.exists()) {
             return;
         }
