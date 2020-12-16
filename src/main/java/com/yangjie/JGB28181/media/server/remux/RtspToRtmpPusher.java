@@ -306,11 +306,10 @@ public class RtspToRtmpPusher {
                 if (null != frame) {
                     // 如果是正在截图，则把当前的帧数据复制一份到全局变量
                     if (ActionController.isSnapshot) {
-                        ActionController.snapshotFrame = frame;
+                        ActionController.snapshotFrame = frame.clone();
                         // 复制数据后把截图标志位设置为false
                         ActionController.isSnapshot = false;
                     }
-                    Long timeStamp = frame.timestamp;
                     if (isTest == 1) {
                         break;
                     }

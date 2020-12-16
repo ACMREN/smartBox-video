@@ -1456,6 +1456,7 @@ public class ActionController implements OnProcessListener {
 					return GBResult.build(500, "未能截图，请重新尝试", null);
 				}
 				Java2DFrameConverter converter = new Java2DFrameConverter();
+				System.out.println(ActionController.snapshotFrame.keyFrame);
 				BufferedImage image = converter.convert(ActionController.snapshotFrame);
 				BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
 				thumbnailImage.getGraphics().drawImage(image, 0, 0, thumbnailWidth, thumbnailHeight, null);
