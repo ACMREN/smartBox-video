@@ -301,7 +301,10 @@ public class RtspToRtmpPusher {
             try {
                 // 用于中断线程时，结束该循环
                 nowThread.sleep(0);
-                Frame frame = grabber.grab();
+                Frame frame;
+                synchronized (grabber) {
+                    frame = grabber.grab();
+                }
                 if (null != frame) {
                     Long timeStamp = frame.timestamp;
                     if (isTest == 1) {

@@ -1447,7 +1447,10 @@ public class ActionController implements OnProcessListener {
 				} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
 					grabber = (CustomFFmpegFrameGrabber) rtspDeviceGrabberMap.get(deviceBaseId);
 				}
-				Frame frame = grabber.grab();
+				Frame frame;
+				synchronized (grabber) {
+					frame = grabber.grab();
+				}
 				Java2DFrameConverter converter = new Java2DFrameConverter();
 				BufferedImage image = converter.convert(frame);
 				BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
