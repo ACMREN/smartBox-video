@@ -303,11 +303,13 @@ public class RtspToRtmpPusher {
                 nowThread.sleep(0);
                 Frame frame;
                 frame = grabber.grab();
-                // 如果是正在截图，则把当前的帧数据复制一份到全局变量
-                if (ActionController.isSnapshot) {
-                    ActionController.snapshotFrame = frame;
-                }
                 if (null != frame) {
+                    // 如果是正在截图，则把当前的帧数据复制一份到全局变量
+                    if (ActionController.isSnapshot) {
+                        ActionController.snapshotFrame = frame;
+                        // 复制数据后把截图标志位设置为false
+                        ActionController.isSnapshot = false;
+                    }
                     Long timeStamp = frame.timestamp;
                     if (isTest == 1) {
                         break;
