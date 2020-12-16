@@ -1333,7 +1333,7 @@ public class ActionController implements OnProcessListener {
 			// 1.3. 把录像文件的信息放入到结果map中
 			for (String key : recordCountInfoMap.keySet()) {
 				FileCountInfoVo data = new FileCountInfoVo();
-				data.setRecord(recordCountInfoMap.get(key).getCount());
+				data.setRecordCount(recordCountInfoMap.get(key).getCount());
 				data.setRecordSize(recordCountInfoMap.get(key).getFileSize());
 				data.setTimestamp(key);
 				resultMap.put(recordCountInfoMap.get(key).getDate(), data);

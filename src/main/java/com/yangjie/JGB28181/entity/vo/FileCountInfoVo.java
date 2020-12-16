@@ -7,6 +7,6 @@ public class FileCountInfoVo {
     private String timestamp;
     private Integer snapshotCount;
     private Long snapshotSize;
-    private Integer record;
+    private Integer recordCount;
     private Long recordSize;
 }
