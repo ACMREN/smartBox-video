@@ -3,6 +3,7 @@ package com.yangjie.JGB28181.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.common.utils.IDUtils;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
 import com.yangjie.JGB28181.entity.PageListVo;
@@ -18,6 +19,7 @@ import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.entity.vo.TreeInfoVo;
+import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
@@ -72,6 +74,9 @@ public class DeviceManagerController {
 
     @Autowired
     private TreeInfoService treeInfoService;
+
+    @Autowired
+    private SipLayer mSipLayer;
 
     public static ServerInfoBo serverInfoBo = new ServerInfoBo();
 
@@ -540,6 +545,26 @@ public class DeviceManagerController {
         } else {
             data.setPollingList(pollingList);
             treeInfoService.updateById(data);
+        }
+
+        return GBResult.ok();
+    }
+
+    @RequestMapping(value = "testSendRegister")
+    public GBResult testSendRegister(@RequestBody ServerInfoBo serverInfoBo) {
+        String serverId = serverInfoBo.getId();
+        String serverDomain = serverInfoBo.getDomain();
+        String serverIp = serverInfoBo.getHost();
+        String serverPort = serverInfoBo.getPort();
+        String password = serverInfoBo.getPw();
+        Long cseq = 1L;
+        String callId = IDUtils.id();
+        String fromTag = IDUtils.id();
+        callId = "platform-" + callId;
+        try	{
+            mSipLayer.sendRegister(serverId, serverDomain, serverIp, serverPort, password, callId, fromTag, null, null, null, cseq);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return GBResult.ok();
