@@ -157,6 +157,10 @@ public class ActionController implements OnProcessListener {
 
 	public static List<Integer> failCidList = new ArrayList<>(20);
 
+	public static boolean isSnapshot = false;
+
+	public static Frame snapshotFrame = null;
+
 	@PostMapping(value = "switchRecord")
 	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceIds();
@@ -1441,18 +1445,18 @@ public class ActionController implements OnProcessListener {
 			String snapshotAddress = RecordNameUtils.snapshotFileAddress(StreamNameUtils.rtspPlay(String.valueOf(deviceBaseId), "1"));
 			String thumbnailAddress = RecordNameUtils.thumbnailFileAddress(StreamNameUtils.rtspPlay(String.valueOf(deviceBaseId), "1"));
 			try {
+				ActionController.isSnapshot = true;
 				FrameGrabber grabber = null;
 				if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
 					grabber = (FFmpegFrameGrabber) gbDeviceGrabberMap.get(deviceBaseId);
 				} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
 					grabber = (CustomFFmpegFrameGrabber) rtspDeviceGrabberMap.get(deviceBaseId);
 				}
-				Frame frame;
-				synchronized (grabber) {
-					frame = grabber.grab();
+				if (ActionController.snapshotFrame == null) {
+					return GBResult.build(500, "未能截图，请重新尝试", null);
 				}
 				Java2DFrameConverter converter = new Java2DFrameConverter();
-				BufferedImage image = converter.convert(frame);
+				BufferedImage image = converter.convert(ActionController.snapshotFrame);
 				BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
 				thumbnailImage.getGraphics().drawImage(image, 0, 0, thumbnailWidth, thumbnailHeight, null);
 
