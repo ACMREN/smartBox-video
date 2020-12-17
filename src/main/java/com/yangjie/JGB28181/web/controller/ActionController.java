@@ -155,11 +155,17 @@ public class ActionController implements OnProcessListener {
 	// 国标设备服务器map
 	public static Map<String, Observer> gbServerMap = new HashMap<>(20);
 
+	// 失败设备id列表
 	public static List<Integer> failCidList = new ArrayList<>(20);
 
-	public static boolean isSnapshot = false;
+	// 截图标志位map
+	public static Map<Integer, Boolean> deviceSnapshotMap = new HashMap<>(20);
 
-	public static Frame snapshotFrame = null;
+	// 截图地址map
+	public static Map<Integer, JSONObject> snapshotAddressMap = new HashMap<>();
+
+	// 截图锁对象
+	private static Object snapshotLock = new Object();
 
 	@PostMapping(value = "switchRecord")
 	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) {
@@ -1433,56 +1439,18 @@ public class ActionController implements OnProcessListener {
 	 * @return
 	 */
 	@RequestMapping("grabSnapshot")
-	public GBResult grabSnapShot(@RequestBody ControlCondition controlCondition) {
-		List<Integer> deviceBaseIds = controlCondition.getDeviceIds();
-		String thumbnailSize = DeviceManagerController.cameraConfigBo.getSnapShootTumbSize();
-		Integer thumbnailWidth = Integer.valueOf(thumbnailSize.split("x")[0]);
-		Integer thumbnailHeight = Integer.valueOf(thumbnailSize.split("x")[1]);
+	public GBResult grabSnapShot(@RequestBody ControlCondition controlCondition) throws InterruptedException {
+		synchronized (snapshotLock) {
+			Integer deviceBaseId = controlCondition.getDeviceIds().get(0);
 
-		for (Integer deviceBaseId : deviceBaseIds) {
-			// 1. 截图并生成缩略图，写入文件路径
-			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
-			String snapshotAddress = RecordNameUtils.snapshotFileAddress(StreamNameUtils.rtspPlay(String.valueOf(deviceBaseId), "1"));
-			String thumbnailAddress = RecordNameUtils.thumbnailFileAddress(StreamNameUtils.rtspPlay(String.valueOf(deviceBaseId), "1"));
-			try {
-				ActionController.isSnapshot = true;
-				FrameGrabber grabber = null;
-				if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
-					grabber = (FFmpegFrameGrabber) gbDeviceGrabberMap.get(deviceBaseId);
-				} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
-					grabber = (CustomFFmpegFrameGrabber) rtspDeviceGrabberMap.get(deviceBaseId);
-				}
-				if (ActionController.snapshotFrame == null) {
-					return GBResult.build(500, "未能截图，请重新尝试", null);
-				}
-				Java2DFrameConverter converter = new Java2DFrameConverter();
-				System.out.println(ActionController.snapshotFrame.keyFrame);
-				BufferedImage image = converter.convert(ActionController.snapshotFrame);
-				BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
-				thumbnailImage.getGraphics().drawImage(image, 0, 0, thumbnailWidth, thumbnailHeight, null);
+			deviceSnapshotMap.put(deviceBaseId, true);
 
-				ImageIO.write(thumbnailImage, "jpg", new File(thumbnailAddress));
-				ImageIO.write(image, "jpg", new File(snapshotAddress));
-			} catch (FrameGrabber.Exception e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// 等待截图完成，并获取截图地址
+			FileUtils.waitSnapshot(deviceBaseId, ActionController.deviceSnapshotMap.get(deviceBaseId));
+			JSONObject snapshotAddressJson = ActionController.snapshotAddressMap.get(deviceBaseId);
 
-			// 2. 保存到数据库
-			File snapshotFile = new File(snapshotAddress);
-			SnapshotInfo snapshotInfo = new SnapshotInfo();
-			snapshotInfo.setDeviceBaseId(deviceBaseId);
-			snapshotInfo.setFilePath(snapshotAddress);
-			snapshotInfo.setThumbnailPath(thumbnailAddress);
-			snapshotInfo.setCreateTime(LocalDateTime.now());
-			snapshotInfo.setType(3);
-			snapshotInfo.setAlarmType(0);
-			snapshotInfo.setFileSize(snapshotFile.length());
-			snapshotInfoService.save(snapshotInfo);
+			return GBResult.ok(snapshotAddressJson);
 		}
-
-		return GBResult.ok();
 	}
 
 	/**
