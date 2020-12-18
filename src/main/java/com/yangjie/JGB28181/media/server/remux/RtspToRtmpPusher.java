@@ -484,6 +484,7 @@ public class RtspToRtmpPusher {
         long timestamp = record.getTimestamp();
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
             record.stop();
+
             recordVideoInfo.setEndTime(LocalDateTime.now());
             recordVideoInfo.setFileSize(file.length());
             // 更新原有的录像文件信息
