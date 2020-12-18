@@ -8,7 +8,9 @@ public interface BaseConstants {
 
     String rtmpBaseUrl = "rtmp://127.0.0.1:1935/live/";
 
-    String hlsBaseUrl = "http://127.0.0.1:8080/hls/";
+    String hlsBaseUrl = "http://127.0.0.1/hls/";
+
+    String flvBaseUrl = "http://127.0.0.1/flv?port=1935&app=live&stream=";
 
     String ONVIF_IPV4_REGEX = "http://[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+\\/onvif/device_service";
 
