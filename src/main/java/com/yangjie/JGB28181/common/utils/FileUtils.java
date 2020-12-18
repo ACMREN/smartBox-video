@@ -34,4 +34,19 @@ public class FileUtils {
         isSnapshot = ActionController.deviceSnapshotMap.get(deviceBaseId);
         waitSnapshot(deviceBaseId, isSnapshot);
     }
+
+    /**
+     * 等待录像完成
+     * @param deviceBaseId
+     * @param isSnapshot
+     * @throws InterruptedException
+     */
+    public static void waitRecord(Integer deviceBaseId, Boolean isSnapshot) throws InterruptedException {
+        Thread.sleep(1000);
+        if (!isSnapshot) {
+            return;
+        }
+        isSnapshot = ActionController.deviceRecordingMap.get(deviceBaseId);
+        waitRecord(deviceBaseId, isSnapshot);
+    }
 }

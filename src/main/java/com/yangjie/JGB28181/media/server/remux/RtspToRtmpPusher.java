@@ -74,6 +74,7 @@ public class RtspToRtmpPusher {
 
     protected CustomFFmpegFrameGrabber grabber = null;// 解码器
     protected FFmpegFrameRecorder record = null;// 编码器
+    protected FFmpegFrameRecorder record1 = null;
     int width;// 视频像素宽
     int height;// 视频像素高
 
@@ -184,9 +185,8 @@ public class RtspToRtmpPusher {
             grabber.setOption("y", "");
             grabber.setOption("vsync", "0");
             // 使用硬件加速
-//            grabber.setOption("hwaccel", "cuvid");
-//            grabber.setVideoCodecName("h264_cuvid");
-            grabber.setVideoCodec(AV_CODEC_ID_H264);
+            grabber.setOption("hwaccel", "cuvid");
+            grabber.setVideoCodecName("h264_cuvid");
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
             grabber.setOption("resize", "1920x1080");
         }
@@ -260,13 +260,12 @@ public class RtspToRtmpPusher {
             record = new FFmpegFrameRecorder(cameraPojo.getRecordDir(), 1280, 720, 0);
         }
 
-        this.setRecorderOption();
+        this.setPushRecorderOption();
         AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
             // 封装格式flv
             record.setFormat("flv");
             record.setAudioCodecName("aac");
-            fc = grabber.getFormatContext();
         }
         try {
             record.start();
@@ -310,6 +309,7 @@ public class RtspToRtmpPusher {
                 Frame frame;
                 frame = grabber.grab();
                 if (null != frame) {
+                    // 判断是否需要截图
                     Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
                     if (isSnapshot != null && isSnapshot) {
                         // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
@@ -319,10 +319,46 @@ public class RtspToRtmpPusher {
                         });
                         ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                     }
+
+                    // 判断是否需要录像
+                    Boolean isRecord = ActionController.deviceRecordingMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                    if (isRecord != null && isRecord) {
+                        if (record1 == null) {
+                            String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
+                            record1 = new FFmpegFrameRecorder(address, 1280, 720);
+                            file = new File(address);
+                            this.setRecordRecorderOption();
+                            cameraPojo.setRecordDir(address);
+                            try {
+                                record1.start();
+                            } catch (FrameRecorder.Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            // 返回录像文件的信息
+                            JSONObject recordVideoJson = new JSONObject();
+                            recordVideoJson.put("deviceId", cameraPojo.getDeviceId());
+                            recordVideoJson.put("source", address);
+
+                            // 新建一条录像文件信息
+                            this.saveRecordFileInfo(new RecordVideoInfo());
+                        }
+                        record1.record(frame);
+                    } else {
+                        if (record1 != null) {
+                            record1.stop();
+                            record1.close();
+                            recordVideoInfo.setEndTime(LocalDateTime.now());
+                            recordVideoInfo.setFileSize(file.length());
+                            this.saveRecordFileInfo(recordVideoInfo);
+                        }
+                    }
+
+                    // 如果是测试推流则直接跳出
                     if (isTest == 1) {
                         break;
                     }
-                    if (cameraPojo.getIsRecord() == 1) {
+                    if (isRecord != null && isRecord) {
                         // 如果超过时间最大值则进行重新记录录像
                         this.restartRecorderWithMaxTime();
                         // 如果超过大小最大值则进行重新记录录像
@@ -331,31 +367,14 @@ public class RtspToRtmpPusher {
                     record.record(frame);
                 }
 
-//                AVPacket pkt = null;
-//                // 获取没有解码的音视频帧
-//                pkt = grabber.grabPacket();
-//                if (pkt == null || pkt.size() <= 0 || pkt.data() == null) {
-//                    // 空包记录次数跳过
-//                    no_frame_index++;
-//                    err_index++;
-//                    continue;
-//                }
-//                if (isTest == 1) {
-//                    break;
-//                }
-//                // 不需要编码直接把音视频帧推出去
-//                err_index += (record.recordPacket(pkt) ? 0 : 1);
-//
-//                String token = cameraPojo.getToken();
-//                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
-//                if (null != heartbeats) {
-//                    heartbeats++;
-//                } else {
-//                    heartbeats = 1L;
-//                }
-//                TimerUtil.heartbeatsMap.put(token, heartbeats);
-//
-//                av_packet_unref(pkt);
+                String token = cameraPojo.getToken();
+                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
+                if (null != heartbeats) {
+                    heartbeats++;
+                } else {
+                    heartbeats = 1L;
+                }
+                TimerUtil.heartbeatsMap.put(token, heartbeats);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 // 销毁构造器
@@ -363,12 +382,6 @@ public class RtspToRtmpPusher {
                 grabber.close();
                 record.stop();
                 record.close();
-                // 如果是正在录像，则把录像信息保存一下
-                if (cameraPojo.getIsRecord() == 1) {
-                    recordVideoInfo.setEndTime(LocalDateTime.now());
-                    recordVideoInfo.setFileSize(file.length());
-                    this.saveRecordFileInfo(recordVideoInfo);
-                }
                 logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
                 break;
             } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
@@ -430,31 +443,45 @@ public class RtspToRtmpPusher {
     }
 
     /**
-     * 设置推流器参数
+     * 设置推流推流器参数
      */
-    private void setRecorderOption() {
-        String recordSize = DeviceManagerController.cameraConfigBo.getRecordSize();
-        Integer width = Integer.valueOf(recordSize.split("x")[0]);
-        Integer height = Integer.valueOf(recordSize.split("x")[1]);
+    private void setPushRecorderOption() {
+        String streamSize = DeviceManagerController.cameraConfigBo.getStreamSize();
+        Integer streamWidth = Integer.valueOf(streamSize.split("x")[0]);
+        Integer streamHeight = Integer.valueOf(streamSize.split("x")[1]);
 
         record.setFrameRate(framerate);
         record.setVideoCodec(AV_CODEC_ID_H264);
-        record.setImageHeight(height);
-        record.setImageWidth(width);
-        record.setVideoBitrate(Integer.valueOf(DeviceManagerController.cameraConfigBo.getRecordMaxRate()));
+        record.setImageHeight(streamHeight);
+        record.setImageWidth(streamWidth);
+        record.setVideoBitrate(Integer.valueOf(DeviceManagerController.cameraConfigBo.getStreamMaxRate()));
 
         // 设置分片时间
         if (cameraPojo.getToHls() == 1) {
             record.setOption("hls_time", "10");
         }
 
-//        record.setOption("maxrate", DeviceManagerController.cameraConfigBo.getRecordMaxRate());
-        AVFormatContext fc = null;
         if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
             // 封装格式flv
             record.setFormat("flv");
             record.setAudioCodecName("aac");
         }
+    }
+
+    /**
+     * 设置录像推流器参数
+     */
+    private void setRecordRecorderOption() {
+        String recordSize = DeviceManagerController.cameraConfigBo.getRecordSize();
+        Integer recordWidth = Integer.valueOf(recordSize.split("x")[0]);
+        Integer recordHeight = Integer.valueOf(recordSize.split("x")[1]);
+
+        record1.setFrameRate(framerate);
+        record1.setVideoCodec(AV_CODEC_ID_H264);
+        record1.setImageHeight(recordHeight);
+        record1.setImageWidth(recordWidth);
+        record1.setVideoBitrate(Integer.valueOf(DeviceManagerController.cameraConfigBo.getRecordMaxRate()));
+        record1.setFormat("flv");
     }
 
     /**
@@ -483,7 +510,7 @@ public class RtspToRtmpPusher {
     private void restartRecorderWithMaxTime() throws FrameRecorder.Exception {
         long timestamp = record.getTimestamp();
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
-            record.stop();
+            record1.stop();
 
             recordVideoInfo.setEndTime(LocalDateTime.now());
             recordVideoInfo.setFileSize(file.length());
@@ -492,9 +519,9 @@ public class RtspToRtmpPusher {
 
             String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
             file = new File(address);
-            record = new FFmpegFrameRecorder(address, 1280, 720);
-            this.setRecorderOption();
-            record.start();
+            record1 = new FFmpegFrameRecorder(address, 1280, 720);
+            this.setRecordRecorderOption();
+            record1.start();
 
             // 新建一条录像文件信息
             this.saveRecordFileInfo(new RecordVideoInfo());
@@ -507,7 +534,7 @@ public class RtspToRtmpPusher {
      */
     private void restartRecorderWithMaxSize() throws FrameRecorder.Exception {
         if (file.length() > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordStSize())) {
-            record.stop();
+            record1.stop();
 
             recordVideoInfo.setEndTime(LocalDateTime.now());
             recordVideoInfo.setFileSize(file.length());
@@ -516,9 +543,9 @@ public class RtspToRtmpPusher {
 
             String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
             file = new File(address);
-            record = new FFmpegFrameRecorder(address, 1280, 720);
-            this.setRecorderOption();
-            record.start();
+            record1 = new FFmpegFrameRecorder(address, 1280, 720);
+            this.setRecordRecorderOption();
+            record1.start();
 
             // 新建一条录像文件信息
             this.saveRecordFileInfo(new RecordVideoInfo());

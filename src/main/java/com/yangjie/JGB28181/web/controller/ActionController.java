@@ -164,70 +164,84 @@ public class ActionController implements OnProcessListener {
 	// 截图地址map
 	public static Map<Integer, JSONObject> snapshotAddressMap = new HashMap<>();
 
+	// 录像标志位map
+	public static Map<Integer, Boolean> deviceRecordingMap = new HashMap<>(20);
+
 	// 截图锁对象
 	private static Object snapshotLock = new Object();
 
+	// 录像锁对象
+	private static Object recordLock = new Object();
+
 	@PostMapping(value = "switchRecord")
-	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) throws InterruptedException {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceIds();
 		Integer isSwitch = deviceBaseCondition.getIsSwitch();
 
 		// 关闭录像
 		if (isSwitch == 0) {
-			List<Integer> failDeviceIds = this.stopRecordStream(deviceIds);
-			if (CollectionUtils.isEmpty(failDeviceIds)) {
-				return GBResult.ok();
-			} else {
-				return GBResult.build(500, "部分设备无法中止录像", failDeviceIds);
+//			List<Integer> failDeviceIds = this.stopRecordStream(deviceIds);
+			synchronized (recordLock) {
+				for (Integer deviceId : deviceIds) {
+					deviceRecordingMap.put(deviceId, false);
+				}
 			}
 		}
 
 		// 开启录像
 		GBResult result;
-		List<JSONObject> resultList = new ArrayList<>();
-		for (Integer deviceId : deviceIds) {
-			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
-			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.GB28181.getCode()) {
-				result = this.GBPlayRtmp(cameraInfo.getIp(), deviceId, 1, isSwitch);
-				int resultCode = result.getCode();
-				if (200 == resultCode) {
-					MediaData mediaData = (MediaData) result.getData();
-					JSONObject data = new JSONObject();
-					String address = mediaData.getAddress();
-					String callId = mediaData.getCallId();
-					data.put("deviceId", deviceId);
-					data.put("source", address);
-					resultList.add(data);
-					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
-				} else {
-					return result;
-				}
+		synchronized (recordLock) {
+			for (Integer deviceId : deviceIds) {
+				deviceRecordingMap.put(deviceId, true);
 			}
-			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.RTSP.getCode()) {
-				String rtspLink = cameraInfo.getRtspLink();
-				CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
-				cameraPojo.setToHls(1);
-				cameraPojo.setDeviceId(deviceId.toString());
-				cameraPojo.setIsRecord(1);
-				cameraPojo.setIsSwitch(isSwitch);
-				result = this.rtspPlayRtmp(cameraPojo);
-				int resultCode = result.getCode();
-				if (200 == resultCode) {
-					MediaData mediaData = (MediaData) result.getData();
-					JSONObject data = new JSONObject();
-					String address = mediaData.getAddress();
-					String callId = mediaData.getCallId();
-					data.put("deviceId", deviceId);
-					data.put("source", address);
-					resultList.add(data);
-					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
-				} else {
-					return result;
-				}
-			}
+
 		}
 
-		return GBResult.ok(resultList);
+
+//		List<JSONObject> resultList = new ArrayList<>();
+//		for (Integer deviceId : deviceIds) {
+//			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
+//			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.GB28181.getCode()) {
+//				result = this.GBPlayRtmp(cameraInfo.getIp(), deviceId, 1, isSwitch);
+//				int resultCode = result.getCode();
+//				if (200 == resultCode) {
+//					MediaData mediaData = (MediaData) result.getData();
+//					JSONObject data = new JSONObject();
+//					String address = mediaData.getAddress();
+//					String callId = mediaData.getCallId();
+//					data.put("deviceId", deviceId);
+//					data.put("source", address);
+//					resultList.add(data);
+//					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
+//				} else {
+//					return result;
+//				}
+//			}
+//			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.RTSP.getCode()) {
+//				String rtspLink = cameraInfo.getRtspLink();
+//				CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+//				cameraPojo.setToHls(1);
+//				cameraPojo.setDeviceId(deviceId.toString());
+//				cameraPojo.setIsRecord(1);
+//				cameraPojo.setIsSwitch(isSwitch);
+//				result = this.rtspPlayRtmp(cameraPojo);
+//				int resultCode = result.getCode();
+//				if (200 == resultCode) {
+//					MediaData mediaData = (MediaData) result.getData();
+//					JSONObject data = new JSONObject();
+//					String address = mediaData.getAddress();
+//					String callId = mediaData.getCallId();
+//					data.put("deviceId", deviceId);
+//					data.put("source", address);
+//					resultList.add(data);
+//					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
+//				} else {
+//					return result;
+//				}
+//			}
+//		}
+
+		return GBResult.ok();
 	}
 
 	private List<Integer> stopRecordStream(List<Integer> deviceBaseIds) {
@@ -499,7 +513,9 @@ public class ActionController implements OnProcessListener {
 				return GBResult.ok();
 			}
 			String callId = typeStreamJson.getString("callId");
-			RedisUtil.expire(callId, 300);
+			Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
+			Integer expiredTime = Math.toIntExact(expiredMs / 1000);
+			RedisUtil.expire(callId, expiredTime);
 		}
 
 		return GBResult.ok();
@@ -713,8 +729,10 @@ public class ActionController implements OnProcessListener {
 
 				observer.setOnProcessListener(this);
 				if (isRecord == 0) {
+					Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
+					Integer expiredTime = Math.toIntExact(expiredMs / 1000);
 					// 设置5分钟的过期时间
-					RedisUtil.set(callId, 300, "keepStreaming");
+					RedisUtil.set(callId, expiredTime, "keepStreaming");
 					// 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
 					if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
 						streamingDeviceMap.put(id, pushStreamDevice);
@@ -950,8 +968,12 @@ public class ActionController implements OnProcessListener {
 		CameraThread.MyRunnable.es.execute(job);
 		jobMap.put(token, job);
 		if (cameraPojo.getIsRecord() == 0) {
+			Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
+			Integer expiredTime = Math.toIntExact(expiredMs / 1000);
 			// 设置5分钟的过期时间
-			RedisUtil.set(token, 300, "keepStreaming");
+			RedisUtil.set(token, expiredTime, "keepStreaming");
+
+
 		}
 
 		return cameraPojo;
