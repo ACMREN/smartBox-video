@@ -335,11 +335,6 @@ public class RtspToRtmpPusher {
                                 e.printStackTrace();
                             }
 
-                            // 返回录像文件的信息
-                            JSONObject recordVideoJson = new JSONObject();
-                            recordVideoJson.put("deviceId", cameraPojo.getDeviceId());
-                            recordVideoJson.put("source", address);
-
                             // 新建一条录像文件信息
                             this.saveRecordFileInfo(new RecordVideoInfo());
                         }

@@ -190,11 +190,12 @@ public class ActionController implements OnProcessListener {
 
 		// 开启录像
 		GBResult result;
-		synchronized (recordLock) {
-			for (Integer deviceId : deviceIds) {
-				deviceRecordingMap.put(deviceId, true);
+		if (isSwitch == 1) {
+			synchronized (recordLock) {
+				for (Integer deviceId : deviceIds) {
+					deviceRecordingMap.put(deviceId, true);
+				}
 			}
-
 		}
 
 
