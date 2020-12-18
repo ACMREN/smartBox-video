@@ -424,8 +424,8 @@ public class RtspToRtmpPusher {
 
         // 3. 保存到临时map中，让调用线程返回结果地址
         JSONObject resultJson = new JSONObject();
-        resultJson.put("snapshotAddress", snapshotAddress);
-        resultJson.put("thumbnailAddress", thumbnailAddress);
+        resultJson.put("filePath", snapshotAddress);
+        resultJson.put("thumbnailPath", thumbnailAddress);
         ActionController.snapshotAddressMap.put(Integer.valueOf(cameraPojo.getDeviceId()), resultJson);
     }
 
