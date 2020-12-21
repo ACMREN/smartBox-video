@@ -887,6 +887,7 @@ public class ActionController implements OnProcessListener {
 		for (String item : ipArr) {
 			sb.append(item);
 		}
+		sb.append(pojo.getChannel());
 		token = sb.toString();
 		if (pojo.getIsRecord() == 1) {
 			token = "record_" + sb.toString();
