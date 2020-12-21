@@ -34,7 +34,6 @@ public class WebSocketServer {
 
     @OnMessage
     public void onMessage(String message) {
-        logger.info("发送消息：" + message);
         this.sendAll(message);
     }
 

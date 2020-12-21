@@ -777,6 +777,9 @@ public class ActionController implements OnProcessListener {
 				if (pojo.getIsRecord() == 1) {
 					url = cameraPojo.getRecordDir();
 				}
+				if (pojo.getToFlv() == 1) {
+					url = cameraPojo.getFlv();
+				}
 				result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
 				logger.info("打开：" + cameraPojo.getRtsp());
 			} else {
@@ -921,12 +924,13 @@ public class ActionController implements OnProcessListener {
 					+ "/av_stream";
 			rtmp = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/live/" + token;
 			hls = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/hls/" + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1");
-			flv	= BaseConstants.flvBaseUrl + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1");
+			flv	= BaseConstants.flvBaseUrl + token;
 			if (config.getHost_extra().equals("127.0.0.1")) {
 				hlsUrl = BaseConstants.hlsBaseUrl + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1") + "/index.m3u8";
 				hlsUrl = hlsUrl.replace("127.0.0.1", streamMediaIp);
 				url = rtmp;
 				url = url.replace("127.0.0.1", streamMediaIp);
+				flv = flv.replace("127.0.0.1", streamMediaIp);
 			} else {
 				url = "rtmp://" + IpUtil.IpConvert(config.getHost_extra()) + ":" + config.getPush_port() + "/live/"
 						+ token;

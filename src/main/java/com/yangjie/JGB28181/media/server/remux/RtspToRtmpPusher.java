@@ -365,7 +365,7 @@ public class RtspToRtmpPusher {
                     record.record(frame);
 
                     // 发送ptz云台的位置坐标
-                    this.sendPTZPosition();
+//                    this.sendPTZPosition();
                 }
 
                 String token = cameraPojo.getToken();
