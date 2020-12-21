@@ -338,6 +338,7 @@ public class ActionController implements OnProcessListener {
 			// 直接进行rtsp转hls推流
 			CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
 			cameraPojo.setToHls(1);
+			cameraPojo.setToFlv(0);
 			cameraPojo.setDeviceId(deviceId.toString());
 			cameraPojo.setIsRecord(0);
 			cameraPojo.setIsSwitch(0);
@@ -604,6 +605,7 @@ public class ActionController implements OnProcessListener {
 			// 测试播放rtsp转rtmp
 			cameraPojo.setIsRecord(0);
 			cameraPojo.setIsSwitch(0);
+			cameraPojo.setToFlv(0);
 			this.rtspPlayRtmp(cameraPojo);
 		}
 		// 等待5秒，结果返回
