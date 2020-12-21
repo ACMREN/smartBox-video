@@ -446,7 +446,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 1, 0, 0);
+			return this.play(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 1, 0, 0, 0);
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
