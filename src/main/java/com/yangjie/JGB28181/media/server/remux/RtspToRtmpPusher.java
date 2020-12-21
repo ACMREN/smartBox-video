@@ -1,12 +1,10 @@
 package com.yangjie.JGB28181.media.server.remux;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yangjie.JGB28181.bean.WebSocketServer;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
-import com.yangjie.JGB28181.common.utils.IpUtil;
-import com.yangjie.JGB28181.common.utils.RecordNameUtils;
-import com.yangjie.JGB28181.common.utils.StreamNameUtils;
-import com.yangjie.JGB28181.common.utils.TimerUtil;
+import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.RecordVideoInfo;
 import com.yangjie.JGB28181.entity.SnapshotInfo;
@@ -14,6 +12,7 @@ import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.service.SnapshotInfoService;
+import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.RecordVideoInfoServiceImpl;
 import com.yangjie.JGB28181.service.impl.SnapshotInfoServiceImpl;
 import com.yangjie.JGB28181.web.controller.ActionController;
@@ -300,6 +299,8 @@ public class RtspToRtmpPusher {
         grabber.flush();
         int isTest = cameraPojo.getIsTest();
         file = new File(cameraPojo.getRecordDir());
+        CameraControlServiceImpl cameraControlService = (CameraControlServiceImpl) applicationContext.getBean("cameraControlServiceImpl");
+        WebSocketServer webSocketServer = (WebSocketServer) applicationContext.getBean("webSocketServer");
 
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
@@ -359,6 +360,22 @@ public class RtspToRtmpPusher {
 //                        this.restartRecorderWithMaxSize();
 //                    }
                     record.record(frame);
+
+                    // 发送ptz云台的位置坐标
+                    GBResult ptzPosResult = cameraControlService.getDVRConfig("hikvision", cameraPojo.getIp(), 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), HCNetSDK.NET_DVR_GET_PTZPOS);
+                    int resultCode = ptzPosResult.getCode();
+                    if (resultCode == 200) {
+                        JSONObject posJson = (JSONObject) ptzPosResult.getData();
+                        Integer pPos = posJson.getInteger("p");
+                        Integer tPos = posJson.getInteger("t");
+                        Integer zPos = posJson.getInteger("z");
+                        // 转换结果
+                        posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
+                        posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
+                        posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
+
+                        webSocketServer.onMessage(posJson.toJSONString());
+                    }
 //                    record.recordPacket(packet);
                 }
 

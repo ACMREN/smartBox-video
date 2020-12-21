@@ -37,6 +37,9 @@
           <element id="library" level="project" name="Maven: org.springframework:spring-context:4.3.17.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:4.3.17.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-expression:4.3.17.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-websocket:1.5.13.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-messaging:4.3.17.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-websocket:4.3.17.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-aop:1.5.13.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.3.17.RELEASE" />
           <element id="library" level="project" name="Maven: org.aspectj:aspectjweaver:1.8.13" />

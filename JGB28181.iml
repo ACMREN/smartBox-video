@@ -67,6 +67,9 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.17.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:4.3.17.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.17.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-websocket:1.5.13.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-messaging:4.3.17.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-websocket:4.3.17.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.boot:spring-boot-starter-tomcat:1.5.13.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:8.5.31" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.tomcat:tomcat-annotations-api:8.5.31" level="project" />
