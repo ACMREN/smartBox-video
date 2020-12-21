@@ -268,8 +268,9 @@ public class RtspToRtmpPusher {
             record.setFormat("flv");
             record.setAudioCodecName("aac");
         }
+        fc = grabber.getFormatContext();
         try {
-            record.start();
+            record.start(fc);
             // 在数据库新建录像文件的信息
             this.saveRecordFileInfo(new RecordVideoInfo());
         } catch (Exception e) {
@@ -311,6 +312,8 @@ public class RtspToRtmpPusher {
                 nowThread.sleep(0);
                 Frame frame;
                 frame = grabber.grab();
+                AVPacket packet;
+                packet = grabber.grabPacket();
                 if (null != frame) {
                     // 判断是否需要截图
                     Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
@@ -362,10 +365,13 @@ public class RtspToRtmpPusher {
                     if (isTest == 1) {
                         break;
                     }
-                    record.record(frame);
+//                    record.record(frame);
+                    record.recordPacket(packet);
 
                     // 发送ptz云台的位置坐标
-//                    this.sendPTZPosition();
+                    this.sendPTZPosition();
+
+                    av_packet_unref(packet);
                 }
 
                 String token = cameraPojo.getToken();
