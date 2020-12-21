@@ -55,22 +55,22 @@
           <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.66" />
           <element id="library" level="project" name="Maven: org.dom4j:dom4j:2.1.1" />
           <element id="library" level="project" name="Maven: io.netty:netty-all:4.1.47.Final" />
-          <element id="library" level="project" name="Maven: org.bytedeco:javacv:1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:javacpp:1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:openblas:0.3.10-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:opencv:4.4.0-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:4.3.1-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:flycapture:2.13.3.31-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:libdc1394:2.2.6-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:libfreenect:0.5.7-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:libfreenect2:0.2.0-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:librealsense:1.12.4-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:librealsense2:2.29.0-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:videoinput:0.200-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:artoolkitplus:2.3.1-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:flandmark:1.07-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:leptonica:1.80.0-1.5.4" />
-          <element id="library" level="project" name="Maven: org.bytedeco:tesseract:4.1.1-1.5.4" />
+          <element id="library" level="project" name="Maven: org.bytedeco:javacv:1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:javacpp:1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:openblas:0.3.7-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:opencv:4.1.2-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:ffmpeg:4.2.1-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:flycapture:2.13.3.31-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:libdc1394:2.2.6-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:libfreenect:0.5.7-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:libfreenect2:0.2.0-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:librealsense:1.12.4-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:librealsense2:2.29.0-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:videoinput:0.200-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:artoolkitplus:2.3.1-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:flandmark:1.07-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:leptonica:1.78.0-1.5.2" />
+          <element id="library" level="project" name="Maven: org.bytedeco:tesseract:4.1.0-1.5.2" />
           <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:11" />
           <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:mac:11" />
           <element id="library" level="project" name="Maven: org.openjfx:javafx-base:11" />

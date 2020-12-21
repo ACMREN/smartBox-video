@@ -152,8 +152,6 @@ public class RtspToRtmpPusher {
             grabber = (CustomFFmpegFrameGrabber) ActionController.rtspDeviceGrabberMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
         }
 
-        org.bytedeco.javacpp.Pointer.maxPhysicalBytes();
-
         // 解决ip输入错误时，grabber.start();出现阻塞无法释放grabber而导致后续推流无法进行；
         Socket rtspSocket = new Socket();
         Socket rtmpSocket = new Socket();
