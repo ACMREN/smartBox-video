@@ -152,6 +152,7 @@ public class RtspToRtmpPusher {
             grabber = (CustomFFmpegFrameGrabber) ActionController.rtspDeviceGrabberMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
         }
 
+        org.bytedeco.javacpp.Pointer.maxPhysicalBytes();
 
         // 解决ip输入错误时，grabber.start();出现阻塞无法释放grabber而导致后续推流无法进行；
         Socket rtspSocket = new Socket();
@@ -267,8 +268,9 @@ public class RtspToRtmpPusher {
             record.setFormat("flv");
             record.setAudioCodecName("aac");
         }
+        fc = grabber.getFormatContext();
         try {
-            record.start();
+            record.start(fc);
             // 在数据库新建录像文件的信息
             this.saveRecordFileInfo(new RecordVideoInfo());
         } catch (Exception e) {
@@ -308,6 +310,8 @@ public class RtspToRtmpPusher {
                 nowThread.sleep(0);
                 Frame frame;
                 frame = grabber.grab();
+                AVPacket packet;
+                packet = grabber.grabPacket();
                 if (null != frame) {
 //                    // 判断是否需要截图
 //                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
@@ -319,7 +323,7 @@ public class RtspToRtmpPusher {
 //                        });
 //                        ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
 //                    }
-
+//
 //                    // 判断是否需要录像
 //                    Boolean isRecord = ActionController.deviceRecordingMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
 //                    if (isRecord != null && isRecord) {
@@ -359,7 +363,8 @@ public class RtspToRtmpPusher {
 //                        // 如果超过大小最大值则进行重新记录录像
 //                        this.restartRecorderWithMaxSize();
 //                    }
-                    record.record(frame);
+//                    record.record(frame);
+                    record.recordPacket(packet);
                 }
 
                 String token = cameraPojo.getToken();
