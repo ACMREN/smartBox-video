@@ -268,9 +268,8 @@ public class RtspToRtmpPusher {
             record.setFormat("flv");
             record.setAudioCodecName("aac");
         }
-        fc = grabber.getFormatContext();
         try {
-            record.start(fc);
+            record.start();
             // 在数据库新建录像文件的信息
             this.saveRecordFileInfo(new RecordVideoInfo());
         } catch (Exception e) {
@@ -310,8 +309,6 @@ public class RtspToRtmpPusher {
                 nowThread.sleep(0);
                 Frame frame;
                 frame = grabber.grab();
-                AVPacket packet;
-                packet = grabber.grabPacket();
                 if (null != frame) {
 //                    // 判断是否需要截图
 //                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
@@ -363,8 +360,8 @@ public class RtspToRtmpPusher {
 //                        // 如果超过大小最大值则进行重新记录录像
 //                        this.restartRecorderWithMaxSize();
 //                    }
-//                    record.record(frame);
-                    record.recordPacket(packet);
+                    record.record(frame);
+//                    record.recordPacket(packet);
                 }
 
                 String token = cameraPojo.getToken();
