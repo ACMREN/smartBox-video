@@ -314,6 +314,12 @@ public class RtspToRtmpPusher {
 //                frame = grabber.grab();
                 AVPacket packet;
                 packet = grabber.grabPacket();
+                if (packet == null || packet.size() <= 0 || packet.data() == null) {
+                    // 空包记录次数跳过
+                    no_frame_index++;
+                    err_index++;
+                    continue;
+                }
                 if (null != packet) {
 //                    // 判断是否需要截图
 //                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
