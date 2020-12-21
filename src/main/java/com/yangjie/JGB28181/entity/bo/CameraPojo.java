@@ -18,6 +18,7 @@ public class CameraPojo implements Serializable {
 	private String hls;// hls地址
 	private String url;// 播放地址
 	private String hlsUrl;// hls播放地址
+	private String flv;	// flv播放地址
 	private String startTime;// 回放开始时间
 	private String endTime;// 回放结束时间
 	private String openTime;// 打开时间
@@ -26,6 +27,7 @@ public class CameraPojo implements Serializable {
 	private Integer cid;
 	private String token;
 	private Integer toHls;
+	private Integer toFlv;
 	private String deviceId;// 设备的基础id
 	private Integer isRecord;// 是否录像功能
 	private Integer isSwitch;// 是否开启录像功能：0-关闭，1-开启

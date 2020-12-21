@@ -198,50 +198,6 @@ public class ActionController implements OnProcessListener {
 			}
 		}
 
-
-//		List<JSONObject> resultList = new ArrayList<>();
-//		for (Integer deviceId : deviceIds) {
-//			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
-//			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.GB28181.getCode()) {
-//				result = this.GBPlayRtmp(cameraInfo.getIp(), deviceId, 1, isSwitch);
-//				int resultCode = result.getCode();
-//				if (200 == resultCode) {
-//					MediaData mediaData = (MediaData) result.getData();
-//					JSONObject data = new JSONObject();
-//					String address = mediaData.getAddress();
-//					String callId = mediaData.getCallId();
-//					data.put("deviceId", deviceId);
-//					data.put("source", address);
-//					resultList.add(data);
-//					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
-//				} else {
-//					return result;
-//				}
-//			}
-//			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.RTSP.getCode()) {
-//				String rtspLink = cameraInfo.getRtspLink();
-//				CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
-//				cameraPojo.setToHls(1);
-//				cameraPojo.setDeviceId(deviceId.toString());
-//				cameraPojo.setIsRecord(1);
-//				cameraPojo.setIsSwitch(isSwitch);
-//				result = this.rtspPlayRtmp(cameraPojo);
-//				int resultCode = result.getCode();
-//				if (200 == resultCode) {
-//					MediaData mediaData = (MediaData) result.getData();
-//					JSONObject data = new JSONObject();
-//					String address = mediaData.getAddress();
-//					String callId = mediaData.getCallId();
-//					data.put("deviceId", deviceId);
-//					data.put("source", address);
-//					resultList.add(data);
-//					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
-//				} else {
-//					return result;
-//				}
-//			}
-//		}
-
 		return GBResult.ok();
 	}
 
@@ -282,7 +238,7 @@ public class ActionController implements OnProcessListener {
 		List<JSONObject> resultList = new ArrayList<>();
 		if (BaseConstants.PUSH_STREAM_RTMP.equals(pushStreamType)) {
 			for (Integer deviceId : deviceIds) {
-				result = this.playRtmp(deviceId);
+				result = this.playRtmp(deviceId, 0);
 				int resultCode = result.getCode();
 				if (200 == resultCode) {
 					MediaData mediaData = (MediaData) result.getData();
@@ -317,6 +273,23 @@ public class ActionController implements OnProcessListener {
 					resultList.add(data);
 
 					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_HLS);
+				} else {
+					return result;
+				}
+			}
+		} else if (BaseConstants.PUSH_STREAM_FLV.equals(pushStreamType)) {
+			for (Integer deviceId : deviceIds) {
+				result = this.playRtmp(deviceId, 1);
+				int resultCode = result.getCode();
+				if (200 == resultCode) {
+					MediaData mediaData = (MediaData) result.getData();
+					JSONObject data = new JSONObject();
+					String address = mediaData.getAddress();
+					String callId = mediaData.getCallId();
+					data.put("deviceId", deviceId);
+					data.put("source", address);
+					resultList.add(data);
+					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RTMP);
 				} else {
 					return result;
 				}
@@ -403,19 +376,20 @@ public class ActionController implements OnProcessListener {
 	 * @param deviceId
 	 * @return
 	 */
-	private GBResult playRtmp(Integer deviceId) {
+	private GBResult playRtmp(Integer deviceId, Integer toFlv) {
 		CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
 		if (null != cameraInfo) {
 			String linkType = LinkTypeEnum.getDataByCode(cameraInfo.getLinkType()).getName();
 			String cameraIp = cameraInfo.getIp();
 			if (LinkTypeEnum.GB28181.getName().equals(linkType)) {
 				// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
-				return this.GBPlayRtmp(cameraIp, deviceId, 0, 0);
+				return this.GBPlayRtmp(cameraIp, deviceId, 0, 0, toFlv);
 			} else if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
 				// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
 				String rtspLink = cameraInfo.getRtspLink();
 				CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
 				cameraPojo.setToHls(0);
+				cameraPojo.setToFlv(toFlv);
 				cameraPojo.setDeviceId(deviceId.toString());
 				cameraPojo.setIsRecord(0);
 				cameraPojo.setIsSwitch(0);
@@ -429,7 +403,7 @@ public class ActionController implements OnProcessListener {
 	 * 国标播放rtmp
 	 * @param cameraIp
 	 */
-	private GBResult GBPlayRtmp(String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch) {
+	private GBResult GBPlayRtmp(String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv) {
 		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraIp);
 		String deviceStr = null;
 		String pushStreamDeviceId = null;
@@ -448,7 +422,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, isSwitch);
+			return this.play(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, isSwitch, toFlv);
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
@@ -621,7 +595,7 @@ public class ActionController implements OnProcessListener {
 									 @RequestParam(name = "type")String type) throws InterruptedException {
 		failCidList = new ArrayList<>();
 		if (!StringUtils.isEmpty(pushStreamDeviceId) && !StringUtils.isEmpty(channelId)) {
-			this.play(null, pushStreamDeviceId, channelId, "TCP", 1, cid, 0, 0, 0);
+			this.play(null, pushStreamDeviceId, channelId, "TCP", 1, cid, 0, 0, 0, 0);
 		} else if (!StringUtils.isEmpty(rtspLink)) {
 			// 把rtsp连接转成pojo
 			CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
@@ -655,7 +629,8 @@ public class ActionController implements OnProcessListener {
 			@RequestParam(value = "cid", required = false)Integer cid,
 			@RequestParam(value = "toHls", required = false)Integer toHls,
 			@RequestParam(value = "isRecord", required = false)Integer isRecord,
-			@RequestParam(value = "isSwitch", required = false)Integer isSwitch){
+			@RequestParam(value = "isSwitch", required = false)Integer isSwitch,
+			@RequestParam(value = "toFlv", required = false)Integer toFlv){
 		GBResult result = null;
 		try{
 			int pushPort = 1935;
@@ -670,7 +645,11 @@ public class ActionController implements OnProcessListener {
 			PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
 			RecordStreamDevice recordStreamDevice = ActionController.deviceRecordMap.get(id);
 			if(pushStreamDevice != null && isRecord == 0){
-				return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+				if (toFlv == 0) {
+					return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+				} else {
+					return GBResult.ok(new MediaData(pushStreamDevice.getPullFlvAddress(),pushStreamDevice.getCallId()));
+				}
 			}
 			if (recordStreamDevice != null && isRecord == 1) {
 				return GBResult.build(201, "已经正在录像，请勿重复请求", null);
@@ -706,12 +685,15 @@ public class ActionController implements OnProcessListener {
 				}
 				Server server = isTcp ? new TCPServer() : new UDPServer();
 				Observer observer;
+
+				// 判断是推流还是录像
 				if (isRecord == 0) {
 					observer = new RtmpPusher(address, callId);
 					((RtmpPusher) observer).setDeviceId(streamName);
+					String pullFlvAddress = BaseConstants.flvBaseUrl + streamName;
 					// 保存推流信息
 					pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
-							observer,address);
+							observer,address, pullFlvAddress);
 					pushStreamDevice.setDialog(response);
 					mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
 				} else {
@@ -817,6 +799,9 @@ public class ActionController implements OnProcessListener {
 						if (pojo.getToHls() == 1) {
 							url = cameraPojo.getHlsUrl();
 						}
+						if (pojo.getToFlv() == 1) {
+							url = cameraPojo.getFlv();
+						}
 						result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
 						logger.info("打开：" + cameraPojo.getRtsp());
 					} else {
@@ -824,6 +809,9 @@ public class ActionController implements OnProcessListener {
 						String url = cameraPojo.getUrl();
 						if (pojo.getToHls() == 1) {
 							url = cameraPojo.getHlsUrl();
+						}
+						if (pojo.getToFlv() == 1) {
+							url = cameraPojo.getFlv();
 						}
 						result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
 						logger.info("打开：" + cameraPojo.getRtsp());
@@ -880,6 +868,7 @@ public class ActionController implements OnProcessListener {
 		String rtsp = "";
 		String rtmp = "";
 		String hls = "";
+		String flv = "";
 		String hlsUrl = "";
 		String IP = IpUtil.IpConvert(pojo.getIp());
 		StringBuilder sb = new StringBuilder();
@@ -932,6 +921,7 @@ public class ActionController implements OnProcessListener {
 					+ "/av_stream";
 			rtmp = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/live/" + token;
 			hls = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/hls/" + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1");
+			flv	= BaseConstants.flvBaseUrl + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1");
 			if (config.getHost_extra().equals("127.0.0.1")) {
 				hlsUrl = BaseConstants.hlsBaseUrl + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1") + "/index.m3u8";
 				hlsUrl = hlsUrl.replace("127.0.0.1", streamMediaIp);
@@ -953,12 +943,14 @@ public class ActionController implements OnProcessListener {
 		cameraPojo.setRtmp(rtmp);
 		cameraPojo.setHls(hls);
 		cameraPojo.setUrl(url);
+		cameraPojo.setFlv(flv);
 		cameraPojo.setHlsUrl(hlsUrl);
 		cameraPojo.setOpenTime(pojo.getOpenTime());
 		cameraPojo.setCount(1);
 		cameraPojo.setToken(token);
 		cameraPojo.setCid(pojo.getCid());
 		cameraPojo.setToHls(pojo.getToHls());
+		cameraPojo.setToFlv(pojo.getToFlv());
 		cameraPojo.setDeviceId(pojo.getDeviceId());
 		cameraPojo.setIsRecord(pojo.getIsRecord());
 		cameraPojo.setIsSwitch(pojo.getIsSwitch());

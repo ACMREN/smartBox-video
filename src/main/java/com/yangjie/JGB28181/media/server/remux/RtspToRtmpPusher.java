@@ -98,6 +98,9 @@ public class RtspToRtmpPusher {
     // 录像文件
     public File file;
 
+    private CameraControlServiceImpl cameraControlService;
+    private WebSocketServer webSocketServer;
+
     public RtspToRtmpPusher() {
         super();
     }
@@ -299,8 +302,8 @@ public class RtspToRtmpPusher {
         grabber.flush();
         int isTest = cameraPojo.getIsTest();
         file = new File(cameraPojo.getRecordDir());
-        CameraControlServiceImpl cameraControlService = (CameraControlServiceImpl) applicationContext.getBean("cameraControlServiceImpl");
-        WebSocketServer webSocketServer = (WebSocketServer) applicationContext.getBean("webSocketServer");
+        cameraControlService = (CameraControlServiceImpl) applicationContext.getBean("cameraControlServiceImpl");
+        webSocketServer = (WebSocketServer) applicationContext.getBean("webSocketServer");
 
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
@@ -309,75 +312,60 @@ public class RtspToRtmpPusher {
                 Frame frame;
                 frame = grabber.grab();
                 if (null != frame) {
-//                    // 判断是否需要截图
-//                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
-//                    if (isSnapshot != null && isSnapshot) {
-//                        // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
-//                        final Frame snapshotFrame = frame.clone();
-//                        ActionController.executor.execute(() -> {
-//                            takeSnapshot(snapshotFrame);
-//                        });
-//                        ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
-//                    }
-//
-//                    // 判断是否需要录像
-//                    Boolean isRecord = ActionController.deviceRecordingMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
-//                    if (isRecord != null && isRecord) {
-//                        if (record1 == null) {
-//                            String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
-//                            record1 = new FFmpegFrameRecorder(address, 1280, 720);
-//                            file = new File(address);
-//                            this.setRecordRecorderOption();
-//                            cameraPojo.setRecordDir(address);
-//                            try {
-//                                record1.start();
-//                            } catch (FrameRecorder.Exception e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            // 新建一条录像文件信息
-//                            this.saveRecordFileInfo(new RecordVideoInfo());
-//                        }
-//                        record1.record(frame);
-//                    } else {
-//                        if (record1 != null) {
-//                            record1.stop();
-//                            record1.close();
-//                            recordVideoInfo.setEndTime(LocalDateTime.now());
-//                            recordVideoInfo.setFileSize(file.length());
-//                            this.saveRecordFileInfo(recordVideoInfo);
-//                        }
-//                    }
+                    // 判断是否需要截图
+                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                    if (isSnapshot != null && isSnapshot) {
+                        // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
+                        final Frame snapshotFrame = frame.clone();
+                        ActionController.executor.execute(() -> {
+                            takeSnapshot(snapshotFrame);
+                        });
+                        ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+                    }
+
+                    // 判断是否需要录像
+                    Boolean isRecord = ActionController.deviceRecordingMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                    if (isRecord != null && isRecord) {
+                        if (record1 == null) {
+                            String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
+                            record1 = new FFmpegFrameRecorder(address, 1280, 720);
+                            file = new File(address);
+                            this.setRecordRecorderOption();
+                            cameraPojo.setRecordDir(address);
+                            try {
+                                record1.start();
+                            } catch (FrameRecorder.Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            // 新建一条录像文件信息
+                            this.saveRecordFileInfo(new RecordVideoInfo());
+                        }
+                        record1.record(frame);
+                    } else {
+                        if (record1 != null) {
+                            record1.stop();
+                            record1.close();
+                            recordVideoInfo.setEndTime(LocalDateTime.now());
+                            recordVideoInfo.setFileSize(file.length());
+                            this.saveRecordFileInfo(recordVideoInfo);
+                        }
+                    }
+                    if (isRecord != null && isRecord) {
+                        // 如果超过时间最大值则进行重新记录录像
+                        this.restartRecorderWithMaxTime();
+                        // 如果超过大小最大值则进行重新记录录像
+                        this.restartRecorderWithMaxSize();
+                    }
 
                     // 如果是测试推流则直接跳出
                     if (isTest == 1) {
                         break;
                     }
-//                    if (isRecord != null && isRecord) {
-//                        // 如果超过时间最大值则进行重新记录录像
-//                        this.restartRecorderWithMaxTime();
-//                        // 如果超过大小最大值则进行重新记录录像
-//                        this.restartRecorderWithMaxSize();
-//                    }
                     record.record(frame);
 
                     // 发送ptz云台的位置坐标
-                    GBResult ptzPosResult = cameraControlService.getDVRConfig("hikvision", cameraPojo.getIp(), 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), HCNetSDK.NET_DVR_GET_PTZPOS);
-                    int resultCode = ptzPosResult.getCode();
-                    if (resultCode == 200) {
-                        JSONObject posJson = (JSONObject) ptzPosResult.getData();
-                        Integer pPos = posJson.getInteger("p");
-                        Integer tPos = posJson.getInteger("t");
-                        Integer zPos = posJson.getInteger("z");
-                        // 转换结果
-                        posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
-                        posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
-                        posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
-                        posJson.put("timestamp", record.getTimestamp());
-
-                        webSocketServer.onMessage(posJson.toJSONString());
-                    }
-//                    record.recordPacket(packet);
+                    this.sendPTZPosition();
                 }
 
                 String token = cameraPojo.getToken();
@@ -412,6 +400,28 @@ public class RtspToRtmpPusher {
         return this;
     }
 
+    private void sendPTZPosition() {
+        GBResult ptzPosResult = cameraControlService.getDVRConfig("hikvision", cameraPojo.getIp(), 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), HCNetSDK.NET_DVR_GET_PTZPOS);
+        int resultCode = ptzPosResult.getCode();
+        if (resultCode == 200) {
+            JSONObject posJson = (JSONObject) ptzPosResult.getData();
+            Integer pPos = posJson.getInteger("p");
+            Integer tPos = posJson.getInteger("t");
+            Integer zPos = posJson.getInteger("z");
+            // 转换结果
+            posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
+            posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
+            posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
+            posJson.put("timestamp", record.getTimestamp());
+
+            webSocketServer.onMessage(posJson.toJSONString());
+        }
+    }
+
+    /**
+     * 截图
+     * @param frame
+     */
     private void takeSnapshot(Frame frame) {
         String thumbnailSize = DeviceManagerController.cameraConfigBo.getSnapShootTumbSize();
         Integer thumbnailWidth = Integer.valueOf(thumbnailSize.split("x")[0]);

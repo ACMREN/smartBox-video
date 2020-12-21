@@ -8,7 +8,9 @@ import javax.sip.Dialog;
 import com.yangjie.JGB28181.media.codec.Frame;
 import com.yangjie.JGB28181.media.server.Server;
 import com.yangjie.JGB28181.media.server.remux.Observer;
+import lombok.Data;
 
+@Data
 public class PushStreamDevice {
 
 	/**
@@ -82,9 +84,14 @@ public class PushStreamDevice {
 	 */
 	private String pullRtmpAddress;
 
+	/**
+	 * flv拉流地址
+	 */
+	private String pullFlvAddress;
+
 
 	public PushStreamDevice(String deviceId, Integer ssrc, String callId, String streamName, int port,
-			boolean isTcp, Server server,Observer observer,String pullRtmpAddress) {
+			boolean isTcp, Server server,Observer observer,String pullRtmpAddress, String pullFlvAddress) {
 		this.deviceId = deviceId;
 		this.ssrc = ssrc;
 		this.callId = callId;
@@ -94,6 +101,7 @@ public class PushStreamDevice {
 		this.server = server;
 		this.observer = observer;
 		this.pullRtmpAddress = pullRtmpAddress;
+		this.pullFlvAddress = pullFlvAddress;
 	}
 
 	public Integer getSsrc() {
