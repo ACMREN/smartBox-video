@@ -33,6 +33,8 @@ public class StartApplication extends SpringBootServletInitializer
      */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+		System.setProperty("org.bytedeco.javacpp.maxphysicalbytes", "0");
+		System.setProperty("org.bytedeco.javacpp.maxbytes", "0");
 		return builder.sources(StartApplication.class);
 	}
 }
