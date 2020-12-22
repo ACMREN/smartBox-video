@@ -268,9 +268,8 @@ public class RtspToRtmpPusher {
             record.setFormat("flv");
             record.setAudioCodecName("aac");
         }
-        fc = grabber.getFormatContext();
         try {
-            record.start(fc);
+            record.start();
             // 在数据库新建录像文件的信息
             this.saveRecordFileInfo(new RecordVideoInfo());
         } catch (Exception e) {
@@ -310,74 +309,63 @@ public class RtspToRtmpPusher {
             try {
                 // 用于中断线程时，结束该循环
                 nowThread.sleep(0);
-//                Frame frame;
-//                frame = grabber.grab();
-                AVPacket packet;
-                packet = grabber.grabPacket();
-                if (packet == null || packet.size() <= 0 || packet.data() == null) {
-                    // 空包记录次数跳过
-                    no_frame_index++;
-                    err_index++;
-                    continue;
-                }
-                if (null != packet) {
-//                    // 判断是否需要截图
-//                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
-//                    if (isSnapshot != null && isSnapshot) {
-//                        // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
-//                        final Frame snapshotFrame = frame.clone();
-//                        ActionController.executor.execute(() -> {
-//                            takeSnapshot(snapshotFrame);
-//                        });
-//                        ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
-//                    }
-//
-//                    // 判断是否需要录像
-//                    Boolean isRecord = ActionController.deviceRecordingMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
-//                    if (isRecord != null && isRecord) {
-//                        if (record1 == null) {
-//                            String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
-//                            record1 = new FFmpegFrameRecorder(address, 1280, 720);
-//                            file = new File(address);
-//                            this.setRecordRecorderOption();
-//                            cameraPojo.setRecordDir(address);
-//                            try {
-//                                record1.start();
-//                            } catch (FrameRecorder.Exception e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            // 新建一条录像文件信息
-//                            this.saveRecordFileInfo(new RecordVideoInfo());
-//                        }
-//                        record1.record(frame);
-//                    } else {
-//                        if (record1 != null) {
-//                            record1.stop();
-//                            record1.close();
-//                            recordVideoInfo.setEndTime(LocalDateTime.now());
-//                            recordVideoInfo.setFileSize(file.length());
-//                            this.saveRecordFileInfo(recordVideoInfo);
-//                        }
-//                    }
-//                    if (isRecord != null && isRecord) {
-//                        // 如果超过时间最大值则进行重新记录录像
-//                        this.restartRecorderWithMaxTime();
-//                        // 如果超过大小最大值则进行重新记录录像
-//                        this.restartRecorderWithMaxSize();
-//                    }
+                Frame frame;
+                frame = grabber.grab();
+                if (null != frame) {
+                    // 判断是否需要截图
+                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                    if (isSnapshot != null && isSnapshot) {
+                        // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
+                        final Frame snapshotFrame = frame.clone();
+                        ActionController.executor.execute(() -> {
+                            takeSnapshot(snapshotFrame);
+                        });
+                        ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+                    }
+
+                    // 判断是否需要录像
+                    Boolean isRecord = ActionController.deviceRecordingMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                    if (isRecord != null && isRecord) {
+                        if (record1 == null) {
+                            String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
+                            record1 = new FFmpegFrameRecorder(address, 1280, 720);
+                            file = new File(address);
+                            this.setRecordRecorderOption();
+                            cameraPojo.setRecordDir(address);
+                            try {
+                                record1.start();
+                            } catch (FrameRecorder.Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            // 新建一条录像文件信息
+                            this.saveRecordFileInfo(new RecordVideoInfo());
+                        }
+                        record1.record(frame);
+                    } else {
+                        if (record1 != null) {
+                            record1.stop();
+                            record1.close();
+                            recordVideoInfo.setEndTime(LocalDateTime.now());
+                            recordVideoInfo.setFileSize(file.length());
+                            this.saveRecordFileInfo(recordVideoInfo);
+                        }
+                    }
+                    if (isRecord != null && isRecord) {
+                        // 如果超过时间最大值则进行重新记录录像
+                        this.restartRecorderWithMaxTime();
+                        // 如果超过大小最大值则进行重新记录录像
+                        this.restartRecorderWithMaxSize();
+                    }
 
                     // 如果是测试推流则直接跳出
                     if (isTest == 1) {
                         break;
                     }
-//                    record.record(frame);
-                    record.recordPacket(packet);
+                    record.record(frame);
 
                     // 发送ptz云台的位置坐标
                     this.sendPTZPosition();
-
-                    av_packet_unref(packet);
                 }
 
                 String token = cameraPojo.getToken();
