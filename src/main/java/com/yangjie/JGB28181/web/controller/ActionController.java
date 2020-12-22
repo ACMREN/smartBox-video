@@ -538,7 +538,8 @@ public class ActionController implements OnProcessListener {
 				logger.info("=======================关闭推流，开始================");
 				if (LinkTypeEnum.GB28181.getName().equals(linkType)) {
 					this.bye(callId);
-				} else if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
+				}
+				if (LinkTypeEnum.RTSP.getName().equals(linkType)) {
 					// 关闭hls推流
 					this.rtspCloseCameraStream(callId);
 					// 关闭rtmp推流
