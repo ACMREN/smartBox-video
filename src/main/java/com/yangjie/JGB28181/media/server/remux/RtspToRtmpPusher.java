@@ -412,7 +412,6 @@ public class RtspToRtmpPusher {
             posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
             posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
             posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
-            System.out.println(record.getTimestamp());
             posJson.put("timestamp", record.getTimestamp());
 
             webSocketServer.onMessage(posJson.toJSONString());
