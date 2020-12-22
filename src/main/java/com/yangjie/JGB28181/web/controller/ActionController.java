@@ -484,6 +484,9 @@ public class ActionController implements OnProcessListener {
 		// 更新redis中推流key-value对象的时间，保证推流
 		for (Integer deviceId : deviceIds) {
 			JSONObject streamJson = ActionController.baseDeviceIdCallIdMap.get(deviceId);
+			if (null == streamJson) {
+				logger.info("获取设备推流信息失败，设备id=" + deviceId);
+			}
 			JSONObject typeStreamJson = streamJson.getJSONObject(type);
 			if (null == typeStreamJson) {
 				return GBResult.ok();
