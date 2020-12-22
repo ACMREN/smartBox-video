@@ -424,6 +424,7 @@ public class RtspToRtmpPusher {
             posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
             posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
             posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
+            System.out.println(record.getTimestamp());
             posJson.put("timestamp", record.getTimestamp());
 
             webSocketServer.onMessage(posJson.toJSONString());
@@ -543,7 +544,7 @@ public class RtspToRtmpPusher {
      * @throws FrameRecorder.Exception
      */
     private void restartRecorderWithMaxTime() throws FrameRecorder.Exception {
-        long timestamp = record.getTimestamp();
+        long timestamp = record1.getTimestamp();
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
             record1.stop();
 
