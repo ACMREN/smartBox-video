@@ -192,9 +192,9 @@ public class RtspToRtmpPusher {
             grabber.setOption("y", "");
             grabber.setOption("vsync", "0");
             // 使用硬件加速
-//            grabber.setOption("hwaccel", "cuvid");
-//            grabber.setVideoCodecName("h264_cuvid");
-            grabber.setVideoCodec(AV_CODEC_ID_H264);
+            grabber.setOption("hwaccel", "cuvid");
+            grabber.setVideoCodecName("h264_cuvid");
+//            grabber.setVideoCodec(AV_CODEC_ID_H264);
             grabber.setOption("rtsp_transport", "tcp");// tcp用于解决丢包问题
             grabber.setOption("resize", "1920x1080");
         }
