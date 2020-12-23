@@ -14,6 +14,7 @@ import com.yangjie.JGB28181.service.impl.SnapshotInfoServiceImpl;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
+import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.*;
 import org.slf4j.Logger;
@@ -52,7 +53,6 @@ public class RtspRecorder {
     public static Timer timer;
 
     protected CustomFFmpegFrameGrabber grabber = null;// 解码器
-    protected FFmpegFrameRecorder record = null;// 编码器
     protected FFmpegFrameRecorder record1 = null;
     int width;// 视频像素宽
     int height;// 视频像素高
@@ -232,17 +232,12 @@ public class RtspRecorder {
      */
     public RtspRecorder to() throws Exception {
         // 录制/推流器
-        record = new FFmpegFrameRecorder(cameraPojo.getRecordDir(), 1280, 720, 0);
+        record1 = new FFmpegFrameRecorder(cameraPojo.getRecordDir(), 1280, 720, 0);
 
-        this.setPushRecorderOption();
+        this.setRecordRecorderOption();
         AVFormatContext fc = null;
-        if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
-            // 封装格式flv
-            record.setFormat("flv");
-            record.setAudioCodecName("aac");
-        }
         try {
-            record.start();
+            record1.start();
             // 在数据库新建录像文件的信息
             this.saveRecordFileInfo(new RecordVideoInfo());
         } catch (Exception e) {
@@ -250,8 +245,8 @@ public class RtspRecorder {
             logger.error("ffmpeg错误信息：", e);
             grabber.stop();
             grabber.close();
-            record.stop();
-            record.close();
+            record1.stop();
+            record1.close();
             return null;
         }
         return this;
@@ -303,7 +298,7 @@ public class RtspRecorder {
                     if (isTest == 1) {
                         break;
                     }
-                    record.record(frame);
+                    record1.record(frame);
                 }
 
             } catch (InterruptedException e) {
@@ -311,8 +306,8 @@ public class RtspRecorder {
                 // 销毁构造器
                 grabber.stop();
                 grabber.close();
-                record.stop();
-                record.close();
+                record1.stop();
+                record1.close();
                 logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
                 break;
             } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
@@ -324,8 +319,8 @@ public class RtspRecorder {
         // 程序正常结束销毁构造器
         grabber.stop();
         grabber.close();
-        record.stop();
-        record.close();
+        record1.stop();
+        record1.close();
         logger.info(cameraPojo.getRtsp() + " 推流结束...");
         return this;
     }
@@ -378,32 +373,6 @@ public class RtspRecorder {
     }
 
     /**
-     * 设置推流推流器参数
-     */
-    private void setPushRecorderOption() {
-        String streamSize = DeviceManagerController.cameraConfigBo.getStreamSize();
-        Integer streamWidth = Integer.valueOf(streamSize.split("x")[0]);
-        Integer streamHeight = Integer.valueOf(streamSize.split("x")[1]);
-
-        record.setFrameRate(framerate);
-        record.setVideoCodec(AV_CODEC_ID_H264);
-        record.setImageHeight(streamHeight);
-        record.setImageWidth(streamWidth);
-        record.setVideoBitrate(Integer.valueOf(DeviceManagerController.cameraConfigBo.getStreamMaxRate()));
-
-        // 设置分片时间
-        if (cameraPojo.getToHls() == 1) {
-            record.setOption("hls_time", "10");
-        }
-
-        if (cameraPojo.getRtmp().indexOf("rtmp") >= 0 || cameraPojo.getRtmp().indexOf("flv") > 0) {
-            // 封装格式flv
-            record.setFormat("flv");
-            record.setAudioCodecName("aac");
-        }
-    }
-
-    /**
      * 设置录像推流器参数
      */
     private void setRecordRecorderOption() {
@@ -412,7 +381,7 @@ public class RtspRecorder {
         Integer recordHeight = Integer.valueOf(recordSize.split("x")[1]);
 
         record1.setFrameRate(framerate);
-        record1.setVideoCodec(AV_CODEC_ID_H264);
+//        record1.setVideoCodec(AV_CODEC_ID_H264);
         record1.setImageHeight(recordHeight);
         record1.setImageWidth(recordWidth);
         record1.setVideoBitrate(Integer.valueOf(DeviceManagerController.cameraConfigBo.getRecordMaxRate()));

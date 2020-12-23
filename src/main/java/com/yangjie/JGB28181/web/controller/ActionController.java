@@ -193,10 +193,46 @@ public class ActionController implements OnProcessListener {
 
 		// 开启录像
 		GBResult result;
-		if (isSwitch == 1) {
-			synchronized (recordLock) {
-				for (Integer deviceId : deviceIds) {
-					deviceRecordingMap.put(deviceId, true);
+		List<JSONObject> resultList = new ArrayList<>();
+		for (Integer deviceId : deviceIds) {
+			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
+			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.GB28181.getCode()) {
+				result = this.GBPlayRtmp(cameraInfo.getIp(), deviceId, 1, isSwitch, 0);
+				int resultCode = result.getCode();
+				if (200 == resultCode) {
+					MediaData mediaData = (MediaData) result.getData();
+					JSONObject data = new JSONObject();
+					String address = mediaData.getAddress();
+					String callId = mediaData.getCallId();
+					data.put("deviceId", deviceId);
+					data.put("source", address);
+					resultList.add(data);
+					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
+				} else {
+					return result;
+				}
+			}
+			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.RTSP.getCode()) {
+				String rtspLink = cameraInfo.getRtspLink();
+				CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
+				cameraPojo.setToHls(1);
+				cameraPojo.setDeviceId(deviceId.toString());
+				cameraPojo.setIsRecord(1);
+				cameraPojo.setIsSwitch(isSwitch);
+				cameraPojo.setToFlv(0);
+				result = this.rtspPlayRtmp(cameraPojo);
+				int resultCode = result.getCode();
+				if (200 == resultCode) {
+					MediaData mediaData = (MediaData) result.getData();
+					JSONObject data = new JSONObject();
+					String address = mediaData.getAddress();
+					String callId = mediaData.getCallId();
+					data.put("deviceId", deviceId);
+					data.put("source", address);
+					resultList.add(data);
+					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
+				} else {
+					return result;
 				}
 			}
 		}

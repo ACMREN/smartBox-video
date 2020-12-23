@@ -265,10 +265,9 @@ public class RtspToRtmpPusher {
             record.setFormat("flv");
             record.setAudioCodecName("aac");
         }
+        fc = grabber.getFormatContext();
         try {
-            record.start();
-            // 在数据库新建录像文件的信息
-            this.saveRecordFileInfo(new RecordVideoInfo());
+            record.start(fc);
         } catch (Exception e) {
             logger.error(cameraPojo.getRtsp() + "  推流异常！");
             logger.error("ffmpeg错误信息：", e);
@@ -321,7 +320,7 @@ public class RtspToRtmpPusher {
                 record.recordPacket(packet);
 
                 // 发送ptz云台的位置坐标
-                this.sendPTZPosition();
+//                this.sendPTZPosition();
 
                 // 检测推流信条
                 String token = cameraPojo.getToken();
