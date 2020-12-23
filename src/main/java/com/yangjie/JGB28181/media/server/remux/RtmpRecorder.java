@@ -1,20 +1,21 @@
 package com.yangjie.JGB28181.media.server.remux;
 
+import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.utils.RecordNameUtils;
 import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.entity.RecordVideoInfo;
+import com.yangjie.JGB28181.entity.SnapshotInfo;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.service.RecordVideoInfoService;
+import com.yangjie.JGB28181.service.SnapshotInfoService;
 import com.yangjie.JGB28181.service.impl.RecordVideoInfoServiceImpl;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameRecorder;
+import org.bytedeco.javacv.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.time.LocalDate;
@@ -149,13 +153,23 @@ public class RtmpRecorder extends Observer {
             // 在数据库新建录像文件的信息
             this.saveRecordFileInfo(new RecordVideoInfo());
 
-            AVPacket avPacket;
             Frame frame;
 
             file = new File(address);
             while(mRunning){
-                frame=grabber.grab();
+                frame = grabber.grab();
                 if (frame != null) {
+                    // 判断是否需要截图
+                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(deviceBaseId);
+                    if (isSnapshot != null && isSnapshot) {
+                        // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
+                        final Frame snapshotFrame = frame.clone();
+                        ActionController.executor.execute(() -> {
+                            takeSnapshot(snapshotFrame);
+                        });
+                        ActionController.deviceSnapshotMap.put(deviceBaseId, false);
+                    }
+
                     // 如果超过时间最大值则进行重新记录录像
                     this.restartRecorderWithMaxTime();
                     // 如果超过大小最大值则进行重新记录录像
@@ -164,7 +178,6 @@ public class RtmpRecorder extends Observer {
                     if (isTest == 1) {
                         break;
                     }
-                    pts = mPtsQueue.pop();
                     recorder.record(frame);
                 } else if (isTest == 1){
                     ActionController.failCidList.add(cid);
@@ -225,6 +238,49 @@ public class RtmpRecorder extends Observer {
             recorder.setFrameRate(25);
             recorder.setOption("loglevel", "quiet");
         }
+    }
+
+    private void takeSnapshot(Frame frame) {
+        String thumbnailSize = DeviceManagerController.cameraConfigBo.getSnapShootTumbSize();
+        Integer thumbnailWidth = Integer.valueOf(thumbnailSize.split("x")[0]);
+        Integer thumbnailHeight = Integer.valueOf(thumbnailSize.split("x")[1]);
+
+        // 1. 截图并生成缩略图，写入文件路径
+        String snapshotAddress = RecordNameUtils.snapshotFileAddress(StreamNameUtils.rtspPlay(deviceBaseId.toString(), "1"));
+        String thumbnailAddress = RecordNameUtils.thumbnailFileAddress(StreamNameUtils.rtspPlay(deviceBaseId.toString(), "1"));
+        try {
+            Java2DFrameConverter converter = new Java2DFrameConverter();
+            BufferedImage image = converter.convert(frame);
+            BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
+            thumbnailImage.getGraphics().drawImage(image, 0, 0, thumbnailWidth, thumbnailHeight, null);
+
+            ImageIO.write(thumbnailImage, "jpg", new File(thumbnailAddress));
+            ImageIO.write(image, "jpg", new File(snapshotAddress));
+        } catch (FrameGrabber.Exception e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 2. 保存到数据库
+        File snapshotFile = new File(snapshotAddress);
+        SnapshotInfo snapshotInfo = new SnapshotInfo();
+        snapshotInfo.setDeviceBaseId(deviceBaseId);
+        snapshotInfo.setFilePath(snapshotAddress);
+        snapshotInfo.setThumbnailPath(thumbnailAddress);
+        snapshotInfo.setCreateTime(LocalDateTime.now());
+        snapshotInfo.setType(3);
+        snapshotInfo.setAlarmType(0);
+        snapshotInfo.setFileSize(snapshotFile.length());
+
+        SnapshotInfoService snapshotInfoService = (SnapshotInfoService) applicationContext.getBean("snapshotInfoService");
+        snapshotInfoService.save(snapshotInfo);
+
+        // 3. 保存到临时map中，让调用线程返回结果地址
+        JSONObject resultJson = new JSONObject();
+        resultJson.put("filePath", snapshotAddress);
+        resultJson.put("thumbnailPath", thumbnailAddress);
+        ActionController.snapshotAddressMap.put(deviceBaseId, resultJson);
     }
 
     /**

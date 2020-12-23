@@ -3,6 +3,7 @@ package com.yangjie.JGB28181.common.thread;
 import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.common.utils.IpUtil;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
+import com.yangjie.JGB28181.media.server.remux.RtspRecorder;
 import com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import org.slf4j.Logger;
@@ -51,13 +52,28 @@ public class CameraThread {
                 // 执行转流推流任务
                 Integer deviceId  = Integer.valueOf(cameraPojo.getDeviceId());
                 RtspToRtmpPusher push;
-                if (null != ActionController.rtspPusherMap.get(deviceId)) {
-                    push = ActionController.rtspPusherMap.get(deviceId);
-                } else {
-                    push = new RtspToRtmpPusher(cameraPojo).from();
+                RtspRecorder recorder;
+                // 如果是推流的话，就创建推流处理器
+                if (cameraPojo.getIsRecord() == 0) {
+                    if (null != ActionController.rtspPusherMap.get(deviceId)) {
+                        push = ActionController.rtspPusherMap.get(deviceId);
+                    } else {
+                        push = new RtspToRtmpPusher(cameraPojo).from();
+                    }
+                    if (push != null) {
+                        push.to().go(nowThread);
+                    }
                 }
-                if (push != null) {
-                    push.to().go(nowThread);
+                // 如果是录像的话，就创建录像处理器
+                if (cameraPojo.getIsRecord() == 1) {
+                    if (null != ActionController.rtspRecorderMap.get(deviceId)) {
+                        recorder = ActionController.rtspRecorderMap.get(deviceId);
+                    } else {
+                        recorder = new RtspRecorder(cameraPojo).from();
+                    }
+                    if (recorder != null) {
+                        recorder.to().go(nowThread);
+                    }
                 }
                 // 清除缓存
                 CacheUtil.STREAMMAP.remove(cameraPojo.getToken());

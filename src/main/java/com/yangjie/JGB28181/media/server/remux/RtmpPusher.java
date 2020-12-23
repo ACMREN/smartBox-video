@@ -134,43 +134,24 @@ public class RtmpPusher extends Observer{
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 
-			// 推流rtmp的参数
-			if (toHls == 0) {
-				recorder.setInterleaved(true);
-				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-				recorder.setFormat("flv");
-				recorder.setFrameRate(25);
-			}
+			recorder.setInterleaved(true);
+			recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+			recorder.setFormat("flv");
+			recorder.setFrameRate(25);
+			recorder.setOption("loglevel", "quiet");
 
-			// 推流hls的参数
-			if (toHls == 1) {
-				recorder.setInterleaved(true);
-				recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
-				recorder.setFormat("flv");
-				recorder.setFrameRate(25);
-				recorder.setOption("loglevel", "quiet");
-			}
 			recorder.start();
 			AVPacket avPacket;
 			Frame frame;
 
 			while(mRunning){
-				frame=grabber.grab();
-				if (frame != null) {
-					Boolean isSnapshot = ActionController.deviceSnapshotMap.get(deviceBaseId);
-					if (null != isSnapshot && isSnapshot) {
-						// 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
-						final Frame snapshotFrame = frame.clone();
-						ActionController.executor.execute(() -> {
-							takeSnapshot(snapshotFrame);
-						});
-						ActionController.deviceSnapshotMap.put(deviceBaseId, false);
-					}
+				avPacket=grabber.grabPacket();
+				if (avPacket != null && avPacket.size() >0 && avPacket.data() != null) {
 					if (isTest == 1) {
 						break;
 					}
 					pts = mPtsQueue.pop();
-					recorder.record(frame);
+					recorder.recordPacket(avPacket,pts,pts);
 				} else if (isTest == 1){
 					ActionController.failCidList.add(cid);
 				}
@@ -201,49 +182,6 @@ public class RtmpPusher extends Observer{
 		}
 		log.error("推流结束");
 
-	}
-
-	private void takeSnapshot(Frame frame) {
-		String thumbnailSize = DeviceManagerController.cameraConfigBo.getSnapShootTumbSize();
-		Integer thumbnailWidth = Integer.valueOf(thumbnailSize.split("x")[0]);
-		Integer thumbnailHeight = Integer.valueOf(thumbnailSize.split("x")[1]);
-
-		// 1. 截图并生成缩略图，写入文件路径
-		String snapshotAddress = RecordNameUtils.snapshotFileAddress(StreamNameUtils.rtspPlay(deviceBaseId.toString(), "1"));
-		String thumbnailAddress = RecordNameUtils.thumbnailFileAddress(StreamNameUtils.rtspPlay(deviceBaseId.toString(), "1"));
-		try {
-			Java2DFrameConverter converter = new Java2DFrameConverter();
-			BufferedImage image = converter.convert(frame);
-			BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
-			thumbnailImage.getGraphics().drawImage(image, 0, 0, thumbnailWidth, thumbnailHeight, null);
-
-			ImageIO.write(thumbnailImage, "jpg", new File(thumbnailAddress));
-			ImageIO.write(image, "jpg", new File(snapshotAddress));
-		} catch (FrameGrabber.Exception e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// 2. 保存到数据库
-		File snapshotFile = new File(snapshotAddress);
-		SnapshotInfo snapshotInfo = new SnapshotInfo();
-		snapshotInfo.setDeviceBaseId(deviceBaseId);
-		snapshotInfo.setFilePath(snapshotAddress);
-		snapshotInfo.setThumbnailPath(thumbnailAddress);
-		snapshotInfo.setCreateTime(LocalDateTime.now());
-		snapshotInfo.setType(3);
-		snapshotInfo.setAlarmType(0);
-		snapshotInfo.setFileSize(snapshotFile.length());
-
-		SnapshotInfoService snapshotInfoService = (SnapshotInfoService) applicationContext.getBean("snapshotInfoService");
-		snapshotInfoService.save(snapshotInfo);
-
-		// 3. 保存到临时map中，让调用线程返回结果地址
-		JSONObject resultJson = new JSONObject();
-		resultJson.put("filePath", snapshotAddress);
-		resultJson.put("thumbnailPath", thumbnailAddress);
-		ActionController.snapshotAddressMap.put(deviceBaseId, resultJson);
 	}
 
 

@@ -149,6 +149,9 @@ public class ActionController implements OnProcessListener {
 	// rtsp设备的线程处理器map
 	public static Map<Integer, RtspToRtmpPusher> rtspPusherMap = new HashMap<>(20);
 
+	// rtsp设备的录像处理器map
+	public static Map<Integer, RtspRecorder> rtspRecorderMap = new HashMap<>(20);
+
 	// 国标设备录像map
 	public static Map<Integer, RecordStreamDevice> deviceRecordMap = new HashMap<>(20);
 

@@ -2,33 +2,23 @@ package com.yangjie.JGB28181.media.server.remux;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.bean.WebSocketServer;
-import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.*;
-import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.RecordVideoInfo;
 import com.yangjie.JGB28181.entity.SnapshotInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
-import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
-import com.yangjie.JGB28181.service.SnapshotInfoService;
 import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.RecordVideoInfoServiceImpl;
 import com.yangjie.JGB28181.service.impl.SnapshotInfoServiceImpl;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
-import org.bytedeco.ffmpeg.avcodec.AVPacket;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
-import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
-import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacv.*;
-import org.opencv.videoio.Videoio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import javax.imageio.ImageIO;
@@ -44,18 +34,8 @@ import java.util.Properties;
 import java.util.Timer;
 
 import static org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_H264;
-import static org.bytedeco.ffmpeg.global.avcodec.av_packet_unref;
 
-
-/**
- * @Title CameraPush.java
- * @description 拉流推流
- * @time 2019年12月16日 上午9:34:41
- * @author wuguodong
- **/
-@Component
-public class RtspToRtmpPusher {
-
+public class RtspRecorder {
     private final static Logger logger = LoggerFactory.getLogger(RtspToRtmpPusher.class);
 
     // 配置类
@@ -101,11 +81,11 @@ public class RtspToRtmpPusher {
     private CameraControlServiceImpl cameraControlService;
     private WebSocketServer webSocketServer;
 
-    public RtspToRtmpPusher() {
+    public RtspRecorder() {
         super();
     }
 
-    public RtspToRtmpPusher(CameraPojo cameraPojo) {
+    public RtspRecorder(CameraPojo cameraPojo) {
         this.cameraPojo = cameraPojo;
         applicationContext = cameraPojo.getApplicationContext();
     }
@@ -145,7 +125,7 @@ public class RtspToRtmpPusher {
      * @throws org.bytedeco.javacv.FrameGrabber.Exception
      * @throws Exception
      */
-    public RtspToRtmpPusher from() throws Exception {
+    public RtspRecorder from() throws Exception {
         // 采集/抓取器
         if (null == grabber) {
             grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
@@ -250,13 +230,9 @@ public class RtspToRtmpPusher {
      * @author wuguodong
      * @throws Exception
      */
-    public RtspToRtmpPusher to() throws Exception {
+    public RtspRecorder to() throws Exception {
         // 录制/推流器
-        if (cameraPojo.getToHls() == 1) {
-            record = new FFmpegFrameRecorder(cameraPojo.getHls(), 1280, 720);
-        } else {
-            record = new FFmpegFrameRecorder(cameraPojo.getRtmp(), 1280, 720);
-        }
+        record = new FFmpegFrameRecorder(cameraPojo.getRecordDir(), 1280, 720, 0);
 
         this.setPushRecorderOption();
         AVFormatContext fc = null;
@@ -290,7 +266,7 @@ public class RtspToRtmpPusher {
      * @throws org.bytedeco.javacv.FrameRecorder.Exception
      * @throws InterruptedException
      */
-    public RtspToRtmpPusher go(Thread nowThread)
+    public RtspRecorder go(Thread nowThread)
             throws org.bytedeco.javacv.FrameGrabber.Exception, org.bytedeco.javacv.FrameRecorder.Exception {
         long err_index = 0;// 采集或推流导致的错误次数
         // 连续五次没有采集到帧则认为视频采集结束，程序错误次数超过5次即中断程序
@@ -299,39 +275,37 @@ public class RtspToRtmpPusher {
         grabber.flush();
         int isTest = cameraPojo.getIsTest();
         file = new File(cameraPojo.getRecordDir());
-        cameraControlService = (CameraControlServiceImpl) applicationContext.getBean("cameraControlServiceImpl");
-        webSocketServer = (WebSocketServer) applicationContext.getBean("webSocketServer");
 
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
                 // 用于中断线程时，结束该循环
                 nowThread.sleep(0);
-                AVPacket packet;
-                packet = grabber.grabPacket();
-                // 数据为空时跳过
-                if (null == packet && packet.size() == 0) {
-                    continue;
+                Frame frame;
+                frame = grabber.grab();
+                if (null != frame) {
+                    // 判断是否需要截图
+                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                    if (isSnapshot != null && isSnapshot) {
+                        // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
+                        final Frame snapshotFrame = frame.clone();
+                        ActionController.executor.execute(() -> {
+                            takeSnapshot(snapshotFrame);
+                        });
+                        ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+                    }
+
+                    // 如果超过时间最大值则进行重新记录录像
+                    this.restartRecorderWithMaxTime();
+                    // 如果超过大小最大值则进行重新记录录像
+                    this.restartRecorderWithMaxSize();
+
+                    // 如果是测试推流则直接跳出
+                    if (isTest == 1) {
+                        break;
+                    }
+                    record.record(frame);
                 }
 
-                // 如果是测试推流则直接跳出
-                if (isTest == 1) {
-                    break;
-                }
-
-                record.recordPacket(packet);
-
-                // 发送ptz云台的位置坐标
-                this.sendPTZPosition();
-
-                // 检测推流信条
-                String token = cameraPojo.getToken();
-                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
-                if (null != heartbeats) {
-                    heartbeats++;
-                } else {
-                    heartbeats = 1L;
-                }
-                TimerUtil.heartbeatsMap.put(token, heartbeats);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 // 销毁构造器
@@ -354,24 +328,6 @@ public class RtspToRtmpPusher {
         record.close();
         logger.info(cameraPojo.getRtsp() + " 推流结束...");
         return this;
-    }
-
-    private void sendPTZPosition() {
-        GBResult ptzPosResult = cameraControlService.getDVRConfig("hikvision", cameraPojo.getIp(), 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), HCNetSDK.NET_DVR_GET_PTZPOS);
-        int resultCode = ptzPosResult.getCode();
-        if (resultCode == 200) {
-            JSONObject posJson = (JSONObject) ptzPosResult.getData();
-            Integer pPos = posJson.getInteger("p");
-            Integer tPos = posJson.getInteger("t");
-            Integer zPos = posJson.getInteger("z");
-            // 转换结果
-            posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
-            posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
-            posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
-            posJson.put("timestamp", record.getTimestamp());
-
-            webSocketServer.onMessage(posJson.toJSONString());
-        }
     }
 
     /**
