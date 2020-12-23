@@ -1,6 +1,9 @@
 package com.yangjie.JGB28181.media.server.remux;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import com.yangjie.JGB28181.bean.WebSocketServer;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
@@ -97,6 +100,9 @@ public class RtspToRtmpPusher {
     private ApplicationContext applicationContext;
     // 录像文件
     public File file;
+    private NativeLong lUserID = new NativeLong(0);
+    private JSONObject resultJson = new JSONObject();
+    private Long startTime = 0L;
 
     private CameraControlServiceImpl cameraControlService;
     private WebSocketServer webSocketServer;
@@ -268,6 +274,7 @@ public class RtspToRtmpPusher {
         fc = grabber.getFormatContext();
         try {
             record.start(fc);
+            startTime = System.currentTimeMillis();
         } catch (Exception e) {
             logger.error(cameraPojo.getRtsp() + "  推流异常！");
             logger.error("ffmpeg错误信息：", e);
@@ -301,6 +308,40 @@ public class RtspToRtmpPusher {
         cameraControlService = (CameraControlServiceImpl) applicationContext.getBean("cameraControlServiceImpl");
         webSocketServer = (WebSocketServer) applicationContext.getBean("webSocketServer");
 
+        ActionController.executor.execute(() -> {
+            HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+
+            // 1.初始化sdk
+            boolean initSuc = hcNetSDK.NET_DVR_Init();
+            if (!initSuc) {
+                logger.info("初始化sdk失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            }
+            // 2.登录设备
+            if (lUserID.intValue() <= 0) {
+                lUserID = hcNetSDK.NET_DVR_Login_V30(cameraPojo.getIp(), (short) 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), null);//登陆
+                if (lUserID.intValue() < 0) {
+                    logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+                }
+            }
+
+            while (true) {
+                Long useTime = System.currentTimeMillis() - startTime;
+                // 3.创建PTZPOS参数对象
+                HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
+                Pointer pos = net_dvr_ptzpos.getPointer();
+
+                // 4.获取PTZPOS参数
+                hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
+                net_dvr_ptzpos.read();
+
+                resultJson.put("deviceBaseId", cameraPojo.getDeviceId());
+                resultJson.put("p", net_dvr_ptzpos.wPanPos);
+                resultJson.put("t", net_dvr_ptzpos.wTiltPos);
+                resultJson.put("z", net_dvr_ptzpos.wZoomPos);
+                resultJson.put("timestamp", useTime);
+            }
+        });
+
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
                 // 用于中断线程时，结束该循环
@@ -320,7 +361,7 @@ public class RtspToRtmpPusher {
                 record.recordPacket(packet);
 
                 // 发送ptz云台的位置坐标
-//                this.sendPTZPosition();
+                this.sendPTZPosition();
 
                 // 检测推流信条
                 String token = cameraPojo.getToken();
@@ -356,68 +397,8 @@ public class RtspToRtmpPusher {
     }
 
     private void sendPTZPosition() {
-        GBResult ptzPosResult = cameraControlService.getDVRConfig("hikvision", cameraPojo.getIp(), 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), HCNetSDK.NET_DVR_GET_PTZPOS);
-        int resultCode = ptzPosResult.getCode();
-        if (resultCode == 200) {
-            JSONObject posJson = (JSONObject) ptzPosResult.getData();
-            Integer pPos = posJson.getInteger("p");
-            Integer tPos = posJson.getInteger("t");
-            Integer zPos = posJson.getInteger("z");
-            // 转换结果
-            posJson.put("p", CameraControlServiceImpl.HexToDecMa(pPos.shortValue()));
-            posJson.put("t", CameraControlServiceImpl.HexToDecMa(tPos.shortValue()));
-            posJson.put("z", CameraControlServiceImpl.HexToDecMa(zPos.shortValue()));
-            posJson.put("timestamp", record.getTimestamp());
-
-            webSocketServer.onMessage(posJson.toJSONString());
-        }
-    }
-
-    /**
-     * 截图
-     * @param frame
-     */
-    private void takeSnapshot(Frame frame) {
-        String thumbnailSize = DeviceManagerController.cameraConfigBo.getSnapShootTumbSize();
-        Integer thumbnailWidth = Integer.valueOf(thumbnailSize.split("x")[0]);
-        Integer thumbnailHeight = Integer.valueOf(thumbnailSize.split("x")[1]);
-
-        // 1. 截图并生成缩略图，写入文件路径
-        String snapshotAddress = RecordNameUtils.snapshotFileAddress(StreamNameUtils.rtspPlay(String.valueOf(cameraPojo.getDeviceId()), "1"));
-        String thumbnailAddress = RecordNameUtils.thumbnailFileAddress(StreamNameUtils.rtspPlay(String.valueOf(cameraPojo.getDeviceId()), "1"));
-        try {
-            Java2DFrameConverter converter = new Java2DFrameConverter();
-            BufferedImage image = converter.convert(frame);
-            BufferedImage thumbnailImage = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
-            thumbnailImage.getGraphics().drawImage(image, 0, 0, thumbnailWidth, thumbnailHeight, null);
-
-            ImageIO.write(thumbnailImage, "jpg", new File(thumbnailAddress));
-            ImageIO.write(image, "jpg", new File(snapshotAddress));
-        } catch (FrameGrabber.Exception e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 2. 保存到数据库
-        File snapshotFile = new File(snapshotAddress);
-        SnapshotInfo snapshotInfo = new SnapshotInfo();
-        snapshotInfo.setDeviceBaseId(Integer.valueOf(cameraPojo.getDeviceId()));
-        snapshotInfo.setFilePath(snapshotAddress);
-        snapshotInfo.setThumbnailPath(thumbnailAddress);
-        snapshotInfo.setCreateTime(LocalDateTime.now());
-        snapshotInfo.setType(3);
-        snapshotInfo.setAlarmType(0);
-        snapshotInfo.setFileSize(snapshotFile.length());
-
-        SnapshotInfoServiceImpl snapshotInfoService = (SnapshotInfoServiceImpl) applicationContext.getBean("snapshotInfoServiceImpl");
-        snapshotInfoService.save(snapshotInfo);
-
-        // 3. 保存到临时map中，让调用线程返回结果地址
-        JSONObject resultJson = new JSONObject();
-        resultJson.put("filePath", snapshotAddress);
-        resultJson.put("thumbnailPath", thumbnailAddress);
-        ActionController.snapshotAddressMap.put(Integer.valueOf(cameraPojo.getDeviceId()), resultJson);
+        // 只是发送最新的云台位置坐标
+        webSocketServer.onMessage(resultJson.toJSONString());
     }
 
     /**
