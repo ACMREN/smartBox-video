@@ -413,6 +413,7 @@ public class RtspRecorder {
         long timestamp = record1.getTimestamp();
         if (timestamp > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordInterval())) {
             record1.stop();
+            record1.close();
 
             recordVideoInfo.setEndTime(LocalDateTime.now());
             recordVideoInfo.setFileSize(file.length());
@@ -438,6 +439,7 @@ public class RtspRecorder {
     private void restartRecorderWithMaxSize() throws FrameRecorder.Exception {
         if (file.length() > Long.valueOf(DeviceManagerController.cameraConfigBo.getRecordStSize())) {
             record1.stop();
+            record1.close();
 
             recordVideoInfo.setEndTime(LocalDateTime.now());
             recordVideoInfo.setFileSize(file.length());
