@@ -153,12 +153,7 @@ public class RtspToRtmpPusher {
      */
     public RtspToRtmpPusher from() throws Exception {
         // 采集/抓取器
-        if (null == grabber) {
-            grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
-            ActionController.rtspDeviceGrabberMap.put(Integer.valueOf(cameraPojo.getDeviceId()), grabber);
-        } else {
-            grabber = (CustomFFmpegFrameGrabber) ActionController.rtspDeviceGrabberMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
-        }
+        grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
 
         // 解决ip输入错误时，grabber.start();出现阻塞无法释放grabber而导致后续推流无法进行；
         Socket rtspSocket = new Socket();
@@ -213,7 +208,6 @@ public class RtspToRtmpPusher {
             } else {
                 grabber.start(config.getSub_code());
             }
-            ActionController.rtspDeviceGrabberMap.put(Integer.valueOf(cameraPojo.getDeviceId()), grabber);
 
 
             logger.debug("******   grabber.start()    END     ******");
@@ -308,38 +302,11 @@ public class RtspToRtmpPusher {
         cameraControlService = (CameraControlServiceImpl) applicationContext.getBean("cameraControlServiceImpl");
         webSocketServer = (WebSocketServer) applicationContext.getBean("webSocketServer");
 
+        ActionController.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), true);
+
+        // 获取PTZ云台的位置坐标
         ActionController.executor.execute(() -> {
-            HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
-
-            // 1.初始化sdk
-            boolean initSuc = hcNetSDK.NET_DVR_Init();
-            if (!initSuc) {
-                logger.info("初始化sdk失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
-            }
-            // 2.登录设备
-            if (lUserID.intValue() <= 0) {
-                lUserID = hcNetSDK.NET_DVR_Login_V30(cameraPojo.getIp(), (short) 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), null);//登陆
-                if (lUserID.intValue() < 0) {
-                    logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
-                }
-            }
-
-            while (true) {
-                Long useTime = System.currentTimeMillis() - startTime;
-                // 3.创建PTZPOS参数对象
-                HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
-                Pointer pos = net_dvr_ptzpos.getPointer();
-
-                // 4.获取PTZPOS参数
-                hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
-                net_dvr_ptzpos.read();
-
-                resultJson.put("deviceBaseId", cameraPojo.getDeviceId());
-                resultJson.put("p", net_dvr_ptzpos.wPanPos);
-                resultJson.put("t", net_dvr_ptzpos.wTiltPos);
-                resultJson.put("z", net_dvr_ptzpos.wZoomPos);
-                resultJson.put("timestamp", useTime);
-            }
+            getPTZPosition();
         });
 
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
@@ -373,6 +340,7 @@ public class RtspToRtmpPusher {
                 }
                 TimerUtil.heartbeatsMap.put(token, heartbeats);
             } catch (InterruptedException e) {
+                ActionController.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                 e.printStackTrace();
                 // 销毁构造器
                 grabber.stop();
@@ -381,12 +349,9 @@ public class RtspToRtmpPusher {
                 record.close();
                 logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
                 break;
-            } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
-                err_index++;
-            } catch (org.bytedeco.javacv.FrameRecorder.Exception e) {
-                err_index++;
             }
         }
+        ActionController.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
         // 程序正常结束销毁构造器
         grabber.stop();
         grabber.close();
@@ -399,6 +364,41 @@ public class RtspToRtmpPusher {
     private void sendPTZPosition() {
         // 只是发送最新的云台位置坐标
         webSocketServer.onMessage(resultJson.toJSONString());
+    }
+
+    private void getPTZPosition() {
+        HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+
+        // 1.初始化sdk
+        boolean initSuc = hcNetSDK.NET_DVR_Init();
+        if (!initSuc) {
+            logger.info("初始化sdk失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+        }
+        // 2.登录设备
+        if (lUserID.intValue() <= 0) {
+            lUserID = hcNetSDK.NET_DVR_Login_V30(cameraPojo.getIp(), (short) 8000, cameraPojo.getUsername(), cameraPojo.getPassword(), null);//登陆
+            if (lUserID.intValue() < 0) {
+                logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+            }
+        }
+
+        while (true) {
+            Long useTime = System.currentTimeMillis() - startTime;
+            // 3.创建PTZPOS参数对象
+            HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
+            Pointer pos = net_dvr_ptzpos.getPointer();
+
+            // 4.获取PTZPOS参数
+            hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
+            net_dvr_ptzpos.read();
+
+            // 5.放入到临时缓存中
+            resultJson.put("deviceBaseId", cameraPojo.getDeviceId());
+            resultJson.put("p", net_dvr_ptzpos.wPanPos);
+            resultJson.put("t", net_dvr_ptzpos.wTiltPos);
+            resultJson.put("z", net_dvr_ptzpos.wZoomPos);
+            resultJson.put("timestamp", useTime);
+        }
     }
 
     /**

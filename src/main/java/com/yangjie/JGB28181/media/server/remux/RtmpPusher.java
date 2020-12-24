@@ -130,7 +130,6 @@ public class RtmpPusher extends Observer{
 				grabber.setOption("re", "");
 			}
 			grabber.start();
-			ActionController.gbDeviceGrabberMap.put(deviceBaseId, grabber);
 
 			recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 
@@ -144,6 +143,7 @@ public class RtmpPusher extends Observer{
 			AVPacket avPacket;
 			Frame frame;
 
+			ActionController.deviceStreamingMap.put(deviceBaseId, true);
 			while(mRunning){
 				avPacket=grabber.grabPacket();
 				if (avPacket != null && avPacket.size() >0 && avPacket.data() != null) {
@@ -158,6 +158,7 @@ public class RtmpPusher extends Observer{
 			}
 
 		}catch(Exception e){
+			ActionController.deviceStreamingMap.put(deviceBaseId, false);
 			e.printStackTrace();
 			PushStreamDeviceManager.mainMap.remove(deviceId);
 			log.error("推流发生异常 >>> {} pts== {}" ,e,pts);
@@ -167,6 +168,7 @@ public class RtmpPusher extends Observer{
 			Thread.currentThread().stop();
 		}finally{
 			try{
+				ActionController.deviceStreamingMap.put(deviceBaseId, false);
 				if(recorder != null){
 					recorder.stop();
 					recorder.close();
@@ -188,6 +190,7 @@ public class RtmpPusher extends Observer{
 	@Override
 	public void stopRemux() {
 		try	{
+			ActionController.deviceStreamingMap.put(deviceBaseId, false);
 			if (null != grabber) {
 				grabber.stop();
 				grabber.close();

@@ -156,6 +156,7 @@ public class RtmpRecorder extends Observer {
             Frame frame;
 
             file = new File(address);
+            ActionController.deviceRecordingMap.put(deviceBaseId, true);
             while(mRunning){
                 frame = grabber.grab();
                 if (frame != null) {
@@ -186,6 +187,7 @@ public class RtmpRecorder extends Observer {
 
         }catch(Exception e){
             e.printStackTrace();
+            ActionController.deviceRecordingMap.put(deviceBaseId, false);
             PushStreamDeviceManager.mainMap.remove(deviceId);
             log.error("推流发生异常 >>> {} pts== {}" ,e,pts);
             if(onProcessListener != null){
@@ -194,6 +196,7 @@ public class RtmpRecorder extends Observer {
             Thread.currentThread().stop();
         }finally{
             try{
+                ActionController.deviceRecordingMap.put(deviceBaseId, false);
                 if(recorder != null){
                     recorder.stop();
                     recorder.close();
@@ -207,7 +210,7 @@ public class RtmpRecorder extends Observer {
                 e.printStackTrace();
             }
         }
-        log.error("推流结束");
+        log.error("录像结束");
     }
 
     /**

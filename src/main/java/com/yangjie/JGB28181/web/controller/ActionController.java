@@ -134,12 +134,6 @@ public class ActionController implements OnProcessListener {
 	// 存放任务 线程
 	public static Map<String, CameraThread.MyRunnable> jobMap = new HashMap<String, CameraThread.MyRunnable>();
 
-	// rtsp设备的拉流map
-	public static Map<Integer, FrameGrabber> rtspDeviceGrabberMap = new HashMap<>(20);
-
-	// 国标设备拉流器map
-	public static Map<Integer, FrameGrabber> gbDeviceGrabberMap = new HashMap<>(20);
-
 	// rtsp设备的线程处理器map
 	public static Map<Integer, RtspToRtmpPusher> rtspPusherMap = new HashMap<>(20);
 
@@ -161,14 +155,12 @@ public class ActionController implements OnProcessListener {
 	// 截图地址map
 	public static Map<Integer, JSONObject> snapshotAddressMap = new HashMap<>();
 
-	// 录像标志位map
+	public static Map<Integer, Boolean> deviceStreamingMap = new HashMap<>(20);
+
 	public static Map<Integer, Boolean> deviceRecordingMap = new HashMap<>(20);
 
 	// 截图锁对象
 	private static Object snapshotLock = new Object();
-
-	// 录像锁对象
-	private static Object recordLock = new Object();
 
 	@PostMapping(value = "switchRecord")
 	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) throws InterruptedException {

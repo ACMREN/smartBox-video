@@ -244,6 +244,12 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             Integer camId = item.getDeviceId();
             for (LiveCamInfoVo item1 : liveCamInfoVos) {
                 Integer deviceId = item1.getDeviceId();
+                Integer deviceBaseId = item1.getBaseDeviceId();
+                // 判断设备是否在推流/录像
+                Boolean recording = ActionController.deviceRecordingMap.get(deviceBaseId);
+                Boolean streaming = ActionController.deviceStreamingMap.get(deviceBaseId);
+                item1.setRecording(recording? 1 : 0);
+                item1.setStreaming(streaming? 1 : 0);
                 if (camId.intValue() == deviceId.intValue()) {
                     String rtspLink = deviceRtspLinkMap.get(deviceId);
                     item1.setRtspLink(rtspLink);

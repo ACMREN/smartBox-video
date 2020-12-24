@@ -127,12 +127,7 @@ public class RtspRecorder {
      */
     public RtspRecorder from() throws Exception {
         // 采集/抓取器
-        if (null == grabber) {
-            grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
-            ActionController.rtspDeviceGrabberMap.put(Integer.valueOf(cameraPojo.getDeviceId()), grabber);
-        } else {
-            grabber = (CustomFFmpegFrameGrabber) ActionController.rtspDeviceGrabberMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
-        }
+        grabber = new CustomFFmpegFrameGrabber(cameraPojo.getRtsp());
 
         // 解决ip输入错误时，grabber.start();出现阻塞无法释放grabber而导致后续推流无法进行；
         Socket rtspSocket = new Socket();
@@ -187,7 +182,6 @@ public class RtspRecorder {
             } else {
                 grabber.start(config.getSub_code());
             }
-            ActionController.rtspDeviceGrabberMap.put(Integer.valueOf(cameraPojo.getDeviceId()), grabber);
 
 
             logger.debug("******   grabber.start()    END     ******");
@@ -265,13 +259,13 @@ public class RtspRecorder {
             throws org.bytedeco.javacv.FrameGrabber.Exception, org.bytedeco.javacv.FrameRecorder.Exception {
         long err_index = 0;// 采集或推流导致的错误次数
         // 连续五次没有采集到帧则认为视频采集结束，程序错误次数超过5次即中断程序
-        logger.info(cameraPojo.getRtsp() + " 开始推流...");
+        logger.info(cameraPojo.getRtsp() + " 开始录像...");
         // 释放探测时缓存下来的数据帧，避免pts初始值不为0导致画面延时
         grabber.flush();
         int isTest = cameraPojo.getIsTest();
         file = new File(cameraPojo.getRecordDir());
+        ActionController.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), true);
 
-        int count = 0;
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
                 // 用于中断线程时，结束该循环
@@ -308,22 +302,24 @@ public class RtspRecorder {
                 // 更新原有的录像文件信息
                 this.saveRecordFileInfo(recordVideoInfo);
 
+                ActionController.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                 e.printStackTrace();
                 // 销毁构造器
                 grabber.stop();
                 grabber.close();
                 record1.stop();
                 record1.close();
-                logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
+                logger.info(cameraPojo.getRtsp() + " 中断录像成功！");
                 break;
             }
         }
+        ActionController.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
         // 程序正常结束销毁构造器
         grabber.stop();
         grabber.close();
         record1.stop();
         record1.close();
-        logger.info(cameraPojo.getRtsp() + " 推流结束...");
+        logger.info(cameraPojo.getRtsp() + " 录像结束...");
         return this;
     }
 
