@@ -811,6 +811,7 @@ public class ActionController implements OnProcessListener {
 			// 获取当前时间
 			String openTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime());
 			Set<String> keys = CacheUtil.STREAMMAP.keySet();
+			Set<String> recordKeys = CacheUtil.rtspVideoRecordMap.keySet();
 			// 缓存是否为空
 			if (0 == keys.size()) {
 				// 开始推流
@@ -885,7 +886,7 @@ public class ActionController implements OnProcessListener {
 						logger.info("打开：" + cameraPojo.getRtsp());
 					}
 				} else if (pojo.getIsRecord() == 1) {
-					for (String key : keys) {
+					for (String key : recordKeys) {
 						if (pojo.getIp().equals(CacheUtil.rtspVideoRecordMap.get(key).getIp())
 								&& pojo.getChannel().equals(CacheUtil.rtspVideoRecordMap.get(key).getChannel())
 								&& pojo.getStream().equals(CacheUtil.rtspVideoRecordMap.get(key).getStream())
