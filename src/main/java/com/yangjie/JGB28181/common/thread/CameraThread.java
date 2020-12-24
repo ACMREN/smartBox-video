@@ -83,10 +83,12 @@ public class CameraThread {
                 }
                 // 清除缓存
                 CacheUtil.STREAMMAP.remove(cameraPojo.getToken());
+                CacheUtil.rtspVideoRecordMap.remove(cameraPojo.getToken());
                 ActionController.jobMap.remove(cameraPojo.getToken());
             } catch (Exception e) {
                 // 清除缓存
                 CacheUtil.STREAMMAP.remove(cameraPojo.getToken());
+                CacheUtil.rtspVideoRecordMap.remove(cameraPojo.getToken());
                 ActionController.jobMap.remove(cameraPojo.getToken());
                 // 重启推流/录像
                 ApplicationContext applicationContext = cameraPojo.getApplicationContext();
