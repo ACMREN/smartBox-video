@@ -289,10 +289,6 @@ public class RtspRecorder {
                         });
                         ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                     }
-                    if (count > 100) {
-                        throw new FrameRecorder.Exception("test");
-                    }
-                    System.out.println(count++);
 
                     // 如果超过时间最大值则进行重新记录录像
                     this.restartRecorderWithMaxTime();
