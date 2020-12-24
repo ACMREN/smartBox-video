@@ -381,7 +381,8 @@ public class RtspRecorder {
         Integer recordHeight = Integer.valueOf(recordSize.split("x")[1]);
 
         record1.setFrameRate(framerate);
-//        record1.setVideoCodec(AV_CODEC_ID_H264);
+//        record1.setVideoCodecName("libx264");
+        record1.setVideoCodecName("nvenc_h264");
         record1.setImageHeight(recordHeight);
         record1.setImageWidth(recordWidth);
         record1.setVideoBitrate(Integer.valueOf(DeviceManagerController.cameraConfigBo.getRecordMaxRate()));
