@@ -271,6 +271,7 @@ public class RtspRecorder {
         int isTest = cameraPojo.getIsTest();
         file = new File(cameraPojo.getRecordDir());
 
+        int count = 0;
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
                 // 用于中断线程时，结束该循环
@@ -288,6 +289,10 @@ public class RtspRecorder {
                         });
                         ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                     }
+                    if (count > 100) {
+                        throw new FrameRecorder.Exception("test");
+                    }
+                    System.out.println(count++);
 
                     // 如果超过时间最大值则进行重新记录录像
                     this.restartRecorderWithMaxTime();
@@ -310,10 +315,6 @@ public class RtspRecorder {
                 record1.close();
                 logger.info(cameraPojo.getRtsp() + " 中断推流成功！");
                 break;
-            } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
-                err_index++;
-            } catch (org.bytedeco.javacv.FrameRecorder.Exception e) {
-                err_index++;
             }
         }
         // 程序正常结束销毁构造器
@@ -424,6 +425,7 @@ public class RtspRecorder {
 
             String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
             file = new File(address);
+            cameraPojo.setRecordDir(address);
             record1 = new FFmpegFrameRecorder(address, 1280, 720);
             this.setRecordRecorderOption();
             record1.start();
@@ -448,6 +450,7 @@ public class RtspRecorder {
 
             String address = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(cameraPojo.getDeviceId(), "1"));
             file = new File(address);
+            cameraPojo.setRecordDir(address);
             record1 = new FFmpegFrameRecorder(address, 1280, 720);
             this.setRecordRecorderOption();
             record1.start();

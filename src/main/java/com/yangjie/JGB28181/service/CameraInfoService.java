@@ -2,6 +2,7 @@ package com.yangjie.JGB28181.service;
 
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yangjie.JGB28181.entity.bo.CameraPojo;
 
 import java.util.List;
 
@@ -18,5 +19,7 @@ public interface CameraInfoService extends IService<CameraInfo> {
     List<CameraInfo> getAllData();
 
     CameraInfo getDataByDeviceBaseId(Integer deviceBaseId);
+
+    CameraPojo openStream(CameraPojo pojo);
 
 }
