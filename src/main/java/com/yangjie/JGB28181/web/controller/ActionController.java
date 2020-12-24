@@ -927,6 +927,7 @@ public class ActionController implements OnProcessListener {
 			sb.append(item);
 		}
 		sb.append(pojo.getChannel());
+		sb.append(pojo.getStream());
 		token = sb.toString();
 		if (pojo.getIsRecord() == 1) {
 			token = "record_" + sb.toString();
