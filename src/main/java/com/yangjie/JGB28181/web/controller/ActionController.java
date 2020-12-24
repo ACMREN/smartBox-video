@@ -886,11 +886,11 @@ public class ActionController implements OnProcessListener {
 					}
 				} else if (pojo.getIsRecord() == 1) {
 					for (String key : keys) {
-						if (pojo.getIp().equals(CacheUtil.STREAMMAP.get(key).getIp())
-								&& pojo.getChannel().equals(CacheUtil.STREAMMAP.get(key).getChannel())
-								&& pojo.getStream().equals(CacheUtil.STREAMMAP.get(key).getStream())
-								&& null == CacheUtil.STREAMMAP.get(key).getStartTime()) {// 存在直播流
-							cameraPojo = CacheUtil.STREAMMAP.get(key);
+						if (pojo.getIp().equals(CacheUtil.rtspVideoRecordMap.get(key).getIp())
+								&& pojo.getChannel().equals(CacheUtil.rtspVideoRecordMap.get(key).getChannel())
+								&& pojo.getStream().equals(CacheUtil.rtspVideoRecordMap.get(key).getStream())
+								&& null == CacheUtil.rtspVideoRecordMap.get(key).getStartTime()) {// 存在直播流
+							cameraPojo = CacheUtil.rtspVideoRecordMap.get(key);
 							sign = 1;
 							break;
 						}

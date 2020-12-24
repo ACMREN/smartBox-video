@@ -18,6 +18,8 @@ public final class CacheUtil {
 	 */
 	public static Map<String, CameraPojo> STREAMMAP = new HashMap<String, CameraPojo>();
 
+	public static Map<String, CameraPojo> rtspVideoRecordMap= new HashMap<>();
+
 	/*
 	 * 保存服务启动时间
 	 */

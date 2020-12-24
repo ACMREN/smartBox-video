@@ -48,7 +48,11 @@ public class CameraThread {
             try {
                 // 获取当前线程存入缓存
                 nowThread = Thread.currentThread();
-                CacheUtil.STREAMMAP.put(cameraPojo.getToken(), cameraPojo);
+                if (cameraPojo.getIsRecord() == 0) {
+                    CacheUtil.STREAMMAP.put(cameraPojo.getToken(), cameraPojo);
+                } else {
+                    CacheUtil.rtspVideoRecordMap.put(cameraPojo.getToken(), cameraPojo);
+                }
                 // 执行转流推流任务
                 Integer deviceId  = Integer.valueOf(cameraPojo.getDeviceId());
                 RtspToRtmpPusher push;
