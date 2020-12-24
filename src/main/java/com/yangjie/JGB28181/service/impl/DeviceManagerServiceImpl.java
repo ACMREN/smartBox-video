@@ -249,7 +249,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
                 Boolean recording = ActionController.deviceRecordingMap.get(deviceBaseId);
                 Boolean streaming = ActionController.deviceStreamingMap.get(deviceBaseId);
                 item1.setRecording(recording == null? 0 : recording? 1 : 0);
-                item1.setStreaming(streaming == null? 0 : recording? 1 : 0);
+                item1.setStreaming(streaming == null? 0 : streaming? 1 : 0);
                 if (camId.intValue() == deviceId.intValue()) {
                     String rtspLink = deviceRtspLinkMap.get(deviceId);
                     item1.setRtspLink(rtspLink);
