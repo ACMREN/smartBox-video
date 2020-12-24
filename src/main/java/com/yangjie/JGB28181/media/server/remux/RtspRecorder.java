@@ -303,6 +303,11 @@ public class RtspRecorder {
                 }
 
             } catch (InterruptedException e) {
+                recordVideoInfo.setEndTime(LocalDateTime.now());
+                recordVideoInfo.setFileSize(file.length());
+                // 更新原有的录像文件信息
+                this.saveRecordFileInfo(recordVideoInfo);
+
                 e.printStackTrace();
                 // 销毁构造器
                 grabber.stop();
