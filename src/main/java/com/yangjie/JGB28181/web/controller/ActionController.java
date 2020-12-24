@@ -177,11 +177,11 @@ public class ActionController implements OnProcessListener {
 
 		// 关闭录像
 		if (isSwitch == 0) {
-//			List<Integer> failDeviceIds = this.stopRecordStream(deviceIds);
-			synchronized (recordLock) {
-				for (Integer deviceId : deviceIds) {
-					deviceRecordingMap.put(deviceId, false);
-				}
+			List<Integer> failDeviceIds = this.stopRecordStream(deviceIds);
+			if (CollectionUtils.isEmpty(failDeviceIds)) {
+				return GBResult.ok();
+			} else {
+				return GBResult.build(500, "部分设备关闭录像失败", failDeviceIds);
 			}
 		}
 
