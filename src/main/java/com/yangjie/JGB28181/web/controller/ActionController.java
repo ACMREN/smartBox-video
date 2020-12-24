@@ -805,7 +805,7 @@ public class ActionController implements OnProcessListener {
 		GBResult result  = null;
 		// 校验参数
 		if (!StringUtils.isEmpty(pojo.getIp()) && !StringUtils.isEmpty(pojo.getUsername()) && !StringUtils.isEmpty(pojo.getPassword())
-				&& !StringUtils.isEmpty(pojo.getChannel())) {
+				&& !StringUtils.isEmpty(pojo.getChannel()) && !StringUtils.isEmpty(pojo.getStream())) {
 			CameraPojo cameraPojo = new CameraPojo();
 			cameraPojo.setToHls(pojo.getToHls());
 			// 获取当前时间
@@ -834,6 +834,7 @@ public class ActionController implements OnProcessListener {
 					for (String key : keys) {
 						if (pojo.getIp().equals(CacheUtil.STREAMMAP.get(key).getIp())
 								&& pojo.getChannel().equals(CacheUtil.STREAMMAP.get(key).getChannel())
+								&& pojo.getStream().equals(CacheUtil.STREAMMAP.get(key).getStream())
 								&& null == CacheUtil.STREAMMAP.get(key).getStartTime()) {// 存在直播流
 							cameraPojo = CacheUtil.STREAMMAP.get(key);
 							sign = 1;
@@ -887,6 +888,7 @@ public class ActionController implements OnProcessListener {
 					for (String key : keys) {
 						if (pojo.getIp().equals(CacheUtil.STREAMMAP.get(key).getIp())
 								&& pojo.getChannel().equals(CacheUtil.STREAMMAP.get(key).getChannel())
+								&& pojo.getStream().equals(CacheUtil.STREAMMAP.get(key).getStream())
 								&& null == CacheUtil.STREAMMAP.get(key).getStartTime()) {// 存在直播流
 							cameraPojo = CacheUtil.STREAMMAP.get(key);
 							sign = 1;
