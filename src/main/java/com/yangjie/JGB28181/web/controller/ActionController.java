@@ -993,19 +993,26 @@ public class ActionController implements OnProcessListener {
 
 		Integer psId = psConfig.getInteger("psId");
 		String psName = psConfig.getString("psName");
+		Integer positionChange = psConfig.getInteger("positionChange");
 
 		// 2. 获取当前点位信息
-		GBResult posResult = cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
-		JSONObject posJson = (JSONObject) posResult.getData();
-		Integer pPos = posJson.getInteger("p");
-		Integer tPos = posJson.getInteger("t");
-		Integer zPos = posJson.getInteger("z");
 		JSONObject presetPos = new JSONObject();
-		presetPos.put("pPos", pPos.shortValue());
-		presetPos.put("tPos", tPos.shortValue());
-		presetPos.put("zPos", zPos.shortValue());
+		if (positionChange == 1) {
+			GBResult posResult = cameraControlService.getDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(), rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS);
+			JSONObject posJson = (JSONObject) posResult.getData();
+			Integer pPos = posJson.getInteger("p");
+			Integer tPos = posJson.getInteger("t");
+			Integer zPos = posJson.getInteger("z");
+			presetPos.put("pPos", pPos.shortValue());
+			presetPos.put("tPos", tPos.shortValue());
+			presetPos.put("zPos", zPos.shortValue());
+		} else {
+			// 2.1 如果不是改变现有的预置点点位，则获取旧的预置点位置
+			PresetInfo presetInfo = presetInfoService.getById(psId);
+			presetPos = JSONObject.parseObject(presetInfo.getPresetPos());
+		}
 
-		// 5. 插入或更新数据库
+		// 3. 插入或更新数据库
 		PresetInfo presetInfo = new PresetInfo();
 		presetInfo.setId(psId);
 		presetInfo.setDeviceBaseId(deviceBaseId);
@@ -1021,8 +1028,8 @@ public class ActionController implements OnProcessListener {
 	 * @param controlCondition
 	 * @return
 	 */
-	@RequestMapping("delPTZPerset")
-	public GBResult delPTZPerset(@RequestBody ControlCondition controlCondition) {
+	@RequestMapping("delPTZPreset")
+	public GBResult delPTZPreset(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
 		List<Integer> presetIds = controlCondition.getPsIds();
 		List<Integer> deviceIds = new ArrayList<>();
