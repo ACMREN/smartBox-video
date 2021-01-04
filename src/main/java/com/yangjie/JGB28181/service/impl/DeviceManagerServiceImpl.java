@@ -150,14 +150,17 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     private List<LiveCamInfoVo> updateLiveCamVoList(List<LiveCamInfoVo> newDataList) {
         List<LiveCamInfoVo> newLiveCamVoList = new ArrayList<>();
         List<LiveCamInfoVo> oldLiveCamVoList = DeviceManagerController.liveCamVoList;
-        List<String> ipList = new ArrayList<>();
+        List<Integer> ipList = new ArrayList<>();
         // 1. 把新数据替换掉旧数据，加入到新的数据列表中
         for (LiveCamInfoVo oldData : oldLiveCamVoList) {
-            String oldDataIp = oldData.getIp();
+            Integer oldId = oldData.getBaseDeviceId();
+            if (null == oldId) {
+                continue;
+            }
             for (LiveCamInfoVo newData : newDataList) {
-                String newDataIp = newData.getIp();
-                if (oldDataIp.equals(newDataIp)) {
-                    ipList.add(oldDataIp);
+                Integer newId = newData.getBaseDeviceId();
+                if (oldId.equals(newId)) {
+                    ipList.add(oldId);
                     newLiveCamVoList.add(newData);
                 }
             }
@@ -165,8 +168,8 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
         // 2. 把旧数据放回到新的数据列表中
         for (LiveCamInfoVo oldData : oldLiveCamVoList) {
-            String oldDataIp = oldData.getIp();
-            if (ipList.contains(oldDataIp)) {
+            Integer oldId = oldData.getBaseDeviceId();
+            if (ipList.contains(oldId)) {
                 continue;
             }
             newLiveCamVoList.add(oldData);

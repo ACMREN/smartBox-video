@@ -12,22 +12,31 @@ import com.yangjie.JGB28181.entity.bo.CameraConfigBo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
 import com.yangjie.JGB28181.entity.enumEntity.TreeTypeEnum;
-import com.yangjie.JGB28181.entity.searchCondition.DeviceBaseCondition;
-import com.yangjie.JGB28181.entity.searchCondition.SearchDeviceTreeCondition;
-import com.yangjie.JGB28181.entity.searchCondition.SearchLiveCamCondition;
+import com.yangjie.JGB28181.entity.condition.DeviceBaseCondition;
+import com.yangjie.JGB28181.entity.condition.SearchDeviceTreeCondition;
+import com.yangjie.JGB28181.entity.condition.SearchLiveCamCondition;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.entity.vo.TreeInfoVo;
+import com.yangjie.JGB28181.media.server.handler.TestClientHandler;
 import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.service.TreeInfoService;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.CharsetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +44,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -580,5 +589,29 @@ public class DeviceManagerController {
     public GBResult discoverDevice() throws IOException {
         deviceManagerService.updateDevice();
         return GBResult.ok();
+    }
+
+    private Channel channel = null;
+
+    @PostMapping("testClient")
+    public void testClient() throws InterruptedException {
+        if (null == channel) {
+            TestClientHandler clientHandler = new TestClientHandler();
+            EventLoopGroup group = new NioEventLoopGroup();
+            Bootstrap b = new Bootstrap();
+            b.group(group)
+                    .channel(NioSocketChannel.class)
+                    .remoteAddress(new InetSocketAddress("localhost", 8999))
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            socketChannel.pipeline().addLast(new TestClientHandler());
+                        }
+                    });
+            ChannelFuture future = b.connect().sync();
+            channel = future.channel();
+        }
+
+        channel.writeAndFlush(Unpooled.copiedBuffer("test message", CharsetUtil.UTF_8));
     }
 }

@@ -305,9 +305,9 @@ public class RtspToRtmpPusher {
         ActionController.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), true);
 
         // 获取PTZ云台的位置坐标
-        ActionController.executor.execute(() -> {
-            getPTZPosition();
-        });
+//        ActionController.executor.execute(() -> {
+//            getPTZPosition();
+//        });
 
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {

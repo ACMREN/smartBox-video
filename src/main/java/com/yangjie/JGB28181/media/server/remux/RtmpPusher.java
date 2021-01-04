@@ -15,6 +15,7 @@ import com.yangjie.JGB28181.service.SnapshotInfoService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.bytedeco.ffmpeg.avcodec.AVPacket;
+import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.*;
@@ -139,7 +140,8 @@ public class RtmpPusher extends Observer{
 			recorder.setFrameRate(25);
 			recorder.setOption("loglevel", "quiet");
 
-			recorder.start();
+			AVFormatContext fc = grabber.getFormatContext();
+			recorder.start(fc);
 			AVPacket avPacket;
 			Frame frame;
 
@@ -151,7 +153,7 @@ public class RtmpPusher extends Observer{
 						break;
 					}
 					pts = mPtsQueue.pop();
-					recorder.recordPacket(avPacket,pts,pts);
+					recorder.recordPacket(avPacket, pts, pts);
 				} else if (isTest == 1){
 					ActionController.failCidList.add(cid);
 				}

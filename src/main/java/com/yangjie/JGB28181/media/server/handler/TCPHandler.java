@@ -1,11 +1,20 @@
 package com.yangjie.JGB28181.media.server.handler;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.yangjie.JGB28181.media.server.TCPServer;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.web.controller.ActionController;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +25,6 @@ import com.yangjie.JGB28181.media.codec.Frame;
 import com.yangjie.JGB28181.media.codec.Parser;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -47,22 +54,33 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 
 	private Parser mParser;
 
-	private String callId;
+	private String higherServerIp;
 
-	private Integer deviceBaseId;
+	private Integer higherServerPort;
+
+	private Integer toHigherServer = 0;
+
+	private Bootstrap b = null;
 
 
 	public void setOnChannelStatusListener(OnChannelStatusListener onChannelStatusListener) {
 		this.onChannelStatusListener = onChannelStatusListener;
 	}
-	public TCPHandler(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc, boolean checkSsrc, String deviceId, Integer deviceBaseId,
+	public TCPHandler(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc, boolean checkSsrc, String deviceId,
+					  Integer deviceBaseId, Integer toHigherServer, String higherServerIp, Integer higherServerPort,
 			Parser parser) {
 		this.mFrameDeque =frameDeque;
 		this.mSsrc = ssrc;
 		this.mParser = parser;
-		this.deviceBaseId = deviceBaseId;
 		this.deviceId = deviceId;
+		this.toHigherServer = toHigherServer;
+		this.higherServerIp = higherServerIp;
+		this.higherServerPort = higherServerPort;
+		ActionController.deviceHandlerMap.put(deviceBaseId, this);
 	}
+
+	private Channel channel = null;
+
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if(mFrameDeque == null){
@@ -72,13 +90,36 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 		//log.info("channelRead");
 
 		ByteBuf byteBuf = (ByteBuf) msg;
+		ByteBuf byteBuf1 = byteBuf.copy();
 		int readableBytes = byteBuf.readableBytes();
 		if(readableBytes <=0){
 			return;
 		}
 		byte[] copyData = new byte[readableBytes];
 		byteBuf.readBytes(copyData);
-		
+
+		if (null != toHigherServer && toHigherServer == 1) {
+			if (null == channel) {
+				if (null == b) {
+					EventLoopGroup group = new NioEventLoopGroup();
+					b = new Bootstrap();
+					b.group(group);
+					b.channel(NioSocketChannel.class);
+					b.remoteAddress(new InetSocketAddress(higherServerIp, higherServerPort));
+					b.handler(new ChannelInitializer<SocketChannel>() {
+						@Override
+						protected void initChannel(SocketChannel socketChannel) throws Exception {
+							socketChannel.pipeline().addLast(new TestClientHandler());
+						}
+					});
+				}
+				ChannelFuture future = b.connect().sync();
+				channel = future.channel();
+			}
+
+			channel.writeAndFlush(byteBuf1);
+		}
+
 		//log.error("TCPHandler channelRead >>> {}",HexStringUtils.toHexString(copyData));
 		try{
 			if(mIsCheckSsrc){
@@ -135,7 +176,7 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 						mParser.parseTcp(pop);
 					}
 				}
-			}  
+			}
 		}catch (Exception e){
 			e.printStackTrace();
 			if (!(e instanceof ArrayIndexOutOfBoundsException)) {
@@ -176,5 +217,17 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 			onChannelStatusListener.onDisconnect();
 		}
 		ctx.close();
+	}
+
+	public void setToHigherServer(Integer toHigherServer) {
+		this.toHigherServer = toHigherServer;
+	}
+
+	public void setHigherServerIp(String higherServerIp) {
+		this.higherServerIp = higherServerIp;
+	}
+
+	public void setHigherServerPort(Integer higherServerPort) {
+		this.higherServerPort = higherServerPort;
 	}
 }

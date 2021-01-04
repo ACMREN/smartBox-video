@@ -3,6 +3,9 @@ package com.yangjie.JGB28181.message;
 import java.io.ByteArrayInputStream;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -22,19 +25,27 @@ import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
+import javax.sip.address.URI;
 import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
+import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
+import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
+import com.yangjie.JGB28181.message.session.SyncFuture;
+import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
+import gov.nist.javax.sip.message.SIPRequest;
+import org.apache.catalina.util.ServerInfo;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
@@ -57,6 +68,9 @@ import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Expires;
 
 public class SipLayer implements SipListener{
+
+	@Autowired
+	private CameraInfoService cameraInfoService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private SipStackImpl mSipStack;
@@ -127,6 +141,8 @@ public class SipLayer implements SipListener{
 
 	private static Map<String, String> deviceCatalogMap = new HashMap<>(20);
 
+	private static Map<String, JSONObject> inviteCallIdMap = new HashMap<>(20);
+
 	public SipLayer(String sipId,String sipRealm,String password,String localIp,int localPort,String streamMediaIp){
 		this.mSipId = sipId;
 		this.mLocalIp= localIp;
@@ -188,10 +204,37 @@ public class SipLayer implements SipListener{
 				processMessage(evt);
 			}else if(method.equalsIgnoreCase(Request.BYE)){
 				processBye(evt);
+			} else if (method.equalsIgnoreCase(Request.INVITE)) {
+				processInvite(evt);
+			} else if (method.equalsIgnoreCase(Request.ACK)) {
+				ActionController.executor.execute(() -> {
+					processAck(evt);
+				});
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	private void processAck(RequestEvent event) {
+		Request request = event.getRequest();
+		CallIdHeader callIdHeader = (CallIdHeader) request.getHeader("call-id");
+		String callId = callIdHeader.getCallId();
+		if (inviteCallIdMap.containsKey(callId)) {
+			JSONObject inviteJson = inviteCallIdMap.get(callId);
+			String deviceId = inviteJson.getString("deviceId");
+			String ip = inviteJson.getString("ip");
+			Integer port = inviteJson.getInteger("port");
+			cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(80, deviceId, deviceId, "TCP", 0, null, 1, 0, 0, 0, 1, ip, port));
+			inviteCallIdMap.remove(callId);
+		}
+	}
+
+	private void processInvite(RequestEvent event) throws Exception {
+		Request request = event.getRequest();
+
+		ServerTransaction serverTransaction = sendTrying(event, request);
+		sendInviteOK(event, request, serverTransaction);
 	}
 
 
@@ -260,7 +303,8 @@ public class SipLayer implements SipListener{
 
 				ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
 				String clientId = clientInfo.getId();
-				Map<String, Device> subDeviceMap = clientInfo.getSubDeviceMap();
+				String subDeviceStr = RedisUtil.get(CLIENT_DEVICE_PREFIX + clientId);
+				Map<String, Device> subDeviceMap = JSONObject.parseObject(subDeviceStr, HashMap.class);
 				if (null == subDeviceMap) {
 					subDeviceMap = new HashMap<>();
 				}
@@ -526,6 +570,87 @@ public class SipLayer implements SipListener{
 		request.addHeader(contentTypeHeader);
 
 		sendRequest(request);
+	}
+
+	public ServerTransaction sendTrying(RequestEvent event, Request request) throws Exception {
+		Response response = mMessageFactory.createResponse(Response.TRYING, request);
+		ServerTransaction serverTransaction = getServerTransaction(event);
+		sendResponse(response, serverTransaction);
+		return serverTransaction;
+	}
+
+	public void sendInviteOK(RequestEvent event, Request request, ServerTransaction serverTransaction) throws Exception {
+		// 1. 取出设备编号id
+		ToHeader toHeader = (ToHeader) request.getHeader("to");
+		CallIdHeader callIdHeader = (CallIdHeader) request.getHeader("call-id");
+		String callId = callIdHeader.getCallId();
+		Address address = toHeader.getAddress();
+		String uriStr = address.getURI().toString();
+		String deviceId = uriStr.split(":")[1].split("@")[0];
+
+		// 2. 取出ip地址和端口号
+		String content = new String(request.getRawContent());
+		String ip = content.split("c=IN IP4 ")[1].split("\r\n")[0];
+		Integer port = Integer.valueOf(content.split("video ")[1].split(" ")[0]);
+		System.out.println(content.matches("TCP"));
+		System.out.println("ip=" + ip + ", port=" + port);
+
+		// 3. 把invite的关键信息放入到map中
+		JSONObject inviteInfo = new JSONObject();
+		inviteInfo.put("deviceId", deviceId);
+		inviteInfo.put("ip", ip);
+		inviteInfo.put("port", port);
+		inviteCallIdMap.put(callId, inviteInfo);
+
+		// 4. 设置ok中的返回内容
+		String okContent = SipContentHelper.generateInviteMediaOKContent(connectServerInfo.getId(), connectServerInfo.getHost(),
+				Integer.valueOf(connectServerInfo.getPort()), connectServerInfo.getPw(), SESSION_NAME_PLAY, "0200000000");
+		ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "SDP");
+
+		// 5. 创建response
+		Response response = mMessageFactory.createResponse(Response.OK, request);
+		Address concatAddress = mAddressFactory.createAddress(mAddressFactory.createSipURI(connectServerInfo.getId(),
+				connectServerInfo.getHost().concat(":").concat(String.valueOf(connectServerInfo.getPort()))));
+		ContactHeader contactHeader = mHeaderFactory.createContactHeader(concatAddress);
+		response.setHeader(contactHeader);
+		response.setContent(okContent, contentTypeHeader);
+
+//		sendResponse(response, serverTransaction);
+	}
+
+	private Response createResponse(String deviceId,String address,String targetIp,int targetPort,String protocol,
+									String fromUserInfo, String fromHostPort, String fromTag,
+									String toUserInfo, String toHostPort, String toTag,
+									String callId, long cseqNo, Integer response, String method) throws ParseException, InvalidArgumentException {
+		//请求行
+		SipURI requestLine = mAddressFactory.createSipURI(deviceId, address);
+		//Via头
+		ArrayList viaHeaderList = new ArrayList();
+		ViaHeader viaHeader = mHeaderFactory.createViaHeader(targetIp, targetPort, protocol, null);
+		viaHeader.setRPort();
+		viaHeaderList.add(viaHeader);
+
+		//To头
+		SipURI toAddress = mAddressFactory.createSipURI(toUserInfo, toHostPort);
+		Address toNameAddress = mAddressFactory.createAddress(toAddress);
+		ToHeader toHeader = mHeaderFactory.createToHeader(toNameAddress, toTag);
+
+		//From头
+		SipURI from = mAddressFactory.createSipURI(fromUserInfo, fromHostPort);
+		Address fromNameAddress = mAddressFactory.createAddress(from);
+		FromHeader fromHeader = mHeaderFactory.createFromHeader(fromNameAddress, fromTag);
+
+		//callId
+		CallIdHeader callIdHeader = protocol.equals(TCP)?mTCPSipProvider.getNewCallId():mUDPSipProvider.getNewCallId();;
+		callIdHeader.setCallId(callId);
+
+		//Cseq
+		CSeqHeader cSeqHeader = mHeaderFactory.createCSeqHeader(cseqNo, method);
+
+		//Max_forward
+		MaxForwardsHeader maxForwardsHeader = mHeaderFactory.createMaxForwardsHeader(70);
+
+		return mMessageFactory.createResponse(response, callIdHeader, cSeqHeader, fromHeader, toHeader, null, maxForwardsHeader);
 	}
 
 	private Request createRequest(String deviceId,String address,String targetIp,int targetPort,String protocol,

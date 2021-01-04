@@ -1,9 +1,16 @@
 package com.yangjie.JGB28181.media.server.handler;
 
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +20,6 @@ import com.yangjie.JGB28181.media.codec.Packet;
 import com.yangjie.JGB28181.media.codec.Parser;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 
 /*
@@ -51,16 +56,43 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 	private Parser mParser;
 
-	public UDPHandler(int mSsrc,boolean mIsCheckSsrc,Parser parser) {
+	private Integer toHigherServer;
+
+	private String higherServerIp;
+
+	private Integer higherServerPort;
+
+	private Channel channel;
+
+	public UDPHandler(int mSsrc,boolean mIsCheckSsrc, Integer toHigherServer, String higherServerIp, Integer higherServerPort , Parser parser) {
 		this.mSsrc = mSsrc;
 		this.mIsCheckSsrc = mIsCheckSsrc;
 		this.mParser = parser;
+		this.toHigherServer = toHigherServer;
+		this.higherServerIp = higherServerIp;
+		this.higherServerPort = higherServerPort;
 	}
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
 
 		ByteBuf byteBuf =  msg.content();
+		if (toHigherServer == 1) {
+			ByteBuf byteBuf1 = byteBuf.copy();
+			if (null == channel) {
+				EventLoopGroup group = new NioEventLoopGroup();
+				Bootstrap b = new Bootstrap();
+				b.group(group);
+				b.channel(NioDatagramChannel.class);
+				b.option(ChannelOption.SO_BROADCAST, true);
+				b.handler(new TestClientHandler());
+				channel = b.bind(0).sync().channel();
+			}
+
+			channel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(higherServerIp, higherServerPort)));
+
+			byteBuf1.release();
+		}
 		int readableBytes = byteBuf.readableBytes();
 		if(readableBytes <=0){
 			return;

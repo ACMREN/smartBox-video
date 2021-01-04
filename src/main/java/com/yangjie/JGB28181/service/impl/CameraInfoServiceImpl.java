@@ -1,18 +1,37 @@
 package com.yangjie.JGB28181.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yangjie.JGB28181.bean.Device;
+import com.yangjie.JGB28181.bean.DeviceChannel;
+import com.yangjie.JGB28181.bean.PushStreamDevice;
+import com.yangjie.JGB28181.bean.RecordStreamDevice;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
+import com.yangjie.JGB28181.common.constants.ResultConstants;
+import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.common.result.MediaData;
 import com.yangjie.JGB28181.common.thread.CameraThread;
-import com.yangjie.JGB28181.common.utils.IpUtil;
-import com.yangjie.JGB28181.common.utils.RecordNameUtils;
-import com.yangjie.JGB28181.common.utils.RedisUtil;
-import com.yangjie.JGB28181.common.utils.StreamNameUtils;
+import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.bo.Config;
+import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
 import com.yangjie.JGB28181.mapper.CameraInfoMapper;
+import com.yangjie.JGB28181.media.callback.OnProcessListener;
+import com.yangjie.JGB28181.media.server.Server;
+import com.yangjie.JGB28181.media.server.TCPServer;
+import com.yangjie.JGB28181.media.server.UDPServer;
+import com.yangjie.JGB28181.media.server.handler.TCPHandler;
+import com.yangjie.JGB28181.media.server.remux.Observer;
+import com.yangjie.JGB28181.media.server.remux.RtmpPusher;
+import com.yangjie.JGB28181.media.server.remux.RtmpRecorder;
+import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
+import com.yangjie.JGB28181.message.SipLayer;
+import com.yangjie.JGB28181.message.session.MessageManager;
+import com.yangjie.JGB28181.message.session.SyncFuture;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import org.slf4j.Logger;
@@ -23,10 +42,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.sip.Dialog;
+import javax.sip.SipException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -37,17 +61,34 @@ import java.util.UUID;
  * @since 2020-10-28
  */
 @Service
-public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraInfo> implements CameraInfoService {
+public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraInfo> implements CameraInfoService, OnProcessListener {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private Config config;
 
     @Autowired
+    private SipLayer mSipLayer;
+
+    @Autowired
+    private IDeviceManagerService deviceManagerService;
+
+    public static PushStreamDeviceManager mPushStreamDeviceManager = PushStreamDeviceManager.getInstance();
+
+    private MessageManager mMessageManager = MessageManager.getInstance();
+
+    @Autowired
     private ApplicationContext applicationContext;
 
     @Value("${config.streamMediaIp}")
     private String streamMediaIp;
+
+    @Value("${config.pushHlsAddress}")
+    private String pushHlsAddress;
+
+
+    @Value("${config.pushRtmpAddress}")
+    private String pushRtmpAddress;
 
     @Override
     public List<CameraInfo> getAllData() {
@@ -173,5 +214,156 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         }
 
         return cameraPojo;
+    }
+
+    @Override
+    public GBResult gbDevicePlay(GBDevicePlayCondition gbDevicePlayCondition) {
+        GBResult result = null;
+        Integer id = gbDevicePlayCondition.getId();
+        String deviceId = gbDevicePlayCondition.getDeviceId();
+        String channelId = gbDevicePlayCondition.getChannelId();
+        String mediaProtocol = gbDevicePlayCondition.getProtocol();
+        Integer isTest = gbDevicePlayCondition.getIsTest();
+        Integer cid = gbDevicePlayCondition.getCid();
+        Integer toHls = gbDevicePlayCondition.getToHls();
+        Integer isRecord = gbDevicePlayCondition.getIsRecord();
+        Integer isSwitch = gbDevicePlayCondition.getIsSwitch();
+        Integer toFlv = gbDevicePlayCondition.getToFlv();
+        Integer toHigherServer = gbDevicePlayCondition.getToHigherServer();
+        String higherServerIp = gbDevicePlayCondition.getHigherServerIp();
+        Integer higherServerPort = gbDevicePlayCondition.getHigherServerPort();
+        try{
+            int pushPort = 1935;
+            //1.从redis查找设备，如果不存在，返回离线
+            String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + deviceId);
+            if(StringUtils.isEmpty(deviceStr)){
+                return GBResult.build(ResultConstants.DEVICE_OFF_LINE_CODE, ResultConstants.DEVICE_OFF_LINE);
+            }
+            // 2.设备在线，先检查是否正在推流
+            // 如果正在推流，直接返回rtmp地址
+            String streamName = StreamNameUtils.play(deviceId, channelId);
+            PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
+            RecordStreamDevice recordStreamDevice = ActionController.deviceRecordMap.get(id);
+            if(pushStreamDevice != null && isRecord == 0){
+                if (toHigherServer == 1) {
+                    TCPHandler handler = (TCPHandler) ActionController.deviceHandlerMap.get(80);
+                    handler.setToHigherServer(1);
+                    handler.setHigherServerIp(higherServerIp);
+                    handler.setHigherServerPort(higherServerPort);
+                }
+                if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
+                    ActionController.streamingDeviceMap.put(id, pushStreamDevice);
+                }
+                if (toFlv == 0) {
+                    return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+                } else {
+                    return GBResult.ok(new MediaData(pushStreamDevice.getPullFlvAddress(),pushStreamDevice.getCallId()));
+                }
+            }
+            if (recordStreamDevice != null && isRecord == 1) {
+                return GBResult.build(201, "已经正在录像，请勿重复请求", null);
+            }
+            boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
+            int port = mSipLayer.getPort(isTcp);
+            // 检查通道是否存在
+            Device device = JSONObject.parseObject(deviceStr, Device.class);
+            Map<String, DeviceChannel> channelMap = device.getChannelMap();
+            if(channelMap == null || !channelMap.containsKey(channelId)){
+                return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
+            }
+            // 3.下发指令
+            String callId = null;
+            if (isRecord == 0) {
+                callId = IDUtils.id();
+            } else {
+                callId = "record_" + IDUtils.id();
+            }
+            // getPort可能耗时，在外面调用。
+            String ssrc = mSipLayer.getSsrc(true);
+            mSipLayer.sendInvite(device,SipLayer.SESSION_NAME_PLAY,callId,channelId,port,ssrc,isTcp);
+            // 4.等待指令响应
+            SyncFuture<?> receive = mMessageManager.receive(callId);
+            Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
+
+            //4.1响应成功，创建推流session
+            if(response != null){
+                String address = pushRtmpAddress.concat(streamName);
+                // 如果是hls，则推到hls的地址
+                if (toHls == 1) {
+                    address = pushHlsAddress.concat(streamName);
+                }
+                Server server = isTcp ? new TCPServer() : new UDPServer();
+                Observer observer;
+
+                // 判断是推流还是录像
+                if (isRecord == 0) {
+                    observer = new RtmpPusher(address, callId);
+                    ((RtmpPusher) observer).setDeviceId(streamName);
+                    String pullFlvAddress = BaseConstants.flvBaseUrl + streamName;
+                    // 保存推流信息
+                    pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
+                            observer,address, pullFlvAddress);
+                    pushStreamDevice.setDialog(response);
+                    mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
+                } else {
+                    String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
+                    observer = new RtmpRecorder(recordAddress, callId);
+                    ((RtmpRecorder) observer).setDeviceId(streamName);
+                    recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
+                            observer, recordAddress);
+                    ActionController.deviceRecordMap.put(id, recordStreamDevice);
+                }
+
+                server.subscribe(observer);
+                server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName,
+                        id, toHigherServer, higherServerIp, higherServerPort);
+                observer.startRemux(isTest, cid, toHls, id, streamName, applicationContext);
+                ActionController.gbServerMap.put(callId, observer);
+
+                observer.setOnProcessListener(this);
+                if (isRecord == 0) {
+                    Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
+                    Integer expiredTime = Math.toIntExact(expiredMs / 1000);
+                    // 设置5分钟的过期时间
+                    RedisUtil.set(callId, expiredTime, "keepStreaming");
+                    // 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
+                    if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
+                        ActionController.streamingDeviceMap.put(id, pushStreamDevice);
+                    }
+                    if (toHls == 1) {
+                        // 开启清理过期的TS索引文件的定时器
+                        PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
+
+                        String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
+                        String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
+                        String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
+                        pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
+                        result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
+                    } else {
+                        result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+                    }
+                } else {
+                    result = GBResult.ok(new MediaData(recordStreamDevice.getPullRtmpAddress(), recordStreamDevice.getCallId()));
+                }
+            }
+            else {
+                //3.2响应失败，删除推流session
+                mMessageManager.remove(callId);
+                result =  GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+            result = GBResult.build(ResultConstants.SYSTEM_ERROR_CODE, ResultConstants.SYSTEM_ERROR);
+        }
+        return result;
+    }
+
+    @Override
+    public void onError(String callId) {
+        try {
+            mSipLayer.sendBye(callId);
+        } catch (SipException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -11,7 +11,9 @@ public  abstract class Server extends CommonParser implements Observable{
 
 	protected Observer observer;
 
-	public abstract  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId, Integer deviceBaseId);
+	public abstract  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc,
+									  String deviceId, Integer deviceBaseId, Integer toHigherServer, String higherServerIp,
+									  Integer higherServerPort);
 	public abstract  void stopServer();
 	
 	public OnProcessListener onProcessListener = null;

@@ -35,6 +35,25 @@
         return content.toString();
 	}
 
+	public static String generateInviteMediaOKContent(String serverId, String serverIp, int serverPort, String password, String sessionName, String ssrc) {
+	    StringBuffer content = new StringBuffer(200);
+	    content.append("v=0\r\n");
+	    content.append("o=" + serverId + " 0 0 IN IP4 " + serverIp + "\r\n");
+	    content.append("s=" + sessionName + "\r\n");
+	    content.append("c=IN IP4 " + serverIp + "\r\n");
+	    content.append("t=0 0" + "\r\n");
+	    content.append("m=video " + serverPort + " RTP/AVP 96" + "\r\n");
+	    content.append("a=setup:active" + "\r\n");
+	    content.append("a=sendonly" + "\r\n");
+	    content.append("a=rtpmap 96 PS/90000" + "\r\n");
+	    content.append("a=username:" + serverId + "\r\n");
+	    content.append("a=password" + password + "\r\n");
+	    content.append("a=filesize:0" + "\r\n");
+	    content.append("y=" + ssrc + "\r\n");
+	    content.append("f=" + "\r\n");
+	    return content.toString();
+    }
+
 	public static String generateKeepAliveContent(String clientId, String sn) {
         StringBuffer content = new StringBuffer(200);
         content.append("<?xml version=\"1.0\" encoding=\"GB2312\"?>\r\n");
