@@ -127,6 +127,7 @@ public class RtmpPusher extends Observer{
 			grabber.setOption("hwaccel", "cuvid");
 			grabber.setVideoCodecName("h264_cuvid");
 			avutil.av_log_set_level(avutil.AV_LOG_ERROR);
+			grabber.setOption("rtsp_transport", "tcp");
 			if (toHls == 1) {
 				grabber.setOption("re", "");
 			}
@@ -139,6 +140,9 @@ public class RtmpPusher extends Observer{
 			recorder.setFormat("flv");
 			recorder.setFrameRate(25);
 			recorder.setOption("loglevel", "quiet");
+			if (toHls == 1) {
+				recorder.setOption("hls_time", "10");
+			}
 
 			AVFormatContext fc = grabber.getFormatContext();
 			recorder.start(fc);

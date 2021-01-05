@@ -445,7 +445,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, isSwitch, toFlv, 0, null, null));
+			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "UDP", 0, null, 0, isRecord, isSwitch, toFlv, 0, null, null));
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
@@ -469,7 +469,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 1, 0, 0, 0, toHigherServer, null, null));
+			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "UDP", 0, null, 1, 0, 0, 0, toHigherServer, null, null));
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}

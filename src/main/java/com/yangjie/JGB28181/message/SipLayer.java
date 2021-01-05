@@ -225,7 +225,8 @@ public class SipLayer implements SipListener{
 			String deviceId = inviteJson.getString("deviceId");
 			String ip = inviteJson.getString("ip");
 			Integer port = inviteJson.getInteger("port");
-			cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(80, deviceId, deviceId, "TCP", 0, null, 1, 0, 0, 0, 1, ip, port));
+			String protocol = inviteJson.getString("protocol");
+			cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(80, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 1, ip, port));
 			inviteCallIdMap.remove(callId);
 		}
 	}
@@ -592,19 +593,22 @@ public class SipLayer implements SipListener{
 		String content = new String(request.getRawContent());
 		String ip = content.split("c=IN IP4 ")[1].split("\r\n")[0];
 		Integer port = Integer.valueOf(content.split("video ")[1].split(" ")[0]);
-		System.out.println(content.matches("TCP"));
-		System.out.println("ip=" + ip + ", port=" + port);
+		String ssrc = content.split("y=")[1].trim();
+		Pattern pattern = Pattern.compile("TCP");
+		Matcher matcher = pattern.matcher(content);
+		Boolean isTcp = matcher.find();
 
 		// 3. 把invite的关键信息放入到map中
 		JSONObject inviteInfo = new JSONObject();
 		inviteInfo.put("deviceId", deviceId);
 		inviteInfo.put("ip", ip);
 		inviteInfo.put("port", port);
+		inviteInfo.put("protocol", isTcp? "TCP" : "UDP");
 		inviteCallIdMap.put(callId, inviteInfo);
 
 		// 4. 设置ok中的返回内容
 		String okContent = SipContentHelper.generateInviteMediaOKContent(connectServerInfo.getId(), connectServerInfo.getHost(),
-				Integer.valueOf(connectServerInfo.getPort()), connectServerInfo.getPw(), SESSION_NAME_PLAY, "0200000000");
+				Integer.valueOf(connectServerInfo.getPort()), connectServerInfo.getPw(), SESSION_NAME_PLAY, ssrc);
 		ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "SDP");
 
 		// 5. 创建response
@@ -615,7 +619,7 @@ public class SipLayer implements SipListener{
 		response.setHeader(contactHeader);
 		response.setContent(okContent, contentTypeHeader);
 
-//		sendResponse(response, serverTransaction);
+		sendResponse(response, serverTransaction);
 	}
 
 	private Response createResponse(String deviceId,String address,String targetIp,int targetPort,String protocol,

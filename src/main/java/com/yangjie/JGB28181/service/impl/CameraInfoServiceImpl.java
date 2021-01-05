@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
 
 import javax.sip.Dialog;
 import javax.sip.SipException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -280,73 +281,27 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             }
             // getPort可能耗时，在外面调用。
             String ssrc = mSipLayer.getSsrc(true);
+            if (!isTcp) {
+                result = this.createServer(pushStreamDevice, recordStreamDevice, id, deviceId, channelId, port, streamName,
+                        ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, higherServerIp, higherServerPort, null);
+                Thread.sleep(1000);
+            }
+
             mSipLayer.sendInvite(device,SipLayer.SESSION_NAME_PLAY,callId,channelId,port,ssrc,isTcp);
             // 4.等待指令响应
             SyncFuture<?> receive = mMessageManager.receive(callId);
             Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
+            if (!isTcp) {
+                Dialog response1 = (Dialog) receive.get(3, TimeUnit.SECONDS);
+                pushStreamDevice = mPushStreamDeviceManager.get(streamName);
+                pushStreamDevice.setDialog(response1);
+            }
 
             //4.1响应成功，创建推流session
-            if(response != null){
-                String address = pushRtmpAddress.concat(streamName);
-                // 如果是hls，则推到hls的地址
-                if (toHls == 1) {
-                    address = pushHlsAddress.concat(streamName);
-                }
-                Server server = isTcp ? new TCPServer() : new UDPServer();
-                Observer observer;
-
-                // 判断是推流还是录像
-                if (isRecord == 0) {
-                    observer = new RtmpPusher(address, callId);
-                    ((RtmpPusher) observer).setDeviceId(streamName);
-                    String pullFlvAddress = BaseConstants.flvBaseUrl + streamName;
-                    // 保存推流信息
-                    pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
-                            observer,address, pullFlvAddress);
-                    pushStreamDevice.setDialog(response);
-                    mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
-                } else {
-                    String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
-                    observer = new RtmpRecorder(recordAddress, callId);
-                    ((RtmpRecorder) observer).setDeviceId(streamName);
-                    recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
-                            observer, recordAddress);
-                    ActionController.deviceRecordMap.put(id, recordStreamDevice);
-                }
-
-                server.subscribe(observer);
-                server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName,
-                        id, toHigherServer, higherServerIp, higherServerPort);
-                observer.startRemux(isTest, cid, toHls, id, streamName, applicationContext);
-                ActionController.gbServerMap.put(callId, observer);
-
-                observer.setOnProcessListener(this);
-                if (isRecord == 0) {
-                    Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
-                    Integer expiredTime = Math.toIntExact(expiredMs / 1000);
-                    // 设置5分钟的过期时间
-                    RedisUtil.set(callId, expiredTime, "keepStreaming");
-                    // 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
-                    if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
-                        ActionController.streamingDeviceMap.put(id, pushStreamDevice);
-                    }
-                    if (toHls == 1) {
-                        // 开启清理过期的TS索引文件的定时器
-                        PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
-
-                        String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
-                        String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
-                        String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
-                        pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
-                        result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
-                    } else {
-                        result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
-                    }
-                } else {
-                    result = GBResult.ok(new MediaData(recordStreamDevice.getPullRtmpAddress(), recordStreamDevice.getCallId()));
-                }
-            }
-            else {
+            if(isTcp && response != null){
+                result = this.createServer(pushStreamDevice, recordStreamDevice, id, deviceId, channelId, port, streamName,
+                        ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, higherServerIp, higherServerPort, response);
+            } else if (isTcp && null == response){
                 //3.2响应失败，删除推流session
                 mMessageManager.remove(callId);
                 result =  GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
@@ -354,6 +309,74 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         } catch(Exception e){
             e.printStackTrace();
             result = GBResult.build(ResultConstants.SYSTEM_ERROR_CODE, ResultConstants.SYSTEM_ERROR);
+        }
+        return result;
+    }
+
+    private GBResult createServer(PushStreamDevice pushStreamDevice, RecordStreamDevice recordStreamDevice,
+                                  Integer id, String deviceId, String channelId, Integer port, String streamName, String ssrc, String callId, Integer cid,
+                                  Integer toHls, Integer isTest, Integer isRecord, Boolean isTcp, Integer toHigherServer,
+                                  String higherServerIp, Integer higherServerPort, Dialog response) throws IOException {
+        GBResult result = null;
+        String address = pushRtmpAddress.concat(streamName);
+        // 如果是hls，则推到hls的地址
+        if (toHls == 1) {
+            address = pushHlsAddress.concat(streamName);
+        }
+        Server server = isTcp ? new TCPServer() : new UDPServer();
+        Observer observer;
+
+        // 判断是推流还是录像
+        if (isRecord == 0) {
+            observer = new RtmpPusher(address, callId);
+            ((RtmpPusher) observer).setDeviceId(streamName);
+            String pullFlvAddress = BaseConstants.flvBaseUrl + streamName;
+            // 保存推流信息
+            pushStreamDevice = new PushStreamDevice(deviceId,Integer.valueOf(ssrc),callId,streamName,port,isTcp,server,
+                    observer,address, pullFlvAddress);
+            if (null != response) {
+                pushStreamDevice.setDialog(response);
+            }
+            mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
+        } else {
+            String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
+            observer = new RtmpRecorder(recordAddress, callId);
+            ((RtmpRecorder) observer).setDeviceId(streamName);
+            recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
+                    observer, recordAddress);
+            ActionController.deviceRecordMap.put(id, recordStreamDevice);
+        }
+
+        server.subscribe(observer);
+        server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName,
+                id, toHigherServer, higherServerIp, higherServerPort);
+        observer.startRemux(isTest, cid, toHls, id, streamName, applicationContext);
+        ActionController.gbServerMap.put(callId, observer);
+
+        observer.setOnProcessListener(this);
+        if (isRecord == 0) {
+            Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
+            Integer expiredTime = Math.toIntExact(expiredMs / 1000);
+            // 设置5分钟的过期时间
+            RedisUtil.set(callId, expiredTime, "keepStreaming");
+            // 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
+            if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
+                ActionController.streamingDeviceMap.put(id, pushStreamDevice);
+            }
+            if (toHls == 1) {
+                // 开启清理过期的TS索引文件的定时器
+                PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
+
+                String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
+                String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
+                String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
+                pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
+                result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
+            } else {
+                result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
+            }
+        } else {
+            result = GBResult.ok(new MediaData(recordStreamDevice.getPullRtmpAddress(), recordStreamDevice.getCallId()));
         }
         return result;
     }

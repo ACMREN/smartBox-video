@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import com.yangjie.JGB28181.web.controller.ActionController;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -50,7 +51,7 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 	 */
 	private boolean mIsFirstI;
 
-	private int CACHE_FRAME_LENGTH= 10;
+	private int CACHE_FRAME_LENGTH= 3;
 
 	private byte[] preData;
 
@@ -62,15 +63,19 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 	private Integer higherServerPort;
 
+	private Integer deviceBaseId;
+
 	private Channel channel;
 
-	public UDPHandler(int mSsrc,boolean mIsCheckSsrc, Integer toHigherServer, String higherServerIp, Integer higherServerPort , Parser parser) {
+	public UDPHandler(Integer deviceBaseId, int mSsrc,boolean mIsCheckSsrc, Integer toHigherServer, String higherServerIp, Integer higherServerPort, Parser parser) {
+		this.deviceBaseId = deviceBaseId;
 		this.mSsrc = mSsrc;
 		this.mIsCheckSsrc = mIsCheckSsrc;
 		this.mParser = parser;
 		this.toHigherServer = toHigherServer;
 		this.higherServerIp = higherServerIp;
 		this.higherServerPort = higherServerPort;
+		ActionController.deviceHandlerMap.put(deviceBaseId, this);
 	}
 
 	@Override
@@ -90,8 +95,6 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 			}
 
 			channel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(higherServerIp, higherServerPort)));
-
-			byteBuf1.release();
 		}
 		int readableBytes = byteBuf.readableBytes();
 		if(readableBytes <=0){
