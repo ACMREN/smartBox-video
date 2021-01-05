@@ -48,7 +48,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     private DeviceBaseInfoService deviceBaseInfoService;
 
     @Autowired
-    CameraInfoService cameraInfoService;
+    private CameraInfoService cameraInfoService;
 
     private static Map<String, Integer> ipDeviceIdMap = new HashMap<>(20);
 
@@ -370,6 +370,10 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     private List<LiveCamInfoVo> parseCameraInfoToLiveCamInfoVo(List<CameraInfo> cameraInfoList) {
         List<LiveCamInfoVo> dataList = new ArrayList<>();
         Random random = new Random();
+        List<Integer> deviceBaseIdList = cameraInfoList.stream().map(CameraInfo::getDeviceBaseId).collect(Collectors.toList());
+        List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceBaseIdList);
+        Map<Integer, DeviceBaseInfo> deviceIdCameraMap = deviceBaseInfos.stream().collect(Collectors.toMap(DeviceBaseInfo::getId, Function.identity()));
+
         for (CameraInfo item : cameraInfoList) {
             LiveCamInfoVo data = new LiveCamInfoVo();
             data.setCid(random.nextInt(10000));
@@ -381,6 +385,8 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             data.setLinkStatus(LinkStatusEnum.REGISTERED.getName());
             data.setLinkType(LinkTypeEnum.getDataByCode(item.getLinkType()).getName());
             data.setNetType(NetTypeEnum.getDataByCode(item.getNetType()).getName());
+            String specification = deviceIdCameraMap.get(item.getDeviceBaseId()).getSpecification();
+            data.setSpecification(specification);
 
             dataList.add(data);
         }

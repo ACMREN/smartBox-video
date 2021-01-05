@@ -338,6 +338,9 @@ public class DeviceManagerController {
         if (!StringUtils.isEmpty(searchLiveCamCondition.getNetStatus())) {
             resultList = resultList.stream().filter(item -> item.getNetStatus().equals(searchLiveCamCondition.getNetStatus())).collect(Collectors.toList());
         }
+        if (!StringUtils.isEmpty(searchLiveCamCondition.getSpecification())) {
+            resultList = resultList.stream().filter(item -> item.getSpecification().equals(searchLiveCamCondition.getSpecification())).collect(Collectors.toList());
+        }
         if (!StringUtils.isEmpty(searchLiveCamCondition.getKeyword())) {
             String searchKeyword = searchLiveCamCondition.getKeyword();
             resultList = resultList.stream().filter(item -> item.getNetStatus().equals(NetStatusEnum.ONLINE.getName())).collect(Collectors.toList());

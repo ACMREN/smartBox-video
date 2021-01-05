@@ -12,6 +12,8 @@ public class SearchLiveCamCondition {
     private String linkStatus;
     // 网络状态
     private String netStatus;
+    // 品牌类型
+    private String specification;
     // 搜索关键词
     private String keyword;
     // 排序字段

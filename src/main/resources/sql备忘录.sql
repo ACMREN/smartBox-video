@@ -1,6 +1,7 @@
 CREATE TABLE `camera_info`(
 	id INT(10) AUTO_INCREMENT COMMENT '自增id',
 	device_base_id INT(10) NOT NULL COMMENT '基础设备id',
+	device_serial_num VARCHAR(30) DEFAULT NULL '设备编号',
 	rtsp_link VARCHAR(200) DEFAULT '' COMMENT 'rtsp链接',
 	ip VARCHAR(20) DEFAULT '' COMMENT 'ip地址',
 	device_name VARCHAR(20) DEFAULT '' COMMENT '设备名称',
