@@ -34,11 +34,15 @@ import javax.sip.message.Response;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
+import com.yangjie.JGB28181.media.server.Server;
+import com.yangjie.JGB28181.media.server.handler.TCPHandler;
+import com.yangjie.JGB28181.media.server.handler.UDPHandler;
 import com.yangjie.JGB28181.message.session.SyncFuture;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import gov.nist.javax.sip.message.SIPRequest;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.catalina.util.ServerInfo;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -226,7 +230,11 @@ public class SipLayer implements SipListener{
 			String ip = inviteJson.getString("ip");
 			Integer port = inviteJson.getInteger("port");
 			String protocol = inviteJson.getString("protocol");
-			cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(80, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 1, ip, port));
+			try {
+				cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(80, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 0, 1, ip, port));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			inviteCallIdMap.remove(callId);
 		}
 	}
@@ -846,8 +854,43 @@ public class SipLayer implements SipListener{
 			pushStreamDevice.getObserver().stopRemux();
 		}
 	}
+
+	private void closeServer(String serverKey) {
+		Server server = ActionController.gbServerMap.get(serverKey);
+		if (null != server) {
+			if (null != server.getToHigherServer() && server.getToHigherServer() == 1) {
+				ChannelInboundHandlerAdapter adapter = ActionController.deviceHandlerMap.get(serverKey);
+				if (serverKey.contains("tcp")) {
+					TCPHandler handler = (TCPHandler) adapter;
+					handler.setToPushStream(0);
+				} else if (serverKey.contains("udp")){
+					UDPHandler handler = (UDPHandler) adapter;
+					handler.setToPushStream(0);
+				}
+			} else {
+				ActionController.gbServerMap.remove(serverKey);
+			}
+		}
+	}
+
 	public void sendBye(String callId) throws SipException{
 		PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.removeByCallId(callId);
+		Integer deviceBaseId = null;
+		for (Map.Entry<Integer, JSONObject> entry : ActionController.baseDeviceIdCallIdMap.entrySet()) {
+			JSONObject typeStreamJson = entry.getValue();
+			String rtmpCallId = typeStreamJson.getJSONObject("rtmp")==null? "" : typeStreamJson.getJSONObject("rtmp").getString("callId");
+			String hlsCallId = typeStreamJson.getJSONObject("hls")==null? "" : typeStreamJson.getJSONObject("hls").getString("callId");
+			if (rtmpCallId.equals(callId) || hlsCallId.equals(callId)) {
+				deviceBaseId = entry.getKey();
+				break;
+			}
+		}
+		if (null != deviceBaseId) {
+			String tcpServerKey = deviceBaseId.toString() + "_tcp";
+			String udpServerKey = deviceBaseId.toString() + "_udp";
+			this.closeServer(tcpServerKey);
+			this.closeServer(udpServerKey);
+		}
 		if(pushStreamDevice != null){
 			close(pushStreamDevice);
 			Dialog dialog = pushStreamDevice.getDialog();

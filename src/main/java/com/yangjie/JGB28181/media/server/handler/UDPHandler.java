@@ -51,13 +51,15 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 	 */
 	private boolean mIsFirstI;
 
-	private int CACHE_FRAME_LENGTH= 3;
+	private int CACHE_FRAME_LENGTH= 2;
 
 	private byte[] preData;
 
 	private Parser mParser;
 
 	private Integer toHigherServer;
+
+	private Integer toPushStream;
 
 	private String higherServerIp;
 
@@ -67,15 +69,18 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 	private Channel channel;
 
-	public UDPHandler(Integer deviceBaseId, int mSsrc,boolean mIsCheckSsrc, Integer toHigherServer, String higherServerIp, Integer higherServerPort, Parser parser) {
+	public UDPHandler(Integer deviceBaseId, int mSsrc,boolean mIsCheckSsrc, Integer toPushStream,
+					  Integer toHigherServer, String higherServerIp, Integer higherServerPort, Parser parser) {
 		this.deviceBaseId = deviceBaseId;
 		this.mSsrc = mSsrc;
 		this.mIsCheckSsrc = mIsCheckSsrc;
 		this.mParser = parser;
+		this.toPushStream = toPushStream;
 		this.toHigherServer = toHigherServer;
 		this.higherServerIp = higherServerIp;
 		this.higherServerPort = higherServerPort;
-		ActionController.deviceHandlerMap.put(deviceBaseId, this);
+		String deviceProtocolKey = deviceBaseId.toString() + "_udp";
+		ActionController.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
 
 	@Override
@@ -96,84 +101,103 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 			channel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(higherServerIp, higherServerPort)));
 		}
-		int readableBytes = byteBuf.readableBytes();
-		if(readableBytes <=0){
-			return;
-		}
-		byte[] copyData = new byte[readableBytes];
-		byteBuf.readBytes(copyData);
-		//log.info("UDP接受到帧数据>>> {}",HexStringUtils.toHexString(copyData));
 
-		int seq = BitUtils.byte2ToInt(copyData[2],copyData[3]);
-		int length = copyData.length;
-		//检查是否有rtp头
-		//有的终端会先发rtp头一个包，再发ps包
-		//如果当前包没有 rtp头，写入前一个数据包
-		if(length <= 12 && (copyData[0] & 0xff) == 0x80 && ((copyData[1] & 0xff) != 0x60 || (copyData[1] & 0xff) != 0xe0 )){
-			preData = copyData;
-			return ;
-		}
-		if((copyData[0] & 0xff) != 0x80 && ((copyData[1] & 0xff) != 0x60 || (copyData[1] & 0xff) != 0xe0 || (copyData[1] & 0xff) != 0x88 )){
-			int newLength = preData.length + length;
-			byte[] buffer =new byte[newLength];
-			System.arraycopy(preData, 0, buffer, 0,  preData.length);
-			System.arraycopy(copyData, 0, buffer, preData.length, length);
-			copyData = buffer;
-			length = newLength;
-			preData = null;
-		}
-		if(mIsCheckSsrc){
-			int uploadSsrc = BitUtils.byte4ToInt(copyData[8],copyData[9],copyData[10],copyData[11]);
-			if(uploadSsrc != mSsrc){
+		if (toPushStream == 1) {
+			int readableBytes = byteBuf.readableBytes();
+			if(readableBytes <=0){
 				return;
 			}
-		}
-		try{
-			Packet packet;
-			if(length > 16 && copyData[12] == 0 &&copyData[13] ==0 &&copyData[14] ==01 && (copyData[15]&0xff) == 0xba){
-				int stuffingLength =  copyData[25] & 7;
-				int startIndex = 25+stuffingLength+1;
-				//i帧
-				if(copyData[startIndex] == 0 && copyData[startIndex+1] == 0&&copyData[startIndex+2] == 01&&(copyData[startIndex+3]&0xff) == 0xbb )
-				{
-					packet = new Packet(seq,copyData,Packet.I);
-					if(!mIsFirstI){
-						mIsFirstI = true;
-					}
+			byte[] copyData = new byte[readableBytes];
+			byteBuf.readBytes(copyData);
+			//log.info("UDP接受到帧数据>>> {}",HexStringUtils.toHexString(copyData));
+
+			int seq = BitUtils.byte2ToInt(copyData[2],copyData[3]);
+			int length = copyData.length;
+			//检查是否有rtp头
+			//有的终端会先发rtp头一个包，再发ps包
+			//如果当前包没有 rtp头，写入前一个数据包
+			if(length <= 12 && (copyData[0] & 0xff) == 0x80 && ((copyData[1] & 0xff) != 0x60 || (copyData[1] & 0xff) != 0xe0 )){
+				preData = copyData;
+				return ;
+			}
+			if((copyData[0] & 0xff) != 0x80 && ((copyData[1] & 0xff) != 0x60 || (copyData[1] & 0xff) != 0xe0 || (copyData[1] & 0xff) != 0x88 )){
+				int newLength = preData.length + length;
+				byte[] buffer =new byte[newLength];
+				System.arraycopy(preData, 0, buffer, 0,  preData.length);
+				System.arraycopy(copyData, 0, buffer, preData.length, length);
+				copyData = buffer;
+				length = newLength;
+				preData = null;
+			}
+			if(mIsCheckSsrc){
+				int uploadSsrc = BitUtils.byte4ToInt(copyData[8],copyData[9],copyData[10],copyData[11]);
+				if(uploadSsrc != mSsrc){
+					return;
 				}
-				//p帧
-				else{
+			}
+			try{
+				Packet packet;
+				if(length > 16 && copyData[12] == 0 &&copyData[13] ==0 &&copyData[14] ==01 && (copyData[15]&0xff) == 0xba){
+					int stuffingLength =  copyData[25] & 7;
+					int startIndex = 25+stuffingLength+1;
+					//i帧
+					if(copyData[startIndex] == 0 && copyData[startIndex+1] == 0&&copyData[startIndex+2] == 01&&(copyData[startIndex+3]&0xff) == 0xbb )
+					{
+						packet = new Packet(seq,copyData,Packet.I);
+						if(!mIsFirstI){
+							mIsFirstI = true;
+						}
+					}
+					//p帧
+					else{
+						if(!mIsFirstI){
+							return;
+						}
+						packet = new Packet(seq,copyData,Packet.P);
+					}
+					mSeqMap.add(seq);
+				}
+				//音频数据
+				else if( length > 16 &&  copyData[12] == 0 &&copyData[13] ==0 &&copyData[14] ==01 && (copyData[15]&0xff) == 0xc0){
 					if(!mIsFirstI){
 						return;
 					}
-					packet = new Packet(seq,copyData,Packet.P);
+					mSeqMap.add(seq);
+					packet = new Packet(seq,copyData,Packet.AUDIO);
+				}else {
+					if(!mIsFirstI){
+						return ;
+					}
+					packet = new Packet(seq,copyData,Packet.SUB_PACKET);
 				}
-				mSeqMap.add(seq);
-			}
-			//音频数据
-			else if( length > 16 &&  copyData[12] == 0 &&copyData[13] ==0 &&copyData[14] ==01 && (copyData[15]&0xff) == 0xc0){
-				if(!mIsFirstI){
-					return;
+				mPacketMap.put(seq, packet);
+				if(mSeqMap.size() >= CACHE_FRAME_LENGTH){
+					Integer firstSeq = mSeqMap.pop();
+					Integer endSeq = mSeqMap.getFirst()-1;
+					mParser.parseUdp(mPacketMap,firstSeq,endSeq);
 				}
-				mSeqMap.add(seq);
-				packet = new Packet(seq,copyData,Packet.AUDIO);
-			}else {
-				if(!mIsFirstI){
-					return ;
-				}
-				packet = new Packet(seq,copyData,Packet.SUB_PACKET);
+			}catch (Exception e){
+				e.printStackTrace();
+				log.error("UDPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));
+			}finally {
+				//release(msg);
 			}
-			mPacketMap.put(seq, packet);
-			if(mSeqMap.size() >= CACHE_FRAME_LENGTH){
-				Integer firstSeq = mSeqMap.pop();
-				Integer endSeq = mSeqMap.getFirst()-1;
-				mParser.parseUdp(mPacketMap,firstSeq,endSeq);
-			}
-		}catch (Exception e){
-			e.printStackTrace();
-			log.error("UDPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));
-		}finally {
-			//release(msg);
 		}
+	}
+
+	public void setToPushStream(Integer toPushStream) {
+		this.toPushStream = toPushStream;
+	}
+
+	public void setToHigherServer(Integer toHigherServer) {
+		this.toHigherServer = toHigherServer;
+	}
+
+	public void setHigherServerIp(String higherServerIp) {
+		this.higherServerIp = higherServerIp;
+	}
+
+	public void setHigherServerPort(Integer higherServerPort) {
+		this.higherServerPort = higherServerPort;
 	}
 }

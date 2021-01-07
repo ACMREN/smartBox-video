@@ -24,6 +24,6 @@ public interface CameraInfoService extends IService<CameraInfo> {
 
     CameraPojo openStream(CameraPojo pojo);
 
-    GBResult gbDevicePlay(GBDevicePlayCondition gbDevicePlayCondition);
+    GBResult gbDevicePlay(GBDevicePlayCondition gbDevicePlayCondition) throws Exception;
 
 }

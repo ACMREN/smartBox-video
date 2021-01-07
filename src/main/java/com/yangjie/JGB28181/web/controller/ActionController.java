@@ -28,12 +28,22 @@ import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.entity.vo.RecordVideoInfoVo;
 import com.yangjie.JGB28181.entity.vo.SnapshotInfoVo;
 import com.yangjie.JGB28181.media.server.handler.TCPHandler;
+import com.yangjie.JGB28181.media.server.handler.TestClientHandler;
+import com.yangjie.JGB28181.media.server.handler.TestClientUDPHandler;
+import com.yangjie.JGB28181.media.server.handler.UDPHandler;
 import com.yangjie.JGB28181.media.server.remux.*;
 import com.yangjie.JGB28181.media.server.remux.Observer;
 import com.yangjie.JGB28181.service.*;
 import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import com.yangjie.JGB28181.service.impl.PushHlsStreamServiceImpl;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,7 +148,9 @@ public class ActionController implements OnProcessListener {
 	public static Map<Integer, RecordStreamDevice> deviceRecordMap = new HashMap<>(20);
 
 	// 国标设备服务器map
-	public static Map<String, Observer> gbServerMap = new HashMap<>(20);
+	public static Map<String, Observer> gbPushObserver = new HashMap<>(20);
+
+	public static Map<String, Server> gbServerMap = new HashMap<>(20);
 
 	// 失败设备id列表
 	public static List<Integer> failCidList = new ArrayList<>(20);
@@ -153,13 +165,13 @@ public class ActionController implements OnProcessListener {
 
 	public static Map<Integer, Boolean> deviceRecordingMap = new HashMap<>(20);
 
-	public static Map<Integer, ChannelInboundHandlerAdapter> deviceHandlerMap = new HashMap<>(20);
+	public static Map<String, ChannelInboundHandlerAdapter> deviceHandlerMap = new HashMap<>(20);
 
 	// 截图锁对象
 	private static Object snapshotLock = new Object();
 
 	@PostMapping(value = "switchRecord")
-	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) throws InterruptedException {
+	public GBResult switchRecord(@RequestBody DeviceBaseCondition deviceBaseCondition) throws Exception {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceIds();
 		Integer isSwitch = deviceBaseCondition.getIsSwitch();
 
@@ -230,7 +242,7 @@ public class ActionController implements OnProcessListener {
 				JSONObject typeStreamJson = streamJson.getJSONObject(BaseConstants.PUSH_STREAM_RECORD);
 				String callId = typeStreamJson.getString("callId");
 
-				RtmpRecorder gbRecorder = (RtmpRecorder) ActionController.gbServerMap.get(callId);
+				RtmpRecorder gbRecorder = (RtmpRecorder) ActionController.gbPushObserver.get(callId);
 				CameraThread.MyRunnable rtspRecorder = ActionController.jobMap.get(callId);
 				if (gbRecorder != null) {
 					gbRecorder.stopRemux();
@@ -252,7 +264,7 @@ public class ActionController implements OnProcessListener {
 	 * @return
 	 */
 	@PostMapping(value = "getCameraStream")
-	public GBResult getCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) throws InterruptedException {
+	public GBResult getCameraStream(@RequestBody DeviceBaseCondition deviceBaseCondition) throws Exception {
 		List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
 		String pushStreamType = deviceBaseCondition.getType();
 		Integer toHigherServer = deviceBaseCondition.getToHigherServer();
@@ -350,7 +362,7 @@ public class ActionController implements OnProcessListener {
 	 * @param deviceId
 	 * @return
 	 */
-	private GBResult playHls(CameraInfo cameraInfo, Integer deviceId, Integer toHihgerServer) throws InterruptedException {
+	private GBResult playHls(CameraInfo cameraInfo, Integer deviceId, Integer toHihgerServer) throws Exception {
 		if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
 			// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
 			return this.GBPlayHls(cameraInfo.getIp(), deviceId, toHihgerServer);
@@ -399,7 +411,7 @@ public class ActionController implements OnProcessListener {
 	 * @param deviceId
 	 * @return
 	 */
-	private GBResult playRtmp(Integer deviceId, Integer toFlv) {
+	private GBResult playRtmp(Integer deviceId, Integer toFlv) throws Exception {
 		CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
 		if (null != cameraInfo) {
 			String linkType = LinkTypeEnum.getDataByCode(cameraInfo.getLinkType()).getName();
@@ -426,7 +438,7 @@ public class ActionController implements OnProcessListener {
 	 * 国标播放rtmp
 	 * @param cameraIp
 	 */
-	private GBResult GBPlayRtmp(String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv) {
+	private GBResult GBPlayRtmp(String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv) throws Exception {
 		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraIp);
 		String deviceStr = null;
 		String pushStreamDeviceId = null;
@@ -445,12 +457,12 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "UDP", 0, null, 0, isRecord, isSwitch, toFlv, 0, null, null));
+			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, isSwitch, toFlv, 1, 0, null, null));
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
 
-	private GBResult GBPlayHls(String cameraIp, Integer deviceId, Integer toHigherServer) {
+	private GBResult GBPlayHls(String cameraIp, Integer deviceId, Integer toHigherServer) throws Exception {
 		JSONObject dataJson = this.getLiveCamInfoVoByMatchIp(cameraIp);
 		String deviceStr = null;
 		String pushStreamDeviceId = null;
@@ -469,7 +481,7 @@ public class ActionController implements OnProcessListener {
 					channelId = key;
 				}
 			}
-			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "UDP", 0, null, 1, 0, 0, 0, toHigherServer, null, null));
+			return this.play(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 1, 0, 0, 0, 1, toHigherServer, null, null));
 		}
 		return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
 	}
@@ -619,10 +631,10 @@ public class ActionController implements OnProcessListener {
 									 @RequestParam(name = "channelId", required = false)String channelId,
 									 @RequestParam(name = "rtspLink", required = false)String rtspLink,
 									 @RequestParam(name = "deviceId")Integer cid,
-									 @RequestParam(name = "type")String type) throws InterruptedException {
+									 @RequestParam(name = "type")String type) throws Exception {
 		failCidList = new ArrayList<>();
 		if (!StringUtils.isEmpty(pushStreamDeviceId) && !StringUtils.isEmpty(channelId)) {
-			this.play(new GBDevicePlayCondition(null, pushStreamDeviceId, channelId, "TCP", 1, cid, 0, 0, 0, 0, 0, null, null));
+			this.play(new GBDevicePlayCondition(null, pushStreamDeviceId, channelId, "TCP", 1, cid, 0, 0, 0, 0, 1, 0, null, null));
 		} else if (!StringUtils.isEmpty(rtspLink)) {
 			// 把rtsp连接转成pojo
 			CameraPojo cameraPojo = this.parseRtspLinkToCameraPojo(rtspLink);
@@ -644,20 +656,76 @@ public class ActionController implements OnProcessListener {
 	 * @return
 	 */
 	@RequestMapping("play")
-	public GBResult play(GBDevicePlayCondition gbDevicePlayCondition){
+	public GBResult play(GBDevicePlayCondition gbDevicePlayCondition) throws Exception {
 		GBResult result = null;
 		return cameraInfoService.gbDevicePlay(gbDevicePlayCondition);
 	}
 
-	@RequestMapping("testPlat")
-	public void testPlay() throws Exception {
+	@RequestMapping("testPlayTcp")
+	public void testPlayTcp() throws Exception {
+		Integer port = mSipLayer.getPort(true);
 		String deviceId = "34020000001320000005";
 		String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + deviceId);
 		Device device = JSONObject.parseObject(deviceStr, Device.class);
 		String callId = IDUtils.id();
-		mSipLayer.sendInvite(device,SipLayer.SESSION_NAME_PLAY,callId,deviceId,mSipLayer.getPort(true),"0200000000",true);
+
+		new Thread(() -> {
+			try {
+				EventLoopGroup group = new NioEventLoopGroup();
+				ServerBootstrap serverBootstrap = new ServerBootstrap();
+				serverBootstrap.group(group)//
+						.channel(NioServerSocketChannel.class) //
+						.childHandler(new ChannelInitializer<SocketChannel>() { //
+							@Override
+							public void initChannel(SocketChannel ch) throws Exception {
+								//解决TCP粘包问题
+								ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024*1024,0,2));
+								TestClientHandler testClientHandler = new TestClientHandler();
+								ch.pipeline().addLast(testClientHandler);
+							}
+						});
+				ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
+				channelFuture.channel().closeFuture().sync();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+
+		mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, deviceId, port,"0200000000", true);
 		SyncFuture<?> receive = mMessageManager.receive(callId);
-		Dialog response = (Dialog) receive.get(5, TimeUnit.SECONDS);
+		Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
+
+		if (response != null) {
+			System.out.println(response);
+		}
+	}
+
+	@RequestMapping("testPlayUdp")
+	public void testPlayUdp() throws Exception {
+		Integer port = mSipLayer.getPort(false);
+		String deviceId = "34020000001320000005";
+		String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + deviceId);
+		Device device = JSONObject.parseObject(deviceStr, Device.class);
+		String callId = IDUtils.id();
+
+		new Thread(() -> {
+			try {
+				EventLoopGroup workerGroup= new NioEventLoopGroup();
+				Bootstrap bootstrap = new Bootstrap();
+				bootstrap.group(workerGroup)//
+						.channel(NioDatagramChannel.class) //
+						.option(ChannelOption.SO_RCVBUF,1024*1024)
+						.handler(new TestClientUDPHandler());
+				bootstrap.bind(port).sync().channel().closeFuture().sync();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+		Thread.sleep(1000);
+
+		mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, deviceId, port,"0200000000", false);
+		SyncFuture<?> receive = mMessageManager.receive(callId);
+		Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
 
 		if (response != null) {
 			System.out.println(response);

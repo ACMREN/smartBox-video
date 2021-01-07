@@ -14,13 +14,14 @@ public class GBDevicePlayCondition {
     private Integer isRecord;
     private Integer isSwitch;
     private Integer toFlv;
+    private Integer toPushStream;
     private Integer toHigherServer;
     private String higherServerIp;
     private Integer higherServerPort;
 
     public GBDevicePlayCondition(Integer id, String deviceId, String channelId, String protocol, Integer isTest,
-                                 Integer cid, Integer toHls, Integer isRecord, Integer isSwitch, Integer toFlv, Integer toHigherServer,
-                                 String higherServerIp, Integer higherServerPort) {
+                                 Integer cid, Integer toHls, Integer isRecord, Integer isSwitch, Integer toFlv,
+                                 Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort) {
         this.id = id;
         this.deviceId = deviceId;
         this.channelId = channelId;
@@ -31,6 +32,7 @@ public class GBDevicePlayCondition {
         this.isRecord = isRecord;
         this.isSwitch = isSwitch;
         this.toFlv = toFlv;
+        this.toPushStream = toPushStream;
         this.toHigherServer = toHigherServer;
         this.higherServerIp = higherServerIp;
         this.higherServerPort = higherServerPort;

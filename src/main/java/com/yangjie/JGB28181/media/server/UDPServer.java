@@ -29,7 +29,8 @@ public class UDPServer extends Server{
 	private Bootstrap bootstrap = null;
 	private EventLoopGroup workerGroup = null;
 
-	private void bind(int port,int ssrc,boolean checkSsrc, Integer deviceBaseId, Integer toHigherServer, String higherServerIp, Integer higherServerPort) throws Exception {
+	private void bind(int port,int ssrc,boolean checkSsrc, Integer deviceBaseId, Integer toPushStream,
+					  Integer toHigherServer, String higherServerIp, Integer higherServerPort) throws Exception {
 		workerGroup= new NioEventLoopGroup();
 		try {
 			bootstrap = new Bootstrap();
@@ -39,7 +40,8 @@ public class UDPServer extends Server{
 			.handler(new ChannelInitializer<NioDatagramChannel>() { //
 				@Override
 				public void initChannel(NioDatagramChannel ch) throws Exception {
-					ch.pipeline().addLast(new UDPHandler(deviceBaseId, ssrc,checkSsrc, toHigherServer, higherServerIp, higherServerPort, UDPServer.this));
+					ch.pipeline().addLast(new UDPHandler(deviceBaseId, ssrc,checkSsrc, toPushStream,
+							toHigherServer, higherServerIp, higherServerPort, UDPServer.this));
 				}
 			});
 			this.log.info("UDP服务启动成功port:{}", port);
@@ -53,7 +55,7 @@ public class UDPServer extends Server{
 	}
 	@Override
 	public  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId,
-							 Integer deviceBaseId, Integer toHigherServer, String higherServerIp, Integer higherServerPort) {
+							 Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort) {
 		if (this.isRunning) {
 			throw new IllegalStateException(TAG+ " is already started .");
 		}
@@ -61,7 +63,7 @@ public class UDPServer extends Server{
 
 		new Thread(() -> {
 			try {
-				this.bind(port,ssrc,checkSsrc, deviceBaseId, toHigherServer, higherServerIp, higherServerPort);
+				this.bind(port,ssrc,checkSsrc, deviceBaseId, toPushStream, toHigherServer, higherServerIp, higherServerPort);
 			} catch (Exception e) {
 				this.log.info("{}服务启动出错:{}", TAG,e.getMessage());
 				e.printStackTrace();

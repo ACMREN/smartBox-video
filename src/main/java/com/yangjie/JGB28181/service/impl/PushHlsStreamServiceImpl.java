@@ -21,6 +21,7 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 
@@ -199,7 +200,7 @@ public class PushHlsStreamServiceImpl implements IPushStreamService {
             playFileName = StreamNameUtils.play(deviceId, channelId);
         }
         final String documentName = playFileName;
-        ActionController.scheduledExecutorService.scheduleAtFixedRate(() -> {
+        ScheduledFuture<?> scheduledFuture = ActionController.scheduledExecutorService.scheduleAtFixedRate(() -> {
             String filePath = BaseConstants.hlsStreamPath + documentName + "/";
             System.out.println("====================start file clean up==================");
             File dir = new File(filePath);

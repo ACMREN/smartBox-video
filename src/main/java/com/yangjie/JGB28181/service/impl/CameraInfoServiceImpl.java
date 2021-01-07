@@ -22,6 +22,7 @@ import com.yangjie.JGB28181.media.server.Server;
 import com.yangjie.JGB28181.media.server.TCPServer;
 import com.yangjie.JGB28181.media.server.UDPServer;
 import com.yangjie.JGB28181.media.server.handler.TCPHandler;
+import com.yangjie.JGB28181.media.server.handler.UDPHandler;
 import com.yangjie.JGB28181.media.server.remux.Observer;
 import com.yangjie.JGB28181.media.server.remux.RtmpPusher;
 import com.yangjie.JGB28181.media.server.remux.RtmpRecorder;
@@ -34,6 +35,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,7 @@ import javax.sip.SipException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -230,82 +233,73 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         Integer isRecord = gbDevicePlayCondition.getIsRecord();
         Integer isSwitch = gbDevicePlayCondition.getIsSwitch();
         Integer toFlv = gbDevicePlayCondition.getToFlv();
+        Integer toPushStream = gbDevicePlayCondition.getToPushStream();
         Integer toHigherServer = gbDevicePlayCondition.getToHigherServer();
         String higherServerIp = gbDevicePlayCondition.getHigherServerIp();
         Integer higherServerPort = gbDevicePlayCondition.getHigherServerPort();
-        try{
+        try {
             int pushPort = 1935;
-            //1.从redis查找设备，如果不存在，返回离线
+            // 1. 从redis查找设备，如果不存在，返回离线
             String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + deviceId);
-            if(StringUtils.isEmpty(deviceStr)){
+            if (StringUtils.isEmpty(deviceStr)) {
                 return GBResult.build(ResultConstants.DEVICE_OFF_LINE_CODE, ResultConstants.DEVICE_OFF_LINE);
             }
-            // 2.设备在线，先检查是否正在推流
-            // 如果正在推流，直接返回rtmp地址
+
+            // 2. 生成创建服务器的必要参数
             String streamName = StreamNameUtils.play(deviceId, channelId);
             PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
             RecordStreamDevice recordStreamDevice = ActionController.deviceRecordMap.get(id);
-            if(pushStreamDevice != null && isRecord == 0){
-                if (toHigherServer == 1) {
-                    TCPHandler handler = (TCPHandler) ActionController.deviceHandlerMap.get(80);
-                    handler.setToHigherServer(1);
-                    handler.setHigherServerIp(higherServerIp);
-                    handler.setHigherServerPort(higherServerPort);
-                }
-                if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
-                    ActionController.streamingDeviceMap.put(id, pushStreamDevice);
-                }
-                if (toFlv == 0) {
-                    return GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
-                } else {
-                    return GBResult.ok(new MediaData(pushStreamDevice.getPullFlvAddress(),pushStreamDevice.getCallId()));
-                }
-            }
-            if (recordStreamDevice != null && isRecord == 1) {
-                return GBResult.build(201, "已经正在录像，请勿重复请求", null);
-            }
             boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
-            int port = mSipLayer.getPort(isTcp);
-            // 检查通道是否存在
+            JSONObject serverParameters = this.createServerParameters(streamName, toHls, isRecord, isTcp);
+            String callId = serverParameters.getString("callId");
+            String ssrc = serverParameters.getString("ssrc");
+            Integer port = serverParameters.getInteger("port");
+            String deviceIdProtocolKey = id + "_" + (isTcp? "tcp" : "udp");
+
+            // 3. 检查通道是否存在
             Device device = JSONObject.parseObject(deviceStr, Device.class);
             Map<String, DeviceChannel> channelMap = device.getChannelMap();
-            if(channelMap == null || !channelMap.containsKey(channelId)){
+            if (channelMap == null || !channelMap.containsKey(channelId)) {
                 return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
             }
+            // 4. 判断是否存在推流/录像
+            result = this.judgePushStreamRecordExist(pushStreamDevice, recordStreamDevice, isRecord, toPushStream, toHigherServer,
+                    higherServerIp, higherServerPort, isTcp, deviceIdProtocolKey, toFlv);
+            int existCode = result.getCode();
+            if (existCode == 201) {
+                return result;
+            }
+
             // 3.下发指令
-            String callId = null;
-            if (isRecord == 0) {
-                callId = IDUtils.id();
-            } else {
-                callId = "record_" + IDUtils.id();
-            }
-            // getPort可能耗时，在外面调用。
-            String ssrc = mSipLayer.getSsrc(true);
             if (!isTcp) {
-                result = this.createServer(pushStreamDevice, recordStreamDevice, id, deviceId, channelId, port, streamName,
-                        ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, higherServerIp, higherServerPort, null);
-                Thread.sleep(1000);
+                result = this.createPushStream(id, deviceId, channelId, port, streamName,
+                        ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, toPushStream, higherServerIp, higherServerPort, null);
             }
 
-            mSipLayer.sendInvite(device,SipLayer.SESSION_NAME_PLAY,callId,channelId,port,ssrc,isTcp);
-            // 4.等待指令响应
-            SyncFuture<?> receive = mMessageManager.receive(callId);
-            Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
-            if (!isTcp) {
-                Dialog response1 = (Dialog) receive.get(3, TimeUnit.SECONDS);
-                pushStreamDevice = mPushStreamDeviceManager.get(streamName);
-                pushStreamDevice.setDialog(response1);
+            mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, channelId, port, ssrc, isTcp);
+
+            if (toPushStream == 1) {
+                // 4.等待指令响应
+                SyncFuture<?> receive = mMessageManager.receive(callId);
+                Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
+                if (!isTcp) {
+                    Dialog response1 = (Dialog) receive.get(3, TimeUnit.SECONDS);
+                    pushStreamDevice = mPushStreamDeviceManager.get(streamName);
+                    pushStreamDevice.setDialog(response1);
+                }
+
+                //4.1响应成功，创建推流session
+                if (isTcp && response != null) {
+                    result = this.createPushStream(id, deviceId, channelId, port, streamName,
+                            ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, toPushStream, higherServerIp, higherServerPort, response);
+                } else if (isTcp && null == response) {
+                    //3.2响应失败，删除推流session
+                    System.out.println("响应失败，删除推流session");
+                    mMessageManager.remove(callId);
+                    result = GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
+                }
             }
 
-            //4.1响应成功，创建推流session
-            if(isTcp && response != null){
-                result = this.createServer(pushStreamDevice, recordStreamDevice, id, deviceId, channelId, port, streamName,
-                        ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, higherServerIp, higherServerPort, response);
-            } else if (isTcp && null == response){
-                //3.2响应失败，删除推流session
-                mMessageManager.remove(callId);
-                result =  GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
-            }
         } catch(Exception e){
             e.printStackTrace();
             result = GBResult.build(ResultConstants.SYSTEM_ERROR_CODE, ResultConstants.SYSTEM_ERROR);
@@ -313,19 +307,121 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         return result;
     }
 
-    private GBResult createServer(PushStreamDevice pushStreamDevice, RecordStreamDevice recordStreamDevice,
-                                  Integer id, String deviceId, String channelId, Integer port, String streamName, String ssrc, String callId, Integer cid,
-                                  Integer toHls, Integer isTest, Integer isRecord, Boolean isTcp, Integer toHigherServer,
-                                  String higherServerIp, Integer higherServerPort, Dialog response) throws IOException {
-        GBResult result = null;
+    /**
+     * 判断是否存在推流/录像
+     */
+    private GBResult judgePushStreamRecordExist(PushStreamDevice pushStreamDevice, RecordStreamDevice recordStreamDevice,
+                                            Integer isRecord, Integer toPushStream, Integer toHigherServer, String higherServerIp,
+                                            Integer higherServerPort, Boolean isTcp, String deviceIdProtocolKey, Integer toFlv) {
+        GBResult result = GBResult.ok();
+        // 1. 判断是否存在推流
+        if (pushStreamDevice != null && isRecord == 0) {
+            // 1.1 如果已经存在推流，要添加推送平台，则直接往handler中添加参数
+            if (toHigherServer == 1) {
+                ChannelInboundHandlerAdapter adapter = ActionController.deviceHandlerMap.get(deviceIdProtocolKey);
+                Server server = ActionController.gbServerMap.get(deviceIdProtocolKey);
+                // 1.1.1 如果级联平台需要的视频流恰好存在对应的服务器在推流，则直接设置属性
+                if (null != adapter) {
+                    if (isTcp) {
+                        server.setToHigherServer(1);
+                        TCPHandler tcpHandler = (TCPHandler) adapter;
+                        tcpHandler.setToHigherServer(1);
+                        tcpHandler.setHigherServerIp(higherServerIp);
+                        tcpHandler.setHigherServerPort(higherServerPort);
+                    } else {
+                        UDPHandler udpHandler = (UDPHandler) adapter;
+                        server.setToHigherServer(1);
+                        udpHandler.setToHigherServer(1);
+                        udpHandler.setHigherServerIp(higherServerIp);
+                        udpHandler.setHigherServerPort(higherServerPort);
+                    }
+                }
+                return result = GBResult.ok();
+            }
+            if (toFlv == 0) {
+                result = GBResult.build(201, "已经存在推流，请勿重复请求", new MediaData(pushStreamDevice.getPullRtmpAddress(), pushStreamDevice.getCallId()));
+            } else {
+                result = GBResult.build(201, "已经存在推流，请勿重复请求", new MediaData(pushStreamDevice.getPullFlvAddress(), pushStreamDevice.getCallId()));
+            }
+        }
+        // 2. 判断是否存在录像
+        if (recordStreamDevice != null && isRecord == 1) {
+            result = GBResult.build(201, "已经正在录像，请勿重复请求", null);
+        }
+        return result;
+    }
+
+    /**
+     * 创建开启服务器的必要参数
+     * @param streamName
+     * @param toHls
+     * @param isRecord
+     * @param isTcp
+     * @return
+     */
+    private JSONObject createServerParameters(String streamName, Integer toHls, Integer isRecord, Boolean isTcp) {
+        // 4.2.1 创建推流地址
+        String address = pushRtmpAddress.concat(streamName);
+        if (toHls == 1) {
+            address = pushHlsAddress.concat(streamName);
+        }
+        // 4.2.2 创建callId
+        String callId = null;
+        if (isRecord == 0) {
+            callId = IDUtils.id();
+        } else {
+            callId = "record_" + IDUtils.id();
+        }
+        // 4.2.3 创建ssrc
+        String ssrc = mSipLayer.getSsrc(true);
+        // 4.2.4 创建端口号
+        int port = mSipLayer.getPort(isTcp);
+
+        JSONObject paramJson = new JSONObject();
+        paramJson.put("address", address);
+        paramJson.put("callId", callId);
+        paramJson.put("ssrc", ssrc);
+        paramJson.put("port", port);
+
+        return paramJson;
+    }
+
+    /**
+     * 创建服务器
+     */
+    private Server createServer(Boolean isTcp, String ssrc, String streamName, Integer id, Integer port, Integer toPushStream,
+                                Integer toHigherServer, String higherServerIp, Integer higherServerPort) throws InterruptedException {
+        String protocol = isTcp? "tcp" : "udp";
+        String deviceIdProtocolKey = id.toString() + "_" + protocol;
+        Server server = ActionController.gbServerMap.get(deviceIdProtocolKey);
+        if (null != server) {
+            return server;
+        }
+
+        server = isTcp ? new TCPServer() : new UDPServer();
+        server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName,
+                id, toPushStream, toHigherServer, higherServerIp, higherServerPort);
+        ActionController.gbServerMap.put(deviceIdProtocolKey, server);
+        Thread.sleep(1000);
+
+        return server;
+    }
+
+    /**
+     * 创建推流的容器
+     */
+    private JSONObject createObserver(Server server, String callId, String streamName, String deviceId, String ssrc,
+                                      Integer id, Integer port, Integer isRecord, Boolean isTcp, Integer toHls,
+                                      Integer isTest, Integer cid, Dialog response) {
+        JSONObject jsonObject = new JSONObject();
+        Observer observer;
+        PushStreamDevice pushStreamDevice = null;
+        RecordStreamDevice recordStreamDevice = null;
         String address = pushRtmpAddress.concat(streamName);
         // 如果是hls，则推到hls的地址
         if (toHls == 1) {
             address = pushHlsAddress.concat(streamName);
         }
-        Server server = isTcp ? new TCPServer() : new UDPServer();
-        Observer observer;
-
         // 判断是推流还是录像
         if (isRecord == 0) {
             observer = new RtmpPusher(address, callId);
@@ -337,7 +433,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             if (null != response) {
                 pushStreamDevice.setDialog(response);
             }
-            mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
+            ActionController.mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
         } else {
             String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
             observer = new RtmpRecorder(recordAddress, callId);
@@ -346,37 +442,80 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                     observer, recordAddress);
             ActionController.deviceRecordMap.put(id, recordStreamDevice);
         }
-
         server.subscribe(observer);
-        server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName,
-                id, toHigherServer, higherServerIp, higherServerPort);
         observer.startRemux(isTest, cid, toHls, id, streamName, applicationContext);
-        ActionController.gbServerMap.put(callId, observer);
+        ActionController.gbPushObserver.put(callId, observer);
 
         observer.setOnProcessListener(this);
+
+        jsonObject.put("observer", observer);
+        jsonObject.put("pushStreamDevice", pushStreamDevice);
+        jsonObject.put("recordStreamDevice", recordStreamDevice);
+
+        return jsonObject;
+    }
+
+    /**
+     * 处理推流后的一些配置
+     * @throws IOException
+     */
+    private GBResult handlePushStreamConfig(Integer id, Integer isRecord, Integer toHls, PushStreamDevice pushStreamDevice,
+                                            RecordStreamDevice recordStreamDevice, String deviceId, String channelId,
+                                            String callId, String streamName) throws IOException {
+        GBResult result;
         if (isRecord == 0) {
             Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
             Integer expiredTime = Math.toIntExact(expiredMs / 1000);
             // 设置5分钟的过期时间
-            RedisUtil.set(callId, expiredTime, "keepStreaming");
+            RedisUtil.set(callId, 10, "keepStreaming");
             // 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
             if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
                 ActionController.streamingDeviceMap.put(id, pushStreamDevice);
             }
+
+            String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
             if (toHls == 1) {
                 // 开启清理过期的TS索引文件的定时器
                 PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
 
-                String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
                 String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
                 String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
                 pushStreamDevice.setPullRtmpAddress(hlsPlayFile);
                 result = GBResult.ok(new MediaData(hlsPlayFile, pushStreamDevice.getCallId()));
             } else {
+                String pushRtmpStreamAddress = BaseConstants.rtmpBaseUrl.replace("127.0.0.1", mediaIp);
+                String rtmpPlayFile = pushRtmpStreamAddress + streamName;
+                pushStreamDevice.setPullRtmpAddress(rtmpPlayFile);
                 result = GBResult.ok(new MediaData(pushStreamDevice.getPullRtmpAddress(),pushStreamDevice.getCallId()));
             }
         } else {
             result = GBResult.ok(new MediaData(recordStreamDevice.getPullRtmpAddress(), recordStreamDevice.getCallId()));
+        }
+
+        return result;
+    }
+
+    /**
+     * 创建推流
+     * @throws IOException
+     */
+    private GBResult createPushStream(Integer id, String deviceId, String channelId, Integer port, String streamName, String ssrc, String callId, Integer cid,
+                                  Integer toHls, Integer isTest, Integer isRecord, Boolean isTcp, Integer toHigherServer, Integer toPushStream,
+                                  String higherServerIp, Integer higherServerPort, Dialog response) throws IOException, InterruptedException {
+        GBResult result = GBResult.ok();
+
+        // 1. 创建服务器
+        Server server = this.createServer(isTcp, ssrc, streamName, id, port, toPushStream, toHigherServer, higherServerIp, higherServerPort);
+
+        if (toPushStream == 1) {
+            // 2. 创建推流容器并进行推流/录像
+            JSONObject observerJson = this.createObserver(server, callId, streamName, deviceId, ssrc, id, port, isRecord, isTcp, toHls, isTest, cid, response);
+            Observer observer = (Observer) observerJson.get("observer");
+            PushStreamDevice pushStreamDevice = (PushStreamDevice) observerJson.get("pushStreamDevice");
+            RecordStreamDevice recordStreamDevice = (RecordStreamDevice) observerJson.get("recordStreamDevice");
+
+            // 3. 处理推流的配置
+            result = handlePushStreamConfig(id, isRecord, toHls, pushStreamDevice, recordStreamDevice, deviceId, channelId, callId, streamName);
         }
         return result;
     }

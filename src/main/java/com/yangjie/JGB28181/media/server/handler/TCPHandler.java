@@ -32,7 +32,7 @@ import io.netty.util.ReferenceCountUtil;
  * @author yangjie
  * 2020年3月13日
  */
-public class TCPHandler  extends ChannelInboundHandlerAdapter{
+public class TCPHandler extends ChannelInboundHandlerAdapter{
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -60,6 +60,8 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 
 	private Integer toHigherServer = 0;
 
+	private Integer toPushStream = 0;
+
 	private Bootstrap b = null;
 
 
@@ -67,16 +69,18 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 		this.onChannelStatusListener = onChannelStatusListener;
 	}
 	public TCPHandler(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc, boolean checkSsrc, String deviceId,
-					  Integer deviceBaseId, Integer toHigherServer, String higherServerIp, Integer higherServerPort,
+					  Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort,
 			Parser parser) {
 		this.mFrameDeque =frameDeque;
 		this.mSsrc = ssrc;
 		this.mParser = parser;
 		this.deviceId = deviceId;
+		this.toPushStream = toPushStream;
 		this.toHigherServer = toHigherServer;
 		this.higherServerIp = higherServerIp;
 		this.higherServerPort = higherServerPort;
-		ActionController.deviceHandlerMap.put(deviceBaseId, this);
+		String deviceProtocolKey = deviceBaseId.toString() + "_tcp";
+		ActionController.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
 
 	private Channel channel = null;
@@ -87,19 +91,14 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 			log.error("frame deque can not null");
 			return;
 		}
-		//log.info("channelRead");
 
 		ByteBuf byteBuf = (ByteBuf) msg;
-		ByteBuf byteBuf1 = byteBuf.copy();
-		int readableBytes = byteBuf.readableBytes();
-		if(readableBytes <=0){
-			return;
-		}
-		byte[] copyData = new byte[readableBytes];
-		byteBuf.readBytes(copyData);
-
+		// 1. 判断是否开启了推送到其它平台
 		if (null != toHigherServer && toHigherServer == 1) {
+			ByteBuf byteBuf1 = byteBuf.copy();
+			// 1.1 判断通道是否开启
 			if (null == channel) {
+				// 1.2 判断线程组是否已经开启
 				if (null == b) {
 					EventLoopGroup group = new NioEventLoopGroup();
 					b = new Bootstrap();
@@ -108,7 +107,7 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 					b.remoteAddress(new InetSocketAddress(higherServerIp, higherServerPort));
 					b.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
-						protected void initChannel(SocketChannel socketChannel) throws Exception {
+						protected void initChannel(SocketChannel socketChannel) {
 							socketChannel.pipeline().addLast(new TestClientHandler());
 						}
 					});
@@ -120,73 +119,83 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 			channel.writeAndFlush(byteBuf1);
 		}
 
-		//log.error("TCPHandler channelRead >>> {}",HexStringUtils.toHexString(copyData));
-		try{
-			if(mIsCheckSsrc){
-				int uploadSsrc = BitUtils.byte4ToInt(copyData[10],copyData[11],copyData[12],copyData[13]);
-				if(uploadSsrc != mSsrc){
-					return;
-				}
-			}
-			int seq = BitUtils.byte2ToInt(copyData[4],copyData[5]);
-			Frame frame;
-			//有ps头,判断是否是i帧或者p帧
-			if(readableBytes > 18 && copyData[14] == 0 &&copyData[15] ==0 &&copyData[16] ==01 && (copyData[17]&0xff) == 0xba){
-				//pack_stuffing_length
-				int stuffingLength =  copyData[27] & 7;
-				int startIndex = 27+stuffingLength+1;
 
-				//有ps系统头为i帧
-				if(copyData[startIndex] == 0 && copyData[startIndex+1] == 0&&copyData[startIndex+2] == 01&&(copyData[startIndex+3]&0xff) == 0xbb ){
-					frame = new Frame(Frame.I);
-					mIsFirstI = true;
+		// 2. 判断是否开启了推流
+		if (null != toPushStream && toPushStream == 1) {
+			// 2.1 读取byteBuf数据到字节数组中
+			int readableBytes = byteBuf.readableBytes();
+			if(readableBytes <=0){
+				return;
+			}
+			byte[] copyData = new byte[readableBytes];
+			byteBuf.readBytes(copyData);
+			try{
+				if(mIsCheckSsrc){
+					int uploadSsrc = BitUtils.byte4ToInt(copyData[10],copyData[11],copyData[12],copyData[13]);
+					if(uploadSsrc != mSsrc){
+						return;
+					}
 				}
-				//p帧
-				else{
+				int seq = BitUtils.byte2ToInt(copyData[4],copyData[5]);
+				Frame frame;
+				//有ps头,判断是否是i帧或者p帧
+				if(readableBytes > 18 && copyData[14] == 0 &&copyData[15] ==0 &&copyData[16] ==01 && (copyData[17]&0xff) == 0xba){
+					//pack_stuffing_length
+					int stuffingLength =  copyData[27] & 7;
+					int startIndex = 27+stuffingLength+1;
+
+					//有ps系统头为i帧
+					if(copyData[startIndex] == 0 && copyData[startIndex+1] == 0&&copyData[startIndex+2] == 01&&(copyData[startIndex+3]&0xff) == 0xbb ){
+						frame = new Frame(Frame.I);
+						mIsFirstI = true;
+					}
+					//p帧
+					else{
+						if(!mIsFirstI){
+							return;
+						}
+						frame = new Frame(Frame.P);
+					}
+					frame.addPacket(seq, copyData);
+					frame.setFirstSeq(seq);
+					mFrameDeque.add(frame);
+				}
+				//音频数据
+				else if(readableBytes > 18 && copyData[14] == 0 &&copyData[15] ==0 &&copyData[16] ==01 && (copyData[17]&0xff) == 0xc0){
 					if(!mIsFirstI){
 						return;
 					}
-					frame = new Frame(Frame.P);
+					frame = new Frame(Frame.AUDIO);
+					frame.addPacket(seq, copyData);
+					frame.setFirstSeq(seq);
+					mFrameDeque.add(frame);
 				}
-				frame.addPacket(seq, copyData);
-				frame.setFirstSeq(seq);
-				mFrameDeque.add(frame);
-			}
-			//音频数据
-			else if(readableBytes > 18 && copyData[14] == 0 &&copyData[15] ==0 &&copyData[16] ==01 && (copyData[17]&0xff) == 0xc0){
-				if(!mIsFirstI){
-					return;
-				}
-				frame = new Frame(Frame.AUDIO);
-				frame.addPacket(seq, copyData);
-				frame.setFirstSeq(seq);
-				mFrameDeque.add(frame);
-			}
-			//分包数据
-			else{
-				if(mFrameDeque.size() >0 && mIsFirstI){
-					frame = mFrameDeque.getLast();
-					if(frame != null){
-						frame .addPacket(seq, copyData);
-						frame.setEndSeq(seq);
-					}
+				//分包数据
+				else{
+					if(mFrameDeque.size() >0 && mIsFirstI){
+						frame = mFrameDeque.getLast();
+						if(frame != null){
+							frame .addPacket(seq, copyData);
+							frame.setEndSeq(seq);
+						}
 
-					if(mFrameDeque.size() >1){
-						Frame pop = mFrameDeque.pop();
-						mParser.parseTcp(pop);
+						if(mFrameDeque.size() >1){
+							Frame pop = mFrameDeque.pop();
+							mParser.parseTcp(pop);
+						}
 					}
 				}
+			}catch (Exception e){
+				e.printStackTrace();
+				if (!(e instanceof ArrayIndexOutOfBoundsException)) {
+					PushStreamDeviceManager.mainMap.remove(deviceId);
+					ctx.close();
+				}
+				log.error("TCPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));
+			}finally {
+				copyData = null;
+				release(msg);
 			}
-		}catch (Exception e){
-			e.printStackTrace();
-			if (!(e instanceof ArrayIndexOutOfBoundsException)) {
-				PushStreamDeviceManager.mainMap.remove(deviceId);
-				ctx.close();
-			}
-			log.error("TCPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));
-		}finally {
-			copyData = null;
-			release(msg);
 		}
 	}
 	private void release(Object msg){
@@ -217,6 +226,10 @@ public class TCPHandler  extends ChannelInboundHandlerAdapter{
 			onChannelStatusListener.onDisconnect();
 		}
 		ctx.close();
+	}
+
+	public void setToPushStream(Integer toPushStream) {
+		this.toPushStream = toPushStream;
 	}
 
 	public void setToHigherServer(Integer toHigherServer) {
