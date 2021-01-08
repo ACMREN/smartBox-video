@@ -325,15 +325,23 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                     if (isTcp) {
                         server.setToHigherServer(1);
                         TCPHandler tcpHandler = (TCPHandler) adapter;
-                        tcpHandler.setToHigherServer(1);
-                        tcpHandler.setHigherServerIp(higherServerIp);
-                        tcpHandler.setHigherServerPort(higherServerPort);
+                        if (null == tcpHandler.getToHigherServer() || tcpHandler.getToHigherServer() == 0) {
+                            tcpHandler.setToHigherServer(1);
+                            tcpHandler.setHigherServerIp(higherServerIp);
+                            tcpHandler.setHigherServerPort(higherServerPort);
+                        } else {
+                            tcpHandler.connectNewRemoteAddress(higherServerIp, higherServerPort);
+                        }
                     } else {
-                        UDPHandler udpHandler = (UDPHandler) adapter;
                         server.setToHigherServer(1);
-                        udpHandler.setToHigherServer(1);
-                        udpHandler.setHigherServerIp(higherServerIp);
-                        udpHandler.setHigherServerPort(higherServerPort);
+                        UDPHandler udpHandler = (UDPHandler) adapter;
+                        if (null == udpHandler.getToHigherServer() || udpHandler.getToHigherServer() == 0) {
+                            udpHandler.setToHigherServer(1);
+                            udpHandler.setHigherServerIp(higherServerIp);
+                            udpHandler.setHigherServerPort(higherServerPort);
+                        } else {
+                            udpHandler.connectNewRemoteAddress(higherServerIp, higherServerPort);
+                        }
                     }
                 }
                 return result = GBResult.ok();
@@ -467,7 +475,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
             Integer expiredTime = Math.toIntExact(expiredMs / 1000);
             // 设置5分钟的过期时间
-            RedisUtil.set(callId, 10, "keepStreaming");
+            RedisUtil.set(callId, expiredTime, "keepStreaming");
             // 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
             if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
                 ActionController.streamingDeviceMap.put(id, pushStreamDevice);

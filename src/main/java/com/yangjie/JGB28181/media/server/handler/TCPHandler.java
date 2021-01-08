@@ -1,6 +1,8 @@
 package com.yangjie.JGB28181.media.server.handler;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.yangjie.JGB28181.media.server.TCPServer;
@@ -26,6 +28,7 @@ import com.yangjie.JGB28181.media.codec.Parser;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 接受TCP音视频媒体流
@@ -83,7 +86,7 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 		ActionController.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
 
-	private Channel channel = null;
+	private List<Channel> channels = new ArrayList<>();
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -97,7 +100,7 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 		if (null != toHigherServer && toHigherServer == 1) {
 			ByteBuf byteBuf1 = byteBuf.copy();
 			// 1.1 判断通道是否开启
-			if (null == channel) {
+			if (CollectionUtils.isEmpty(channels)) {
 				// 1.2 判断线程组是否已经开启
 				if (null == b) {
 					EventLoopGroup group = new NioEventLoopGroup();
@@ -113,10 +116,13 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 					});
 				}
 				ChannelFuture future = b.connect().sync();
-				channel = future.channel();
+				Channel channel = future.channel();
+				channels.add(channel);
 			}
 
-			channel.writeAndFlush(byteBuf1);
+			for (Channel item : channels) {
+				item.writeAndFlush(byteBuf1);
+			}
 		}
 
 
@@ -232,6 +238,10 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 		this.toPushStream = toPushStream;
 	}
 
+	public Integer getToHigherServer() {
+		return toHigherServer;
+	}
+
 	public void setToHigherServer(Integer toHigherServer) {
 		this.toHigherServer = toHigherServer;
 	}
@@ -242,5 +252,22 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 
 	public void setHigherServerPort(Integer higherServerPort) {
 		this.higherServerPort = higherServerPort;
+	}
+
+	/**
+	 * 注册到新的服务器进行视频流推送
+	 * @param remoteIp
+	 * @param remotePort
+	 */
+	public void connectNewRemoteAddress(String remoteIp, Integer remotePort) {
+		if (null != b) {
+			try {
+				ChannelFuture future = b.connect(new InetSocketAddress(remoteIp, remotePort)).sync();
+				Channel channel = future.channel();
+				channels.add(channel);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

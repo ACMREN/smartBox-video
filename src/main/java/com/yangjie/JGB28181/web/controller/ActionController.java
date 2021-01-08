@@ -192,19 +192,7 @@ public class ActionController implements OnProcessListener {
 			CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
 			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.GB28181.getCode()) {
 				result = this.GBPlayRtmp(cameraInfo.getIp(), deviceId, 1, isSwitch, 0);
-				int resultCode = result.getCode();
-				if (200 == resultCode) {
-					MediaData mediaData = (MediaData) result.getData();
-					JSONObject data = new JSONObject();
-					String address = mediaData.getAddress();
-					String callId = mediaData.getCallId();
-					data.put("deviceId", deviceId);
-					data.put("source", address);
-					resultList.add(data);
-					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
-				} else {
-					return result;
-				}
+				return judgeRecordIsOpen(result, deviceId);
 			}
 			if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.RTSP.getCode()) {
 				String rtspLink = cameraInfo.getRtspLink();
@@ -215,25 +203,36 @@ public class ActionController implements OnProcessListener {
 				cameraPojo.setIsSwitch(isSwitch);
 				cameraPojo.setToFlv(0);
 				result = this.rtspPlayRtmp(cameraPojo);
-				int resultCode = result.getCode();
-				if (200 == resultCode) {
-					MediaData mediaData = (MediaData) result.getData();
-					JSONObject data = new JSONObject();
-					String address = mediaData.getAddress();
-					String callId = mediaData.getCallId();
-					data.put("deviceId", deviceId);
-					data.put("source", address);
-					resultList.add(data);
-					this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
-				} else {
-					return result;
-				}
+				return judgeRecordIsOpen(result, deviceId);
 			}
 		}
 
 		return GBResult.ok();
 	}
 
+	/**
+	 * 判断录像是否成功开启
+	 * @param result
+	 * @param deviceId
+	 * @return
+	 */
+	private GBResult judgeRecordIsOpen(GBResult result, Integer deviceId) {
+		int resultCode = result.getCode();
+		if (200 == resultCode) {
+			MediaData mediaData = (MediaData) result.getData();
+			String callId = mediaData.getCallId();
+			this.handleStreamInfoMap(callId, deviceId, BaseConstants.PUSH_STREAM_RECORD);
+			return GBResult.ok();
+		} else {
+			return result;
+		}
+	}
+
+	/**
+	 * 停止录像
+	 * @param deviceBaseIds
+	 * @return
+	 */
 	private List<Integer> stopRecordStream(List<Integer> deviceBaseIds) {
 		List<Integer> failDeviceIds = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(deviceBaseIds)) {

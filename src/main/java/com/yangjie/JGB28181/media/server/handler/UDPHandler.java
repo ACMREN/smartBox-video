@@ -2,6 +2,7 @@ package com.yangjie.JGB28181.media.server.handler;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -22,6 +23,7 @@ import com.yangjie.JGB28181.media.codec.Parser;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.socket.DatagramPacket;
+import org.springframework.util.CollectionUtils;
 
 /*
  * UDP 由于在外网环境下(特别是4G)，乱序 丢包情况较为严重
@@ -67,7 +69,9 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 	private Integer deviceBaseId;
 
-	private Channel channel;
+	private List<Channel> channels;
+
+	private Bootstrap b = null;
 
 	public UDPHandler(Integer deviceBaseId, int mSsrc,boolean mIsCheckSsrc, Integer toPushStream,
 					  Integer toHigherServer, String higherServerIp, Integer higherServerPort, Parser parser) {
@@ -89,17 +93,20 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 		ByteBuf byteBuf =  msg.content();
 		if (toHigherServer == 1) {
 			ByteBuf byteBuf1 = byteBuf.copy();
-			if (null == channel) {
+			if (CollectionUtils.isEmpty(channels)) {
 				EventLoopGroup group = new NioEventLoopGroup();
-				Bootstrap b = new Bootstrap();
+				b = new Bootstrap();
 				b.group(group);
 				b.channel(NioDatagramChannel.class);
 				b.option(ChannelOption.SO_BROADCAST, true);
 				b.handler(new TestClientHandler());
-				channel = b.bind(0).sync().channel();
+				Channel channel = b.bind(0).sync().channel();
+				channels.add(channel);
 			}
 
-			channel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(higherServerIp, higherServerPort)));
+			for (Channel channel : channels) {
+				channel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(higherServerIp, higherServerPort)));
+			}
 		}
 
 		if (toPushStream == 1) {
@@ -189,6 +196,10 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 		this.toPushStream = toPushStream;
 	}
 
+	public Integer getToHigherServer() {
+		return toHigherServer;
+	}
+
 	public void setToHigherServer(Integer toHigherServer) {
 		this.toHigherServer = toHigherServer;
 	}
@@ -199,5 +210,22 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 	public void setHigherServerPort(Integer higherServerPort) {
 		this.higherServerPort = higherServerPort;
+	}
+
+	/**
+	 * 注册到新的服务器进行视频流推送
+	 * @param remoteIp
+	 * @param remotePort
+	 */
+	public void connectNewRemoteAddress(String remoteIp, Integer remotePort) {
+		if (null != b) {
+			try {
+				ChannelFuture future = b.connect(new InetSocketAddress(remoteIp, remotePort)).sync();
+				Channel channel = future.channel();
+				channels.add(channel);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
