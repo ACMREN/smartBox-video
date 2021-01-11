@@ -137,7 +137,7 @@ public class RtspRecorder {
         try {
             rtspSocket.connect(new InetSocketAddress(cameraPojo.getIp(), 554), 1000);
         } catch (IOException e) {
-            ActionController.failCidList.add(cameraPojo.getCid());
+            CacheUtil.failCidList.add(cameraPojo.getCid());
             grabber.stop();
             grabber.close();
             rtspSocket.close();
@@ -264,7 +264,7 @@ public class RtspRecorder {
         grabber.flush();
         int isTest = cameraPojo.getIsTest();
         file = new File(cameraPojo.getRecordDir());
-        ActionController.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), true);
+        CacheUtil.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), true);
 
         for (int no_frame_index = 0; no_frame_index < 5 || err_index < 5;) {
             try {
@@ -274,14 +274,14 @@ public class RtspRecorder {
                 frame = grabber.grab();
                 if (null != frame) {
                     // 判断是否需要截图
-                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                    Boolean isSnapshot = CacheUtil.deviceSnapshotMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
                     if (isSnapshot != null && isSnapshot) {
                         // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
                         final Frame snapshotFrame = frame.clone();
-                        ActionController.executor.execute(() -> {
+                        CacheUtil.executor.execute(() -> {
                             takeSnapshot(snapshotFrame);
                         });
-                        ActionController.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+                        CacheUtil.deviceSnapshotMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                     }
 
                     // 如果超过时间最大值则进行重新记录录像
@@ -302,7 +302,7 @@ public class RtspRecorder {
                 // 更新原有的录像文件信息
                 this.saveRecordFileInfo(recordVideoInfo);
 
-                ActionController.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+                CacheUtil.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                 e.printStackTrace();
                 // 销毁构造器
                 grabber.stop();
@@ -313,7 +313,7 @@ public class RtspRecorder {
                 break;
             }
         }
-        ActionController.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+        CacheUtil.deviceRecordingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
         // 程序正常结束销毁构造器
         grabber.stop();
         grabber.close();
@@ -367,7 +367,7 @@ public class RtspRecorder {
         JSONObject resultJson = new JSONObject();
         resultJson.put("filePath", snapshotAddress);
         resultJson.put("thumbnailPath", thumbnailAddress);
-        ActionController.snapshotAddressMap.put(Integer.valueOf(cameraPojo.getDeviceId()), resultJson);
+        CacheUtil.snapshotAddressMap.put(Integer.valueOf(cameraPojo.getDeviceId()), resultJson);
     }
 
     /**

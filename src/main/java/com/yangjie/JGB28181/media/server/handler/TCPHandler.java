@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.media.server.TCPServer;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.message.SipLayer;
@@ -83,7 +84,7 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 		this.higherServerIp = higherServerIp;
 		this.higherServerPort = higherServerPort;
 		String deviceProtocolKey = deviceBaseId.toString() + "_tcp";
-		ActionController.deviceHandlerMap.put(deviceProtocolKey, this);
+		CacheUtil.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
 
 	private List<Channel> channels = new ArrayList<>();

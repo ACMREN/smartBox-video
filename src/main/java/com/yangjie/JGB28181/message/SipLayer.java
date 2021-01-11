@@ -32,6 +32,7 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 
 import com.yangjie.JGB28181.common.constants.BaseConstants;
+import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
 import com.yangjie.JGB28181.media.server.Server;
@@ -211,7 +212,7 @@ public class SipLayer implements SipListener{
 			} else if (method.equalsIgnoreCase(Request.INVITE)) {
 				processInvite(evt);
 			} else if (method.equalsIgnoreCase(Request.ACK)) {
-				ActionController.executor.execute(() -> {
+				CacheUtil.executor.execute(() -> {
 					processAck(evt);
 				});
 			}
@@ -809,7 +810,7 @@ public class SipLayer implements SipListener{
 							connectServerInfo.getPort(), connectServerInfo.getPw(), callId, tag, responseParam, nonce, uri, 1);
 				}
 				if (statusCode == Response.OK) {
-					ActionController.executor.execute(() -> {
+					CacheUtil.executor.execute(() -> {
 						// 发送存活数据包
 						while (true) {
 							try {
@@ -856,10 +857,10 @@ public class SipLayer implements SipListener{
 	}
 
 	private void closeServer(String serverKey) {
-		Server server = ActionController.gbServerMap.get(serverKey);
+		Server server = CacheUtil.gbServerMap.get(serverKey);
 		if (null != server) {
 			if (null != server.getToHigherServer() && server.getToHigherServer() == 1) {
-				ChannelInboundHandlerAdapter adapter = ActionController.deviceHandlerMap.get(serverKey);
+				ChannelInboundHandlerAdapter adapter = CacheUtil.deviceHandlerMap.get(serverKey);
 				if (serverKey.contains("tcp")) {
 					TCPHandler handler = (TCPHandler) adapter;
 					handler.setToPushStream(0);
@@ -868,7 +869,7 @@ public class SipLayer implements SipListener{
 					handler.setToPushStream(0);
 				}
 			} else {
-				ActionController.gbServerMap.remove(serverKey);
+				CacheUtil.gbServerMap.remove(serverKey);
 			}
 		}
 	}
@@ -876,7 +877,7 @@ public class SipLayer implements SipListener{
 	public void sendBye(String callId) throws SipException{
 		PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.removeByCallId(callId);
 		Integer deviceBaseId = null;
-		for (Map.Entry<Integer, JSONObject> entry : ActionController.baseDeviceIdCallIdMap.entrySet()) {
+		for (Map.Entry<Integer, JSONObject> entry : CacheUtil.baseDeviceIdCallIdMap.entrySet()) {
 			JSONObject typeStreamJson = entry.getValue();
 			String rtmpCallId = typeStreamJson.getJSONObject("rtmp")==null? "" : typeStreamJson.getJSONObject("rtmp").getString("callId");
 			String hlsCallId = typeStreamJson.getJSONObject("hls")==null? "" : typeStreamJson.getJSONObject("hls").getString("callId");

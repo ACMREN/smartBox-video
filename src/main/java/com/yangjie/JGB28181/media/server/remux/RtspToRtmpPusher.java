@@ -163,7 +163,7 @@ public class RtspToRtmpPusher {
         try {
             rtspSocket.connect(new InetSocketAddress(cameraPojo.getIp(), 554), 1000);
         } catch (IOException e) {
-            ActionController.failCidList.add(cameraPojo.getCid());
+            CacheUtil.failCidList.add(cameraPojo.getCid());
             grabber.stop();
             grabber.close();
             rtspSocket.close();
@@ -302,7 +302,7 @@ public class RtspToRtmpPusher {
         cameraControlService = (CameraControlServiceImpl) applicationContext.getBean("cameraControlServiceImpl");
         webSocketServer = (WebSocketServer) applicationContext.getBean("webSocketServer");
 
-        ActionController.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), true);
+        CacheUtil.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), true);
 
         // 获取PTZ云台的位置坐标
 //        ActionController.executor.execute(() -> {
@@ -340,7 +340,7 @@ public class RtspToRtmpPusher {
                 }
                 TimerUtil.heartbeatsMap.put(token, heartbeats);
             } catch (InterruptedException e) {
-                ActionController.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+                CacheUtil.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                 e.printStackTrace();
                 // 销毁构造器
                 grabber.stop();
@@ -351,7 +351,7 @@ public class RtspToRtmpPusher {
                 break;
             }
         }
-        ActionController.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
+        CacheUtil.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
         // 程序正常结束销毁构造器
         grabber.stop();
         grabber.close();

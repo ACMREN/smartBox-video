@@ -31,7 +31,7 @@ public class FileUtils {
         if (!isSnapshot) {
             return;
         }
-        isSnapshot = ActionController.deviceSnapshotMap.get(deviceBaseId);
+        isSnapshot = CacheUtil.deviceSnapshotMap.get(deviceBaseId);
         waitSnapshot(deviceBaseId, isSnapshot);
     }
 }

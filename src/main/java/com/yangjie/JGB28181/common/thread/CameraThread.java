@@ -61,8 +61,8 @@ public class CameraThread {
                 RtspRecorder recorder;
                 // 如果是推流的话，就创建推流处理器
                 if (cameraPojo.getIsRecord() == 0) {
-                    if (null != ActionController.rtspPusherMap.get(deviceId)) {
-                        push = ActionController.rtspPusherMap.get(deviceId);
+                    if (null != CacheUtil.rtspPusherMap.get(deviceId)) {
+                        push = CacheUtil.rtspPusherMap.get(deviceId);
                     } else {
                         push = new RtspToRtmpPusher(cameraPojo).from();
                     }
@@ -72,8 +72,8 @@ public class CameraThread {
                 }
                 // 如果是录像的话，就创建录像处理器
                 if (cameraPojo.getIsRecord() == 1) {
-                    if (null != ActionController.rtspRecorderMap.get(deviceId)) {
-                        recorder = ActionController.rtspRecorderMap.get(deviceId);
+                    if (null != CacheUtil.rtspRecorderMap.get(deviceId)) {
+                        recorder = CacheUtil.rtspRecorderMap.get(deviceId);
                     } else {
                         recorder = new RtspRecorder(cameraPojo).from();
                     }
@@ -84,12 +84,12 @@ public class CameraThread {
                 // 清除缓存
                 CacheUtil.STREAMMAP.remove(cameraPojo.getToken());
                 CacheUtil.rtspVideoRecordMap.remove(cameraPojo.getToken());
-                ActionController.jobMap.remove(cameraPojo.getToken());
+                CacheUtil.jobMap.remove(cameraPojo.getToken());
             } catch (Exception e) {
                 // 清除缓存
                 CacheUtil.STREAMMAP.remove(cameraPojo.getToken());
                 CacheUtil.rtspVideoRecordMap.remove(cameraPojo.getToken());
-                ActionController.jobMap.remove(cameraPojo.getToken());
+                CacheUtil.jobMap.remove(cameraPojo.getToken());
                 // 重启推流/录像
                 ApplicationContext applicationContext = cameraPojo.getApplicationContext();
                 CameraInfoServiceImpl cameraInfoServiceImpl = (CameraInfoServiceImpl) applicationContext.getBean("cameraInfoServiceImpl");

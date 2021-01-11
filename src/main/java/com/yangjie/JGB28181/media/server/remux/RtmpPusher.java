@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.common.utils.RecordNameUtils;
 import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.entity.SnapshotInfo;
@@ -149,7 +150,7 @@ public class RtmpPusher extends Observer{
 			AVPacket avPacket;
 			Frame frame;
 
-			ActionController.deviceStreamingMap.put(deviceBaseId, true);
+			CacheUtil.deviceStreamingMap.put(deviceBaseId, true);
 			while(mRunning){
 				avPacket=grabber.grabPacket();
 				if (avPacket != null && avPacket.size() >0 && avPacket.data() != null) {
@@ -159,12 +160,12 @@ public class RtmpPusher extends Observer{
 					pts = mPtsQueue.pop();
 					recorder.recordPacket(avPacket, pts, pts);
 				} else if (isTest == 1){
-					ActionController.failCidList.add(cid);
+					CacheUtil.failCidList.add(cid);
 				}
 			}
 
 		}catch(Exception e){
-			ActionController.deviceStreamingMap.put(deviceBaseId, false);
+			CacheUtil.deviceStreamingMap.put(deviceBaseId, false);
 			e.printStackTrace();
 			PushStreamDeviceManager.mainMap.remove(deviceId);
 			log.error("推流发生异常 >>> {} pts== {}" ,e,pts);
@@ -174,7 +175,7 @@ public class RtmpPusher extends Observer{
 			Thread.currentThread().stop();
 		}finally{
 			try{
-				ActionController.deviceStreamingMap.put(deviceBaseId, false);
+				CacheUtil.deviceStreamingMap.put(deviceBaseId, false);
 				if(recorder != null){
 					recorder.stop();
 					recorder.close();
@@ -196,7 +197,7 @@ public class RtmpPusher extends Observer{
 	@Override
 	public void stopRemux() {
 		try	{
-			ActionController.deviceStreamingMap.put(deviceBaseId, false);
+			CacheUtil.deviceStreamingMap.put(deviceBaseId, false);
 			if (null != grabber) {
 				grabber.stop();
 				grabber.close();

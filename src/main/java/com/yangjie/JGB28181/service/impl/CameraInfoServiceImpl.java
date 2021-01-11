@@ -49,10 +49,7 @@ import javax.sip.SipException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -106,6 +103,27 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         return data;
     }
 
+    @Override
+    public GBResult rtspDevicePlay(CameraPojo pojo) {
+        GBResult result = null;
+        // 校验参数
+        if (this.verifyRtspPlayParameters(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(), pojo.getStream())) {
+            CameraPojo cameraPojo = new CameraPojo();
+            cameraPojo.setToHls(pojo.getToHls());
+            // 获取当前时间
+            Set<String> keys = CacheUtil.STREAMMAP.keySet();
+            Set<String> recordKeys = CacheUtil.rtspVideoRecordMap.keySet();
+            // 处理推流/录像的逻辑
+            if (pojo.getIsRecord() == 0) {
+                result = this.handlePushStream(keys, pojo);
+            }
+            if (pojo.getIsRecord() == 1) {
+                result = this.handleRecordStream(recordKeys, pojo);
+            }
+        }
+        return result;
+    }
+
 
     @Override
     public CameraPojo openStream(CameraPojo pojo) {
@@ -130,56 +148,25 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             token = "record_" + sb.toString();
         }
         String url = "";
-        // 历史流
-        if (!StringUtils.isEmpty(pojo.getStartTime())) {
-            if (!StringUtils.isEmpty(pojo.getEndTime())) {
-                rtsp = "rtsp://" + pojo.getUsername() + ":" + pojo.getPassword() + "@" + IP + ":554/Streaming/tracks/" + pojo.getChannel()
-                        + "01?starttime=" + pojo.getStartTime().substring(0, 8) + "t" + pojo.getStartTime().substring(8) + "z'&'endtime="
-                        + pojo.getEndTime().substring(0, 8) + "t" + pojo.getEndTime().substring(8) + "z";
-                cameraPojo.setStartTime(pojo.getStartTime());
-                cameraPojo.setEndTime(pojo.getEndTime());
-            } else {
-                try {
-                    SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-                    String startTime = df.format(df.parse(pojo.getStartTime()).getTime() - 60 * 1000);
-                    String endTime = df.format(df.parse(pojo.getEndTime()).getTime() + 60 * 1000);
-                    rtsp = "rtsp://" + pojo.getUsername() + ":" + pojo.getPassword() + "@" + IP + ":554/Streaming/tracks/" + pojo.getChannel()
-                            + "01?starttime=" + startTime.substring(0, 8) + "t" + startTime.substring(8)
-                            + "z'&'endtime=" + endTime.substring(0, 8) + "t" + endTime.substring(8) + "z";
-                    cameraPojo.setStartTime(startTime);
-                    cameraPojo.setEndTime(endTime);
-                } catch (ParseException e) {
-                    logger.error("时间格式化错误！", e);
-                }
-            }
-            rtmp = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/history/"
+
+        if (pojo.getToHls() == 1) {
+            // 开启清理过期的TS索引文件的定时器
+            StreamUtils.cleanUpTempTsFile(pojo.getDeviceId(), "1", 1);
+        }
+        rtsp = "rtsp://" + pojo.getUsername() + ":" + pojo.getPassword() + "@" + IP + ":554/h264/ch" + pojo.getChannel() + "/" + pojo.getStream()
+                + "/av_stream";
+        rtmp = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/live/" + token;
+        hls = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/hls/" + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1");
+        flv	= BaseConstants.flvBaseUrl + token;
+        if (config.getHost_extra().equals("127.0.0.1")) {
+            hlsUrl = BaseConstants.hlsBaseUrl + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1") + "/index.m3u8";
+            hlsUrl = hlsUrl.replace("127.0.0.1", streamMediaIp);
+            url = rtmp;
+            url = url.replace("127.0.0.1", streamMediaIp);
+            flv = flv.replace("127.0.0.1", streamMediaIp);
+        } else {
+            url = "rtmp://" + IpUtil.IpConvert(config.getHost_extra()) + ":" + config.getPush_port() + "/live/"
                     + token;
-            if (config.getHost_extra().equals("127.0.0.1")) {
-                url = rtmp;
-            } else {
-                url = "rtmp://" + IpUtil.IpConvert(config.getHost_extra()) + ":" + config.getPush_port() + "/history/"
-                        + token;
-            }
-        } else {// 直播流
-            if (pojo.getToHls() == 1) {
-                // 开启清理过期的TS索引文件的定时器
-                PushHlsStreamServiceImpl.cleanUpTempTsFile(pojo.getDeviceId(), "1", 1);
-            }
-            rtsp = "rtsp://" + pojo.getUsername() + ":" + pojo.getPassword() + "@" + IP + ":554/h264/ch" + pojo.getChannel() + "/" + pojo.getStream()
-                    + "/av_stream";
-            rtmp = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/live/" + token;
-            hls = "rtmp://" + IpUtil.IpConvert(config.getPush_host()) + ":" + config.getPush_port() + "/hls/" + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1");
-            flv	= BaseConstants.flvBaseUrl + token;
-            if (config.getHost_extra().equals("127.0.0.1")) {
-                hlsUrl = BaseConstants.hlsBaseUrl + StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1") + "/index.m3u8";
-                hlsUrl = hlsUrl.replace("127.0.0.1", streamMediaIp);
-                url = rtmp;
-                url = url.replace("127.0.0.1", streamMediaIp);
-                flv = flv.replace("127.0.0.1", streamMediaIp);
-            } else {
-                url = "rtmp://" + IpUtil.IpConvert(config.getHost_extra()) + ":" + config.getPush_port() + "/live/"
-                        + token;
-            }
         }
 
         String recordDir = RecordNameUtils.recordVideoFileAddress(StreamNameUtils.rtspPlay(pojo.getDeviceId(), "1"));
@@ -209,7 +196,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         // 执行任务
         CameraThread.MyRunnable job = new CameraThread.MyRunnable(cameraPojo);
         CameraThread.MyRunnable.es.execute(job);
-        ActionController.jobMap.put(token, job);
+        CacheUtil.jobMap.put(token, job);
         if (cameraPojo.getIsRecord() == 0) {
             Long expiredMs = Long.valueOf(DeviceManagerController.cameraConfigBo.getStreamInterval());
             Integer expiredTime = Math.toIntExact(expiredMs / 1000);
@@ -218,6 +205,143 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         }
 
         return cameraPojo;
+    }
+
+    @Override
+    public GBResult gbPlay(String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv,
+                               Integer toHls) {
+        JSONObject dataJson = DeviceUtils.getLiveCamInfoVoByMatchIp(cameraIp);
+        String deviceStr = null;
+        String pushStreamDeviceId = null;
+        if (null != dataJson) {
+            deviceStr = dataJson.getString("deviceStr");
+            pushStreamDeviceId = dataJson.getString("pushStreamDeviceId");
+        }
+        // 如果redis上获取设备的信息成功，则进行推流
+        if (!StringUtils.isEmpty(deviceStr)) {
+            Device device = JSONObject.parseObject(deviceStr, Device.class);
+            Map<String, DeviceChannel> channelMap = device.getChannelMap();
+            String channelId = null;
+            for (String key : channelMap.keySet()) {
+                DeviceChannel deviceChannel = channelMap.get(key);
+                if (null != deviceChannel) {
+                    channelId = key;
+                }
+            }
+            return this.gbDevicePlay(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, 0, toFlv, 1, 0, null, null));
+        }
+        return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
+    }
+
+    /**
+     * 处理录像的流
+     * @param recordKeys
+     * @param pojo
+     * @return
+     */
+    private GBResult handleRecordStream(Set<String> recordKeys, CameraPojo pojo) {
+        Boolean exist = false;
+        GBResult result = null;
+        for (String key : recordKeys) {
+            if (pojo.getDeviceId().equals(CacheUtil.rtspVideoRecordMap.get(key).getDeviceId())) {
+                exist = true;
+            }
+        }
+        if (exist) {
+            result = GBResult.build(201, "已经正在录像，请勿重复请求", null);
+        } else {
+            CameraPojo cameraPojo = this.openStream(pojo);
+            String url = cameraPojo.getRecordDir();
+            result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
+            logger.info("打开：" + cameraPojo.getRtsp());
+        }
+
+        return result;
+    }
+
+    /**
+     * 处理rtsp的推流逻辑
+     * @param keys
+     * @param pojo
+     * @return
+     */
+    private GBResult handlePushStream(Set<String> keys, CameraPojo pojo) {
+        Boolean exist = false;
+        GBResult result = null;
+        CameraPojo cameraPojo = null;
+        for (String key : keys) {
+            // 如果已经存在直播流，则直接返回
+            if (pojo.getDeviceId().equals(CacheUtil.STREAMMAP.get(key).getDeviceId())) {
+                cameraPojo = CacheUtil.STREAMMAP.get(key);
+                exist = true;
+            }
+        }
+        if (exist) {
+            String url = this.getRtspPlayUrl(pojo.getToHls(), pojo.getIsRecord(), pojo.getToFlv(), cameraPojo);
+            result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
+            logger.info("打开：" + cameraPojo.getRtsp());
+        } else {
+            result = this.startOpenStream(pojo);
+        }
+
+        return result;
+    }
+
+    /**
+     * 开始进行推流/录像
+     * @param pojo
+     * @return
+     */
+    private GBResult startOpenStream(CameraPojo pojo) {
+        GBResult result = null;
+        CameraPojo cameraPojo = this.openStream(pojo);
+        String url = this.getRtspPlayUrl(pojo.getToHls(), pojo.getIsRecord(), pojo.getToFlv(), cameraPojo);
+        result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
+        logger.info("打开：" + cameraPojo.getRtsp());
+
+        return result;
+    }
+
+    private String getRtspPlayUrl(Integer toHls, Integer isRecord, Integer toFlv, CameraPojo cameraPojo) {
+        String url = null;
+        if (toHls == 1) {
+            url = cameraPojo.getHlsUrl();
+        }
+        if (isRecord == 1) {
+            url = cameraPojo.getRecordDir();
+        }
+        if (toFlv == 1) {
+            url = cameraPojo.getFlv();
+        }
+        return url;
+    }
+
+    /**
+     * 验证rtsp连接播放视频的参数
+     * @param ip
+     * @param username
+     * @param password
+     * @param channel
+     * @param stream
+     * @return
+     */
+    private Boolean verifyRtspPlayParameters(String ip, String username, String password, String channel, String stream) {
+        if (StringUtils.isEmpty(ip)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(username)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(password)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(channel)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(stream)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -248,7 +372,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             // 2. 生成创建服务器的必要参数
             String streamName = StreamNameUtils.play(deviceId, channelId);
             PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.get(streamName);
-            RecordStreamDevice recordStreamDevice = ActionController.deviceRecordMap.get(id);
+            RecordStreamDevice recordStreamDevice = CacheUtil.deviceRecordMap.get(id);
             boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
             JSONObject serverParameters = this.createServerParameters(streamName, toHls, isRecord, isTcp);
             String callId = serverParameters.getString("callId");
@@ -262,6 +386,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             if (channelMap == null || !channelMap.containsKey(channelId)) {
                 return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
             }
+
             // 4. 判断是否存在推流/录像
             result = this.judgePushStreamRecordExist(pushStreamDevice, recordStreamDevice, isRecord, toPushStream, toHigherServer,
                     higherServerIp, higherServerPort, isTcp, deviceIdProtocolKey, toFlv);
@@ -270,16 +395,17 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                 return result;
             }
 
-            // 3.下发指令
+            // 5. 如果是udp协议，先开启udp服务器
             if (!isTcp) {
                 result = this.createPushStream(id, deviceId, channelId, port, streamName,
                         ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, toPushStream, higherServerIp, higherServerPort, null);
             }
 
+            // 6. 下发invite指令
             mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, channelId, port, ssrc, isTcp);
 
             if (toPushStream == 1) {
-                // 4.等待指令响应
+                // 7. 等待指令响应
                 SyncFuture<?> receive = mMessageManager.receive(callId);
                 Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
                 if (!isTcp) {
@@ -288,18 +414,16 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                     pushStreamDevice.setDialog(response1);
                 }
 
-                //4.1响应成功，创建推流session
+                // 8. 如果tcp协议请求并且指令得到响应，则开启tcp服务器
                 if (isTcp && response != null) {
                     result = this.createPushStream(id, deviceId, channelId, port, streamName,
                             ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, toPushStream, higherServerIp, higherServerPort, response);
                 } else if (isTcp && null == response) {
-                    //3.2响应失败，删除推流session
                     System.out.println("响应失败，删除推流session");
                     mMessageManager.remove(callId);
                     result = GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
                 }
             }
-
         } catch(Exception e){
             e.printStackTrace();
             result = GBResult.build(ResultConstants.SYSTEM_ERROR_CODE, ResultConstants.SYSTEM_ERROR);
@@ -318,8 +442,8 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         if (pushStreamDevice != null && isRecord == 0) {
             // 1.1 如果已经存在推流，要添加推送平台，则直接往handler中添加参数
             if (toHigherServer == 1) {
-                ChannelInboundHandlerAdapter adapter = ActionController.deviceHandlerMap.get(deviceIdProtocolKey);
-                Server server = ActionController.gbServerMap.get(deviceIdProtocolKey);
+                ChannelInboundHandlerAdapter adapter = CacheUtil.deviceHandlerMap.get(deviceIdProtocolKey);
+                Server server = CacheUtil.gbServerMap.get(deviceIdProtocolKey);
                 // 1.1.1 如果级联平台需要的视频流恰好存在对应的服务器在推流，则直接设置属性
                 if (null != adapter) {
                     if (isTcp) {
@@ -398,10 +522,13 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
      * 创建服务器
      */
     private Server createServer(Boolean isTcp, String ssrc, String streamName, Integer id, Integer port, Integer toPushStream,
-                                Integer toHigherServer, String higherServerIp, Integer higherServerPort) throws InterruptedException {
+                                Integer toHigherServer, String higherServerIp, Integer higherServerPort, Integer isRecord) throws InterruptedException {
         String protocol = isTcp? "tcp" : "udp";
         String deviceIdProtocolKey = id.toString() + "_" + protocol;
-        Server server = ActionController.gbServerMap.get(deviceIdProtocolKey);
+        if (isRecord == 1) {
+            deviceIdProtocolKey += "_record";
+        }
+        Server server = CacheUtil.gbServerMap.get(deviceIdProtocolKey);
         if (null != server) {
             return server;
         }
@@ -409,7 +536,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         server = isTcp ? new TCPServer() : new UDPServer();
         server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName,
                 id, toPushStream, toHigherServer, higherServerIp, higherServerPort);
-        ActionController.gbServerMap.put(deviceIdProtocolKey, server);
+        CacheUtil.gbServerMap.put(deviceIdProtocolKey, server);
         Thread.sleep(1000);
 
         return server;
@@ -448,11 +575,11 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             ((RtmpRecorder) observer).setDeviceId(streamName);
             recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
                     observer, recordAddress);
-            ActionController.deviceRecordMap.put(id, recordStreamDevice);
+            CacheUtil.deviceRecordMap.put(id, recordStreamDevice);
         }
         server.subscribe(observer);
         observer.startRemux(isTest, cid, toHls, id, streamName, applicationContext);
-        ActionController.gbPushObserver.put(callId, observer);
+        CacheUtil.gbPushObserver.put(callId, observer);
 
         observer.setOnProcessListener(this);
 
@@ -478,13 +605,13 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             RedisUtil.set(callId, expiredTime, "keepStreaming");
             // 如果推流的id不为空且已经注册到数据库中，则保存在推流设备map中
             if (null != id && deviceManagerService.judgeCameraIsRegistered(id)) {
-                ActionController.streamingDeviceMap.put(id, pushStreamDevice);
+                CacheUtil.streamingDeviceMap.put(id, pushStreamDevice);
             }
 
-            String mediaIp = PushHlsStreamServiceImpl.getStreamMediaIp();
+            String mediaIp = StreamUtils.getStreamMediaIp();
             if (toHls == 1) {
                 // 开启清理过期的TS索引文件的定时器
-                PushHlsStreamServiceImpl.cleanUpTempTsFile(deviceId, channelId, 0);
+                StreamUtils.cleanUpTempTsFile(deviceId, channelId, 0);
 
                 String pushHlsStreamAddress = BaseConstants.hlsBaseUrl.replace("127.0.0.1", mediaIp);
                 String hlsPlayFile = pushHlsStreamAddress + streamName + "/index.m3u8";
@@ -513,7 +640,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         GBResult result = GBResult.ok();
 
         // 1. 创建服务器
-        Server server = this.createServer(isTcp, ssrc, streamName, id, port, toPushStream, toHigherServer, higherServerIp, higherServerPort);
+        Server server = this.createServer(isTcp, ssrc, streamName, id, port, toPushStream, toHigherServer, higherServerIp, higherServerPort, isRecord);
 
         if (toPushStream == 1) {
             // 2. 创建推流容器并进行推流/录像

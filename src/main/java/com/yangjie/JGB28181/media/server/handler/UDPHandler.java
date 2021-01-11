@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -84,7 +85,7 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 		this.higherServerIp = higherServerIp;
 		this.higherServerPort = higherServerPort;
 		String deviceProtocolKey = deviceBaseId.toString() + "_udp";
-		ActionController.deviceHandlerMap.put(deviceProtocolKey, this);
+		CacheUtil.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
 
 	@Override

@@ -85,4 +85,12 @@ public interface IDeviceManagerService {
      * @return
      */
     boolean judgeCameraIsRegistered(Integer id);
+
+    /**
+     * 验证设备信息
+     * @param specification
+     * @param cameraInfo
+     * @return
+     */
+    GBResult verifyDeviceInfo(String specification, CameraInfo cameraInfo);
 }

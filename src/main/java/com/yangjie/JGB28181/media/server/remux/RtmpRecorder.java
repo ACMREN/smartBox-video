@@ -2,6 +2,7 @@ package com.yangjie.JGB28181.media.server.remux;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.bean.Device;
+import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.common.utils.RecordNameUtils;
 import com.yangjie.JGB28181.common.utils.StreamNameUtils;
 import com.yangjie.JGB28181.entity.RecordVideoInfo;
@@ -156,19 +157,19 @@ public class RtmpRecorder extends Observer {
             Frame frame;
 
             file = new File(address);
-            ActionController.deviceRecordingMap.put(deviceBaseId, true);
+            CacheUtil.deviceRecordingMap.put(deviceBaseId, true);
             while(mRunning){
                 frame = grabber.grab();
                 if (frame != null) {
                     // 判断是否需要截图
-                    Boolean isSnapshot = ActionController.deviceSnapshotMap.get(deviceBaseId);
+                    Boolean isSnapshot = CacheUtil.deviceSnapshotMap.get(deviceBaseId);
                     if (isSnapshot != null && isSnapshot) {
                         // 如果是正在截图，那么就把帧数据复制一份，并写入到磁盘和数据库
                         final Frame snapshotFrame = frame.clone();
-                        ActionController.executor.execute(() -> {
+                        CacheUtil.executor.execute(() -> {
                             takeSnapshot(snapshotFrame);
                         });
-                        ActionController.deviceSnapshotMap.put(deviceBaseId, false);
+                        CacheUtil.deviceSnapshotMap.put(deviceBaseId, false);
                     }
 
                     // 如果超过时间最大值则进行重新记录录像
@@ -181,13 +182,13 @@ public class RtmpRecorder extends Observer {
                     }
                     recorder.record(frame);
                 } else if (isTest == 1){
-                    ActionController.failCidList.add(cid);
+                    CacheUtil.failCidList.add(cid);
                 }
             }
 
         }catch(Exception e){
             e.printStackTrace();
-            ActionController.deviceRecordingMap.put(deviceBaseId, false);
+            CacheUtil.deviceRecordingMap.put(deviceBaseId, false);
             PushStreamDeviceManager.mainMap.remove(deviceId);
             log.error("推流发生异常 >>> {} pts== {}" ,e,pts);
             if(onProcessListener != null){
@@ -196,7 +197,7 @@ public class RtmpRecorder extends Observer {
             Thread.currentThread().stop();
         }finally{
             try{
-                ActionController.deviceRecordingMap.put(deviceBaseId, false);
+                CacheUtil.deviceRecordingMap.put(deviceBaseId, false);
                 if(recorder != null){
                     recorder.stop();
                     recorder.close();
@@ -283,7 +284,7 @@ public class RtmpRecorder extends Observer {
         JSONObject resultJson = new JSONObject();
         resultJson.put("filePath", snapshotAddress);
         resultJson.put("thumbnailPath", thumbnailAddress);
-        ActionController.snapshotAddressMap.put(deviceBaseId, resultJson);
+        CacheUtil.snapshotAddressMap.put(deviceBaseId, resultJson);
     }
 
     /**

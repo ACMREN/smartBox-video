@@ -19,8 +19,6 @@ public class CameraPojo implements Serializable {
 	private String url;// 播放地址
 	private String hlsUrl;// hls播放地址
 	private String flv;	// flv播放地址
-	private String startTime;// 回放开始时间
-	private String endTime;// 回放结束时间
 	private String openTime;// 打开时间
 	private int count = 0;// 使用人数
 	private int isTest;//是否测试
@@ -89,22 +87,6 @@ public class CameraPojo implements Serializable {
 
 	public void setRtmp(String rtmp) {
 		this.rtmp = rtmp;
-	}
-
-	public String getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
-	}
-
-	public String getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
 	}
 
 	public String getOpenTime() {
@@ -189,10 +171,30 @@ public class CameraPojo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CameraPojo [username=" + username + ", password=" + password + ", ip=" + ip + ", channel=" + channel
-				+ ", stream=" + stream + ", rtsp=" + rtsp + ", rtmp=" + rtmp + ", url=" + url + ", startTime="
-				+ startTime + ", endTime=" + endTime + ", openTime=" + openTime + ", count=" + count + ", token="
-				+ token + "]";
+		return "CameraPojo{" +
+				"username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", ip='" + ip + '\'' +
+				", channel='" + channel + '\'' +
+				", stream='" + stream + '\'' +
+				", rtsp='" + rtsp + '\'' +
+				", rtmp='" + rtmp + '\'' +
+				", hls='" + hls + '\'' +
+				", url='" + url + '\'' +
+				", hlsUrl='" + hlsUrl + '\'' +
+				", flv='" + flv + '\'' +
+				", openTime='" + openTime + '\'' +
+				", count=" + count +
+				", isTest=" + isTest +
+				", cid=" + cid +
+				", token='" + token + '\'' +
+				", toHls=" + toHls +
+				", toFlv=" + toFlv +
+				", deviceId='" + deviceId + '\'' +
+				", isRecord=" + isRecord +
+				", isSwitch=" + isSwitch +
+				", recordDir='" + recordDir + '\'' +
+				", applicationContext=" + applicationContext +
+				'}';
 	}
-
 }

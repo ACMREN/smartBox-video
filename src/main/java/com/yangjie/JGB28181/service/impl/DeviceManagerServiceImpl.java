@@ -6,10 +6,13 @@ import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.constants.DeviceConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.common.utils.DateUtils;
+import com.yangjie.JGB28181.common.utils.DeviceUtils;
 import com.yangjie.JGB28181.common.utils.RedisUtil;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
+import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.enumEntity.*;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
@@ -29,11 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -208,7 +211,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
     public List<LiveCamInfoVo> getLiveCamDetailInfo(List<LiveCamInfoVo> liveCamInfoVos) {
         if (!CollectionUtils.isEmpty(liveCamInfoVos)) {
             for (LiveCamInfoVo item : liveCamInfoVos) {
-                if(ActionController.streamingDeviceMap.containsKey(item.getDeviceId())) {
+                if(CacheUtil.streamingDeviceMap.containsKey(item.getDeviceId())) {
                     item.setStreaming(1);
                 }
                 item.setRecording(0);
@@ -249,8 +252,8 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
                 Integer deviceId = item1.getDeviceId();
                 Integer deviceBaseId = item1.getBaseDeviceId();
                 // 判断设备是否在推流/录像
-                Boolean recording = ActionController.deviceRecordingMap.get(deviceBaseId);
-                Boolean streaming = ActionController.deviceStreamingMap.get(deviceBaseId);
+                Boolean recording = CacheUtil.deviceRecordingMap.get(deviceBaseId);
+                Boolean streaming = CacheUtil.deviceStreamingMap.get(deviceBaseId);
                 item1.setRecording(recording == null? 0 : recording? 1 : 0);
                 item1.setStreaming(streaming == null? 0 : streaming? 1 : 0);
                 if (camId.intValue() == deviceId.intValue()) {
@@ -543,5 +546,22 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public GBResult verifyDeviceInfo(String specification, CameraInfo cameraInfo) {
+        // 1. 验证设备是否具有具体型号
+        if (StringUtils.isEmpty(specification)) {
+            return GBResult.build(500, "设备无法进行操作，原因：设备没有具体型号", null);
+        }
+        // 2. 验证设备是否通过rtsp方式进行注册
+        if (LinkTypeEnum.RTSP.getCode() != cameraInfo.getLinkType().intValue()) {
+            return GBResult.build(500, "设备无法进行操作，原因：设备没有设置rtsp链接", null);
+        }
+        // 3. 获取rtsp链接并转成对象
+        String rtspLink = cameraInfo.getRtspLink();
+        CameraPojo rtspPojo = DeviceUtils.parseRtspLinkToCameraPojo(rtspLink);
+
+        return GBResult.ok(rtspPojo);
     }
 }
