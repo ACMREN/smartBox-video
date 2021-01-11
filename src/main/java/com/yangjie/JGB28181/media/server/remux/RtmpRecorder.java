@@ -145,6 +145,7 @@ public class RtmpRecorder extends Observer {
             }
             avutil.av_log_set_level(avutil.AV_LOG_ERROR);
             grabber.start();
+            log.info("拉流器开启成功");
 
             recorder = new CustomFFmpegFrameRecorder(address,1280,720,0);
 

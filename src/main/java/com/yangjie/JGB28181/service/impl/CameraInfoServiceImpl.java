@@ -571,6 +571,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             ActionController.mPushStreamDeviceManager.put(streamName, callId, Integer.valueOf(ssrc), pushStreamDevice);
         } else {
             String recordAddress = RecordNameUtils.recordVideoFileAddress(streamName);
+            logger.info("录像文件地址: " +  recordAddress);
             observer = new RtmpRecorder(recordAddress, callId);
             ((RtmpRecorder) observer).setDeviceId(streamName);
             recordStreamDevice = new RecordStreamDevice(deviceId, Integer.valueOf(ssrc), callId, streamName, port, isTcp, server,
