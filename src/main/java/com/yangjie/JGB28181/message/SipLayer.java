@@ -275,12 +275,12 @@ public class SipLayer implements SipListener{
 		if (CacheUtil.gbServerMap.get(deviceTcpKey) != null) {
 			Server server = CacheUtil.gbServerMap.get(deviceTcpKey);
 			GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceTcpKey);
-			this.stopPushStreamToHigherServer(server, handler, higherCallId);
+			this.stopPushStreamToHigherServer(server, handler, higherCallId, deviceTcpKey);
 		}
 		if (CacheUtil.gbServerMap.get(deviceUdpKey) != null) {
 			Server server = CacheUtil.gbServerMap.get(deviceUdpKey);
 			GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceUdpKey);
-			this.stopPushStreamToHigherServer(server, handler, higherCallId);
+			this.stopPushStreamToHigherServer(server, handler, higherCallId, deviceUdpKey);
 		}
 
 		// 3. 通知上级平台关闭推送通道
@@ -291,7 +291,8 @@ public class SipLayer implements SipListener{
 		serverTransaction.sendResponse(response);
 	}
 
-	private void stopPushStreamToHigherServer(Server server, GBStreamHandler handler, String higherCallId) throws SipException {
+	private void stopPushStreamToHigherServer(Server server, GBStreamHandler handler, String higherCallId,
+											  String deviceProtocolKey) throws SipException {
 		Integer toPushStream = server.getToPushStream();
 		if (null != toPushStream && toPushStream == 1) {
 			if ((handler.callIdChannelMap.size() - 1) != 0) {
@@ -302,6 +303,7 @@ public class SipLayer implements SipListener{
 				handler.disconnectRemoteAddress(higherCallId);
 			} else {
 				Dialog response = server.getResponse();
+				CacheUtil.gbServerMap.remove(deviceProtocolKey);
 				Request byeRequest = response.createRequest(Request.BYE);
 				ClientTransaction clientTransaction = (isTCP(byeRequest) ? mTCPSipProvider:mUDPSipProvider).getNewClientTransaction(byeRequest);
 				response.sendRequest(clientTransaction);
