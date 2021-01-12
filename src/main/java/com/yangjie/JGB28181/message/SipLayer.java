@@ -272,12 +272,14 @@ public class SipLayer implements SipListener{
 		Integer deviceBaseId = cameraInfo.getDeviceBaseId();
 		String deviceTcpKey = deviceBaseId.toString() + "_tcp";
 		String deviceUdpKey = deviceBaseId.toString() + "_udp";
-		Server server = CacheUtil.gbServerMap.get(deviceTcpKey);
-		GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceTcpKey);
 		if (CacheUtil.gbServerMap.get(deviceTcpKey) != null) {
+			Server server = CacheUtil.gbServerMap.get(deviceTcpKey);
+			GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceTcpKey);
 			this.stopPushStreamToHigherServer(server, handler, higherCallId);
 		}
 		if (CacheUtil.gbServerMap.get(deviceUdpKey) != null) {
+			Server server = CacheUtil.gbServerMap.get(deviceUdpKey);
+			GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceUdpKey);
 			this.stopPushStreamToHigherServer(server, handler, higherCallId);
 		}
 
