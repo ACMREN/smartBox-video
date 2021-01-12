@@ -1,6 +1,7 @@
 package com.yangjie.JGB28181.media.server.handler;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 	private Integer deviceBaseId;
 
-	private List<Channel> channels;
+	private List<Channel> channels = new ArrayList<>();
 
 	private Bootstrap b = null;
 

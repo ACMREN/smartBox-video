@@ -31,8 +31,10 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
-import com.yangjie.JGB28181.common.utils.CacheUtil;
+import com.yangjie.JGB28181.common.utils.*;
+import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
 import com.yangjie.JGB28181.media.server.Server;
@@ -59,9 +61,6 @@ import com.yangjie.JGB28181.bean.DeviceChannel;
 import com.yangjie.JGB28181.bean.Host;
 import com.yangjie.JGB28181.bean.PushStreamDevice;
 import com.yangjie.JGB28181.common.constants.DeviceConstants;
-import com.yangjie.JGB28181.common.utils.IDUtils;
-import com.yangjie.JGB28181.common.utils.PortUtils;
-import com.yangjie.JGB28181.common.utils.RedisUtil;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.message.helper.DigestServerAuthenticationHelper;
 import com.yangjie.JGB28181.message.helper.SipContentHelper;
@@ -231,8 +230,12 @@ public class SipLayer implements SipListener{
 			String ip = inviteJson.getString("ip");
 			Integer port = inviteJson.getInteger("port");
 			String protocol = inviteJson.getString("protocol");
+
+			CameraInfo cameraInfo = cameraInfoService.getBaseMapper().selectOne(new QueryWrapper<CameraInfo>().eq("device_serial_num", deviceId));
+			Integer deviceBaseId = cameraInfo.getDeviceBaseId();
+
 			try {
-				cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(80, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 0, 1, ip, port));
+				cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(deviceBaseId, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 0, 1, ip, port));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -252,10 +255,26 @@ public class SipLayer implements SipListener{
 		ServerTransaction serverTransaction = evt.getServerTransaction();
 		Dialog dialog = serverTransaction != null ? serverTransaction.getDialog() : null;
 
+		// 1. 根据设备id进行通道关闭
 		Request request = evt.getRequest();
-		CallIdHeader callIdHeader = (CallIdHeader) request.getHeader(CallIdHeader.NAME);
-		close(mPushStreamDeviceManager.removeByCallId(callIdHeader.getCallId()));
-		
+		ToHeader toHeader = (ToHeader) request.getHeader(ToHeader.NAME);
+		Address address = toHeader.getAddress();
+		String uriStr = address.getURI().toString();
+		String deviceId = uriStr.split(":")[1].split("@")[0];
+		String streamName = StreamNameUtils.play(deviceId, deviceId);
+		PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.remove(streamName);
+		close(pushStreamDevice);
+
+		// 2. 向下级摄像头进行通道关闭信息
+		Dialog dialog1 = pushStreamDevice.getDialog();
+		if(dialog1 != null){
+			Request byeRequest = dialog1.createRequest(Request.BYE);
+			ClientTransaction clientTransaction = (isTCP(byeRequest) ? mTCPSipProvider:mUDPSipProvider).getNewClientTransaction(byeRequest);
+			dialog1.sendRequest(clientTransaction);
+			logger.info("sendRequest >>> {}",byeRequest);
+		}
+
+		// 3. 向上级通知已经关闭推送信息
 		if(serverTransaction == null || dialog == null){
 			serverTransaction = (isTCP(request)?mTCPSipProvider:mUDPSipProvider).getNewServerTransaction(request);
 		}

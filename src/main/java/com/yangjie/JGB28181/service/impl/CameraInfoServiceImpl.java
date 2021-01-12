@@ -404,25 +404,23 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             // 6. 下发invite指令
             mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, channelId, port, ssrc, isTcp);
 
-            if (toPushStream == 1) {
-                // 7. 等待指令响应
-                SyncFuture<?> receive = mMessageManager.receive(callId);
-                Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
-                if (!isTcp) {
-                    Dialog response1 = (Dialog) receive.get(3, TimeUnit.SECONDS);
-                    pushStreamDevice = mPushStreamDeviceManager.get(streamName);
-                    pushStreamDevice.setDialog(response1);
-                }
+            // 7. 等待指令响应
+            SyncFuture<?> receive = mMessageManager.receive(callId);
+            Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
+            if (!isTcp) {
+                Dialog response1 = (Dialog) receive.get(3, TimeUnit.SECONDS);
+                pushStreamDevice = mPushStreamDeviceManager.get(streamName);
+                pushStreamDevice.setDialog(response1);
+            }
 
-                // 8. 如果tcp协议请求并且指令得到响应，则开启tcp服务器
-                if (isTcp && response != null) {
-                    result = this.createPushStream(id, deviceId, channelId, port, streamName,
-                            ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, toPushStream, higherServerIp, higherServerPort, response);
-                } else if (isTcp && null == response) {
-                    System.out.println("响应失败，删除推流session");
-                    mMessageManager.remove(callId);
-                    result = GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
-                }
+            // 8. 如果tcp协议请求并且指令得到响应，则开启tcp服务器
+            if (isTcp && response != null) {
+                result = this.createPushStream(id, deviceId, channelId, port, streamName,
+                        ssrc, callId, cid, toHls, isTest, isRecord, isTcp, toHigherServer, toPushStream, higherServerIp, higherServerPort, response);
+            } else if (isTcp && null == response) {
+                System.out.println("响应失败，删除推流session");
+                mMessageManager.remove(callId);
+                result = GBResult.build(ResultConstants.COMMAND_NO_RESPONSE_CODE, ResultConstants.COMMAND_NO_RESPONSE);
             }
         } catch(Exception e){
             e.printStackTrace();
