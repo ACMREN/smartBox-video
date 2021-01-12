@@ -293,7 +293,7 @@ public class SipLayer implements SipListener{
 
 	private void stopPushStreamToHigherServer(Server server, GBStreamHandler handler, String higherCallId) throws SipException {
 		Integer toPushStream = server.getToPushStream();
-		if (toPushStream == 1) {
+		if (null != toPushStream && toPushStream == 1) {
 			if (handler.callIdChannelMap.size() != 0) {
 				handler.disconnectRemoteAddress(higherCallId);
 			}
