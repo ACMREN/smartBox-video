@@ -30,7 +30,8 @@ public class UDPServer extends Server{
 	private EventLoopGroup workerGroup = null;
 
 	private void bind(int port,int ssrc,boolean checkSsrc, Integer deviceBaseId, Integer toPushStream,
-					  Integer toHigherServer, String higherServerIp, Integer higherServerPort) throws Exception {
+					  Integer toHigherServer, String higherServerIp, Integer higherServerPort,
+					  String higherCallId) throws Exception {
 		workerGroup= new NioEventLoopGroup();
 		try {
 			bootstrap = new Bootstrap();
@@ -41,7 +42,7 @@ public class UDPServer extends Server{
 				@Override
 				public void initChannel(NioDatagramChannel ch) throws Exception {
 					ch.pipeline().addLast(new UDPHandler(deviceBaseId, ssrc,checkSsrc, toPushStream,
-							toHigherServer, higherServerIp, higherServerPort, UDPServer.this));
+							toHigherServer, higherServerIp, higherServerPort, UDPServer.this, higherCallId));
 				}
 			});
 			this.log.info("UDP服务启动成功port:{}", port);
@@ -55,7 +56,8 @@ public class UDPServer extends Server{
 	}
 	@Override
 	public  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId,
-							 Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort) {
+							 Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort,
+							 String higherCallId) {
 		if (this.isRunning) {
 			throw new IllegalStateException(TAG+ " is already started .");
 		}
@@ -63,7 +65,7 @@ public class UDPServer extends Server{
 
 		new Thread(() -> {
 			try {
-				this.bind(port,ssrc,checkSsrc, deviceBaseId, toPushStream, toHigherServer, higherServerIp, higherServerPort);
+				this.bind(port,ssrc,checkSsrc, deviceBaseId, toPushStream, toHigherServer, higherServerIp, higherServerPort, higherCallId);
 			} catch (Exception e) {
 				this.log.info("{}服务启动出错:{}", TAG,e.getMessage());
 				e.printStackTrace();

@@ -7,6 +7,7 @@ import com.yangjie.JGB28181.bean.RecordStreamDevice;
 import com.yangjie.JGB28181.common.thread.CameraThread;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.media.server.Server;
+import com.yangjie.JGB28181.media.server.handler.GBStreamHandler;
 import com.yangjie.JGB28181.media.server.remux.Observer;
 import com.yangjie.JGB28181.media.server.remux.RtspRecorder;
 import com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher;
@@ -84,6 +85,6 @@ public final class CacheUtil {
 
 	public static Map<Integer, Boolean> deviceRecordingMap = new HashMap<>(20);
 
-	public static Map<String, ChannelInboundHandlerAdapter> deviceHandlerMap = new HashMap<>(20);
+	public static Map<String, GBStreamHandler> deviceHandlerMap = new HashMap<>(20);
 
 }

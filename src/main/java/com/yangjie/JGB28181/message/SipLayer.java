@@ -38,6 +38,9 @@ import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
 import com.yangjie.JGB28181.media.server.Server;
+import com.yangjie.JGB28181.media.server.TCPServer;
+import com.yangjie.JGB28181.media.server.UDPServer;
+import com.yangjie.JGB28181.media.server.handler.GBStreamHandler;
 import com.yangjie.JGB28181.media.server.handler.TCPHandler;
 import com.yangjie.JGB28181.media.server.handler.UDPHandler;
 import com.yangjie.JGB28181.message.session.SyncFuture;
@@ -235,7 +238,7 @@ public class SipLayer implements SipListener{
 			Integer deviceBaseId = cameraInfo.getDeviceBaseId();
 
 			try {
-				cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(deviceBaseId, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 0, 1, ip, port));
+				cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(deviceBaseId, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 0, 1, ip, port, null));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -255,31 +258,54 @@ public class SipLayer implements SipListener{
 		ServerTransaction serverTransaction = evt.getServerTransaction();
 		Dialog dialog = serverTransaction != null ? serverTransaction.getDialog() : null;
 
-		// 1. 根据设备id进行通道关闭
+		// 1. 获取请求头中的关键参数
 		Request request = evt.getRequest();
+		CallIdHeader callIdHeader = (CallIdHeader) request.getHeader(CallIdHeader.NAME);
+		String higherCallId = callIdHeader.getCallId();
 		ToHeader toHeader = (ToHeader) request.getHeader(ToHeader.NAME);
 		Address address = toHeader.getAddress();
 		String uriStr = address.getURI().toString();
 		String deviceId = uriStr.split(":")[1].split("@")[0];
-		String streamName = StreamNameUtils.play(deviceId, deviceId);
-		PushStreamDevice pushStreamDevice = mPushStreamDeviceManager.remove(streamName);
-		close(pushStreamDevice);
 
-		// 2. 向下级摄像头进行通道关闭信息
-		Dialog dialog1 = pushStreamDevice.getDialog();
-		if(dialog1 != null){
-			Request byeRequest = dialog1.createRequest(Request.BYE);
-			ClientTransaction clientTransaction = (isTCP(byeRequest) ? mTCPSipProvider:mUDPSipProvider).getNewClientTransaction(byeRequest);
-			dialog1.sendRequest(clientTransaction);
-			logger.info("sendRequest >>> {}",byeRequest);
+		// 2. 根据参数断开级联平台的推送流
+		CameraInfo cameraInfo = cameraInfoService.getBaseMapper().selectOne(new QueryWrapper<CameraInfo>().eq("device_serial_num", deviceId));
+		Integer deviceBaseId = cameraInfo.getDeviceBaseId();
+		String deviceTcpKey = deviceBaseId.toString() + "_tcp";
+		String deviceUdpKey = deviceBaseId.toString() + "_udp";
+		Server server = CacheUtil.gbServerMap.get(deviceTcpKey);
+		GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceTcpKey);
+		if (CacheUtil.gbServerMap.get(deviceTcpKey) != null) {
+			this.stopPushStreamToHigherServer(server, handler, higherCallId);
+		}
+		if (CacheUtil.gbServerMap.get(deviceUdpKey) != null) {
+			this.stopPushStreamToHigherServer(server, handler, higherCallId);
 		}
 
-		// 3. 向上级通知已经关闭推送信息
+		// 3. 通知上级平台关闭推送通道
 		if(serverTransaction == null || dialog == null){
 			serverTransaction = (isTCP(request)?mTCPSipProvider:mUDPSipProvider).getNewServerTransaction(request);
 		}
 		Response response = mMessageFactory.createResponse(Response.OK,request);
 		serverTransaction.sendResponse(response);
+	}
+
+	private void stopPushStreamToHigherServer(Server server, GBStreamHandler handler, String higherCallId) throws SipException {
+		Integer toPushStream = server.getToPushStream();
+		if (toPushStream == 1) {
+			if (handler.callIdChannelMap.size() != 0) {
+				handler.disconnectRemoteAddress(higherCallId);
+			}
+		} else {
+			if (handler.callIdChannelMap.size() != 0) {
+				handler.disconnectRemoteAddress(higherCallId);
+			} else {
+				Dialog response = server.getResponse();
+				Request byeRequest = response.createRequest(Request.BYE);
+				ClientTransaction clientTransaction = (isTCP(byeRequest) ? mTCPSipProvider:mUDPSipProvider).getNewClientTransaction(byeRequest);
+				response.sendRequest(clientTransaction);
+				logger.info("sendRequest >>> {}",byeRequest);
+			}
+		}
 	}
 
 	private void processMessage(RequestEvent evt) throws Exception{

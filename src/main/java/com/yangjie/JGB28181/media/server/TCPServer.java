@@ -33,7 +33,8 @@ public class TCPServer extends Server implements OnChannelStatusListener{
 	private String callId;
 
 	public void bind(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId,
-					 Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort) throws Exception {
+					 Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort,
+					 String higherCallId) throws Exception {
 		EventLoopGroup group = new NioEventLoopGroup();
 		ServerBootstrap serverBootstrap = new ServerBootstrap();
 		serverBootstrap.group(group)//
@@ -44,7 +45,7 @@ public class TCPServer extends Server implements OnChannelStatusListener{
 				//解决TCP粘包问题
 				ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024*1024,0,2));
 				TCPHandler tcpHandler = new TCPHandler(frameDeque,ssrc,checkSsrc, deviceId, deviceBaseId, toPushStream,
-						toHigherServer, higherServerIp, higherServerPort, TCPServer.this);
+						toHigherServer, higherServerIp, higherServerPort, TCPServer.this, higherCallId);
 				tcpHandler.setOnChannelStatusListener(TCPServer.this);
 				ch.pipeline().addLast(tcpHandler);
 			}
@@ -56,12 +57,14 @@ public class TCPServer extends Server implements OnChannelStatusListener{
 	}
 
 	public  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc, String deviceId,
-							 Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort) {
+							 Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort,
+							  String higherCallId) {
 		this.toHigherServer = toHigherServer;
 		this.toPushStream = toPushStream;
 		new Thread(() -> {
 			try {
-				bind(frameDeque,ssrc,port,checkSsrc, deviceId, deviceBaseId, toPushStream, toHigherServer, higherServerIp, higherServerPort);
+				bind(frameDeque,ssrc,port,checkSsrc, deviceId, deviceBaseId, toPushStream, toHigherServer, higherServerIp, higherServerPort,
+						higherCallId);
 			} catch (Exception e) {
 				this.log.info("{}服务启动出错:{}", TAG,e.getMessage());
 				e.printStackTrace();

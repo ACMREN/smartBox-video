@@ -325,7 +325,7 @@ public class ActionController implements OnProcessListener {
 									 @RequestParam(name = "type")String type) throws Exception {
 		CacheUtil.failCidList = new ArrayList<>();
 		if (!StringUtils.isEmpty(pushStreamDeviceId) && !StringUtils.isEmpty(channelId)) {
-			this.play(new GBDevicePlayCondition(null, pushStreamDeviceId, channelId, "TCP", 1, cid, 0, 0, 0, 0, 1, 0, null, null));
+			this.play(new GBDevicePlayCondition(null, pushStreamDeviceId, channelId, "TCP", 1, cid, 0, 0, 0, 0, 1, 0, null, null, null));
 		} else if (!StringUtils.isEmpty(rtspLink)) {
 			// 把rtsp连接转成pojo
 			CameraPojo cameraPojo = DeviceUtils.parseRtspLinkToCameraPojo(rtspLink);

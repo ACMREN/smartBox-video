@@ -21,6 +21,7 @@ import com.yangjie.JGB28181.media.callback.OnProcessListener;
 import com.yangjie.JGB28181.media.server.Server;
 import com.yangjie.JGB28181.media.server.TCPServer;
 import com.yangjie.JGB28181.media.server.UDPServer;
+import com.yangjie.JGB28181.media.server.handler.GBStreamHandler;
 import com.yangjie.JGB28181.media.server.handler.TCPHandler;
 import com.yangjie.JGB28181.media.server.handler.UDPHandler;
 import com.yangjie.JGB28181.media.server.remux.Observer;
@@ -228,7 +229,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                     channelId = key;
                 }
             }
-            return this.gbDevicePlay(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, 0, toFlv, 1, 0, null, null));
+            return this.gbDevicePlay(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, 0, toFlv, 1, 0, null, null, null));
         }
         return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
     }
@@ -361,6 +362,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         Integer toHigherServer = gbDevicePlayCondition.getToHigherServer();
         String higherServerIp = gbDevicePlayCondition.getHigherServerIp();
         Integer higherServerPort = gbDevicePlayCondition.getHigherServerPort();
+        String higherCallId = gbDevicePlayCondition.getHigherCallId();
         try {
             int pushPort = 1935;
             // 1. 从redis查找设备，如果不存在，返回离线
@@ -375,7 +377,12 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             RecordStreamDevice recordStreamDevice = CacheUtil.deviceRecordMap.get(id);
             boolean isTcp = mediaProtocol.toUpperCase().equals(SipLayer.TCP);
             JSONObject serverParameters = this.createServerParameters(streamName, toHls, isRecord, isTcp);
-            String callId = serverParameters.getString("callId");
+            String callId = null;
+            if (!StringUtils.isEmpty(higherCallId)) {
+                callId = higherCallId;
+            } else {
+                callId = serverParameters.getString("callId");
+            }
             String ssrc = serverParameters.getString("ssrc");
             Integer port = serverParameters.getInteger("port");
             String deviceIdProtocolKey = id + "_" + (isTcp? "tcp" : "udp");
@@ -389,7 +396,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
 
             // 4. 判断是否存在推流/录像
             result = this.judgePushStreamRecordExist(pushStreamDevice, recordStreamDevice, isRecord, toPushStream, toHigherServer,
-                    higherServerIp, higherServerPort, isTcp, deviceIdProtocolKey, toFlv);
+                    higherServerIp, higherServerPort, isTcp, deviceIdProtocolKey, toFlv, null);
             int existCode = result.getCode();
             if (existCode == 201) {
                 return result;
@@ -434,37 +441,19 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
      */
     private GBResult judgePushStreamRecordExist(PushStreamDevice pushStreamDevice, RecordStreamDevice recordStreamDevice,
                                             Integer isRecord, Integer toPushStream, Integer toHigherServer, String higherServerIp,
-                                            Integer higherServerPort, Boolean isTcp, String deviceIdProtocolKey, Integer toFlv) {
+                                            Integer higherServerPort, Boolean isTcp, String deviceIdProtocolKey, Integer toFlv,
+                                                String higherCallId) {
         GBResult result = GBResult.ok();
         // 1. 判断是否存在推流
         if (pushStreamDevice != null && isRecord == 0) {
             // 1.1 如果已经存在推流，要添加推送平台，则直接往handler中添加参数
             if (toHigherServer == 1) {
-                ChannelInboundHandlerAdapter adapter = CacheUtil.deviceHandlerMap.get(deviceIdProtocolKey);
+                GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceIdProtocolKey);
                 Server server = CacheUtil.gbServerMap.get(deviceIdProtocolKey);
-                // 1.1.1 如果级联平台需要的视频流恰好存在对应的服务器在推流，则直接设置属性
-                if (null != adapter) {
-                    if (isTcp) {
-                        server.setToHigherServer(1);
-                        TCPHandler tcpHandler = (TCPHandler) adapter;
-                        if (null == tcpHandler.getToHigherServer() || tcpHandler.getToHigherServer() == 0) {
-                            tcpHandler.setToHigherServer(1);
-                            tcpHandler.setHigherServerIp(higherServerIp);
-                            tcpHandler.setHigherServerPort(higherServerPort);
-                        } else {
-                            tcpHandler.connectNewRemoteAddress(higherServerIp, higherServerPort);
-                        }
-                    } else {
-                        server.setToHigherServer(1);
-                        UDPHandler udpHandler = (UDPHandler) adapter;
-                        if (null == udpHandler.getToHigherServer() || udpHandler.getToHigherServer() == 0) {
-                            udpHandler.setToHigherServer(1);
-                            udpHandler.setHigherServerIp(higherServerIp);
-                            udpHandler.setHigherServerPort(higherServerPort);
-                        } else {
-                            udpHandler.connectNewRemoteAddress(higherServerIp, higherServerPort);
-                        }
-                    }
+                // 设置推送参数
+                if (null != handler) {
+                    server.setToHigherServer(1);
+                    handler.connectNewRemoteAddress(higherServerIp, higherServerPort, higherCallId);
                 }
                 return result = GBResult.ok();
             }
@@ -520,7 +509,8 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
      * 创建服务器
      */
     private Server createServer(Boolean isTcp, String ssrc, String streamName, Integer id, Integer port, Integer toPushStream,
-                                Integer toHigherServer, String higherServerIp, Integer higherServerPort, Integer isRecord) throws InterruptedException {
+                                Integer toHigherServer, String higherServerIp, Integer higherServerPort, Integer isRecord,
+                                String higherCallId) throws InterruptedException {
         String protocol = isTcp? "tcp" : "udp";
         String deviceIdProtocolKey = id.toString() + "_" + protocol;
         if (isRecord == 1) {
@@ -533,7 +523,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
 
         server = isTcp ? new TCPServer() : new UDPServer();
         server.startServer(new ConcurrentLinkedDeque<>(),Integer.valueOf(ssrc),port,false, streamName,
-                id, toPushStream, toHigherServer, higherServerIp, higherServerPort);
+                id, toPushStream, toHigherServer, higherServerIp, higherServerPort, higherCallId);
         CacheUtil.gbServerMap.put(deviceIdProtocolKey, server);
         Thread.sleep(1000);
 
@@ -639,7 +629,9 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
         GBResult result = GBResult.ok();
 
         // 1. 创建服务器
-        Server server = this.createServer(isTcp, ssrc, streamName, id, port, toPushStream, toHigherServer, higherServerIp, higherServerPort, isRecord);
+        Server server = this.createServer(isTcp, ssrc, streamName, id, port, toPushStream, toHigherServer, higherServerIp,
+                higherServerPort, isRecord, callId);
+        server.setResponse(response);
 
         if (toPushStream == 1) {
             // 2. 创建推流容器并进行推流/录像

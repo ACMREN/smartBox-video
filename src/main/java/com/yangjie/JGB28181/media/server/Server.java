@@ -7,16 +7,19 @@ import com.yangjie.JGB28181.media.callback.OnProcessListener;
 import com.yangjie.JGB28181.media.codec.CommonParser;
 import com.yangjie.JGB28181.media.server.remux.Observer;
 
+import javax.sip.Dialog;
+
 public  abstract class Server extends CommonParser implements Observable{
 
 	protected Observer observer;
 	protected Integer toHigherServer;
 	protected Integer toPushStream;
+	protected Dialog response;
 
 
 	public abstract  void startServer(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc,int port,boolean checkSsrc,
 									  String deviceId, Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp,
-									  Integer higherServerPort);
+									  Integer higherServerPort, String higherCallId);
 	public abstract  void stopServer();
 	
 	public OnProcessListener onProcessListener = null;
@@ -59,5 +62,13 @@ public  abstract class Server extends CommonParser implements Observable{
 
 	public void setToPushStream(Integer toPushStream) {
 		this.toPushStream = toPushStream;
+	}
+
+	public Dialog getResponse() {
+		return response;
+	}
+
+	public void setResponse(Dialog response) {
+		this.response = response;
 	}
 }

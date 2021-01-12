@@ -1,23 +1,15 @@
 package com.yangjie.JGB28181.media.server.handler;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.yangjie.JGB28181.common.utils.CacheUtil;
-import com.yangjie.JGB28181.media.server.TCPServer;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
-import com.yangjie.JGB28181.message.SipLayer;
-import com.yangjie.JGB28181.web.controller.ActionController;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +28,7 @@ import org.springframework.util.CollectionUtils;
  * @author yangjie
  * 2020年3月13日
  */
-public class TCPHandler extends ChannelInboundHandlerAdapter{
+public class TCPHandler extends GBStreamHandler<ByteBuf> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -58,23 +50,13 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 
 	private Parser mParser;
 
-	private String higherServerIp;
-
-	private Integer higherServerPort;
-
-	private Integer toHigherServer = 0;
-
-	private Integer toPushStream = 0;
-
-	private Bootstrap b = null;
-
 
 	public void setOnChannelStatusListener(OnChannelStatusListener onChannelStatusListener) {
 		this.onChannelStatusListener = onChannelStatusListener;
 	}
 	public TCPHandler(ConcurrentLinkedDeque<Frame> frameDeque,int ssrc, boolean checkSsrc, String deviceId,
-					  Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort,
-			Parser parser) {
+					  Integer deviceBaseId, Integer toPushStream, Integer toHigherServer, String higherServerIp, Integer higherServerPort, Parser parser,
+					  String higherCallId) {
 		this.mFrameDeque =frameDeque;
 		this.mSsrc = ssrc;
 		this.mParser = parser;
@@ -83,14 +65,14 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 		this.toHigherServer = toHigherServer;
 		this.higherServerIp = higherServerIp;
 		this.higherServerPort = higherServerPort;
+		this.higherCallId = higherCallId;
 		String deviceProtocolKey = deviceBaseId.toString() + "_tcp";
 		CacheUtil.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
 
-	private List<Channel> channels = new ArrayList<>();
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
 		if(mFrameDeque == null){
 			log.error("frame deque can not null");
 			return;
@@ -101,7 +83,7 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 		if (null != toHigherServer && toHigherServer == 1) {
 			ByteBuf byteBuf1 = byteBuf.copy();
 			// 1.1 判断通道是否开启
-			if (CollectionUtils.isEmpty(channels)) {
+			if (CollectionUtils.isEmpty(callIdChannelMap)) {
 				// 1.2 判断线程组是否已经开启
 				if (null == b) {
 					EventLoopGroup group = new NioEventLoopGroup();
@@ -118,10 +100,10 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 				}
 				ChannelFuture future = b.connect().sync();
 				Channel channel = future.channel();
-				channels.add(channel);
+				callIdChannelMap.put(higherCallId, channel);
 			}
 
-			for (Channel item : channels) {
+			for (Channel item : callIdChannelMap.values()) {
 				item.writeAndFlush(byteBuf1);
 			}
 		}
@@ -233,42 +215,5 @@ public class TCPHandler extends ChannelInboundHandlerAdapter{
 			onChannelStatusListener.onDisconnect();
 		}
 		ctx.close();
-	}
-
-	public void setToPushStream(Integer toPushStream) {
-		this.toPushStream = toPushStream;
-	}
-
-	public Integer getToHigherServer() {
-		return toHigherServer;
-	}
-
-	public void setToHigherServer(Integer toHigherServer) {
-		this.toHigherServer = toHigherServer;
-	}
-
-	public void setHigherServerIp(String higherServerIp) {
-		this.higherServerIp = higherServerIp;
-	}
-
-	public void setHigherServerPort(Integer higherServerPort) {
-		this.higherServerPort = higherServerPort;
-	}
-
-	/**
-	 * 注册到新的服务器进行视频流推送
-	 * @param remoteIp
-	 * @param remotePort
-	 */
-	public void connectNewRemoteAddress(String remoteIp, Integer remotePort) {
-		if (null != b) {
-			try {
-				ChannelFuture future = b.connect(new InetSocketAddress(remoteIp, remotePort)).sync();
-				Channel channel = future.channel();
-				channels.add(channel);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }

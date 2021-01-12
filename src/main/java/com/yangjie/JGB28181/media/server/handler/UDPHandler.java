@@ -35,7 +35,7 @@ import org.springframework.util.CollectionUtils;
  * 比如收到第三个I帧，开始解析第一个I帧
  * 缓存长度字段：CACHE_FRAME_LENGTH
  */
-public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
+public class UDPHandler  extends GBStreamHandler<DatagramPacket>  {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -61,22 +61,11 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 
 	private Parser mParser;
 
-	private Integer toHigherServer;
-
-	private Integer toPushStream;
-
-	private String higherServerIp;
-
-	private Integer higherServerPort;
-
 	private Integer deviceBaseId;
 
-	private List<Channel> channels = new ArrayList<>();
-
-	private Bootstrap b = null;
-
 	public UDPHandler(Integer deviceBaseId, int mSsrc,boolean mIsCheckSsrc, Integer toPushStream,
-					  Integer toHigherServer, String higherServerIp, Integer higherServerPort, Parser parser) {
+					  Integer toHigherServer, String higherServerIp, Integer higherServerPort, Parser parser,
+					  String higherCallId) {
 		this.deviceBaseId = deviceBaseId;
 		this.mSsrc = mSsrc;
 		this.mIsCheckSsrc = mIsCheckSsrc;
@@ -85,6 +74,7 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 		this.toHigherServer = toHigherServer;
 		this.higherServerIp = higherServerIp;
 		this.higherServerPort = higherServerPort;
+		this.higherCallId = higherCallId;
 		String deviceProtocolKey = deviceBaseId.toString() + "_udp";
 		CacheUtil.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
@@ -95,7 +85,7 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 		ByteBuf byteBuf =  msg.content();
 		if (toHigherServer == 1) {
 			ByteBuf byteBuf1 = byteBuf.copy();
-			if (CollectionUtils.isEmpty(channels)) {
+			if (CollectionUtils.isEmpty(callIdChannelMap)) {
 				EventLoopGroup group = new NioEventLoopGroup();
 				b = new Bootstrap();
 				b.group(group);
@@ -103,10 +93,10 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 				b.option(ChannelOption.SO_BROADCAST, true);
 				b.handler(new TestClientHandler());
 				Channel channel = b.bind(0).sync().channel();
-				channels.add(channel);
+				callIdChannelMap.put(higherCallId, channel);
 			}
 
-			for (Channel channel : channels) {
+			for (Channel channel : callIdChannelMap.values()) {
 				channel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(higherServerIp, higherServerPort)));
 			}
 		}
@@ -190,43 +180,6 @@ public class UDPHandler  extends SimpleChannelInboundHandler<DatagramPacket>  {
 				log.error("UDPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));
 			}finally {
 				//release(msg);
-			}
-		}
-	}
-
-	public void setToPushStream(Integer toPushStream) {
-		this.toPushStream = toPushStream;
-	}
-
-	public Integer getToHigherServer() {
-		return toHigherServer;
-	}
-
-	public void setToHigherServer(Integer toHigherServer) {
-		this.toHigherServer = toHigherServer;
-	}
-
-	public void setHigherServerIp(String higherServerIp) {
-		this.higherServerIp = higherServerIp;
-	}
-
-	public void setHigherServerPort(Integer higherServerPort) {
-		this.higherServerPort = higherServerPort;
-	}
-
-	/**
-	 * 注册到新的服务器进行视频流推送
-	 * @param remoteIp
-	 * @param remotePort
-	 */
-	public void connectNewRemoteAddress(String remoteIp, Integer remotePort) {
-		if (null != b) {
-			try {
-				ChannelFuture future = b.connect(new InetSocketAddress(remoteIp, remotePort)).sync();
-				Channel channel = future.channel();
-				channels.add(channel);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 	}
