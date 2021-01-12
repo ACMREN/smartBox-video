@@ -414,7 +414,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             // 7. 等待指令响应
             SyncFuture<?> receive = mMessageManager.receive(callId);
             Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
-            if (!isTcp) {
+            if (null != pushStreamDevice && !isTcp) {
                 Dialog response1 = (Dialog) receive.get(3, TimeUnit.SECONDS);
                 pushStreamDevice = mPushStreamDeviceManager.get(streamName);
                 pushStreamDevice.setDialog(response1);
