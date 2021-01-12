@@ -414,10 +414,13 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             // 7. 等待指令响应
             SyncFuture<?> receive = mMessageManager.receive(callId);
             Dialog response = (Dialog) receive.get(3, TimeUnit.SECONDS);
-            if (null != pushStreamDevice && !isTcp) {
-                Dialog response1 = (Dialog) receive.get(3, TimeUnit.SECONDS);
+            if (null != response && !isTcp) {
+                Server server = CacheUtil.gbServerMap.get(deviceIdProtocolKey);
+                server.setResponse(response);
                 pushStreamDevice = mPushStreamDeviceManager.get(streamName);
-                pushStreamDevice.setDialog(response1);
+                if (null != pushStreamDevice) {
+                    pushStreamDevice.setDialog(response);
+                }
             }
 
             // 8. 如果tcp协议请求并且指令得到响应，则开启tcp服务器
