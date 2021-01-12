@@ -394,7 +394,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                 return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
             }
 
-            // 4. 判断是否存在推流/录像
+            // 4. 判断是否存在推流/级联平台推送/录像
             result = this.judgePushStreamRecordExist(pushStreamDevice, recordStreamDevice, isRecord, toPushStream, toHigherServer,
                     higherServerIp, higherServerPort, isTcp, deviceIdProtocolKey, toFlv, null);
             int existCode = result.getCode();
@@ -445,25 +445,25 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                                                 String higherCallId) {
         GBResult result = GBResult.ok();
         // 1. 判断是否存在推流
-        if (pushStreamDevice != null && isRecord == 0) {
-            // 1.1 如果已经存在推流，要添加推送平台，则直接往handler中添加参数
-            if (toHigherServer == 1) {
-                GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceIdProtocolKey);
-                Server server = CacheUtil.gbServerMap.get(deviceIdProtocolKey);
-                // 设置推送参数
-                if (null != handler) {
-                    server.setToHigherServer(1);
-                    handler.connectNewRemoteAddress(higherServerIp, higherServerPort, higherCallId);
-                }
-                return result = GBResult.ok();
-            }
+        if (pushStreamDevice != null && toPushStream == 1) {
             if (toFlv == 0) {
                 result = GBResult.build(201, "已经存在推流，请勿重复请求", new MediaData(pushStreamDevice.getPullRtmpAddress(), pushStreamDevice.getCallId()));
             } else {
                 result = GBResult.build(201, "已经存在推流，请勿重复请求", new MediaData(pushStreamDevice.getPullFlvAddress(), pushStreamDevice.getCallId()));
             }
         }
-        // 2. 判断是否存在录像
+        // 2. 判断是否存在级联平台的推送
+        if (toHigherServer == 1) {
+            GBStreamHandler handler = CacheUtil.deviceHandlerMap.get(deviceIdProtocolKey);
+            Server server = CacheUtil.gbServerMap.get(deviceIdProtocolKey);
+            // 设置推送参数
+            if (null != handler) {
+                server.setToHigherServer(1);
+                handler.connectNewRemoteAddress(higherServerIp, higherServerPort, higherCallId);
+            }
+            return result = GBResult.ok();
+        }
+        // 3. 判断是否存在录像
         if (recordStreamDevice != null && isRecord == 1) {
             result = GBResult.build(201, "已经正在录像，请勿重复请求", null);
         }

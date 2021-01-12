@@ -238,7 +238,7 @@ public class SipLayer implements SipListener{
 			Integer deviceBaseId = cameraInfo.getDeviceBaseId();
 
 			try {
-				cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(deviceBaseId, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 0, 1, ip, port, null));
+				cameraInfoService.gbDevicePlay(new GBDevicePlayCondition(deviceBaseId, deviceId, deviceId, protocol, 0, null, 1, 0, 0, 0, 0, 1, ip, port, callId));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
