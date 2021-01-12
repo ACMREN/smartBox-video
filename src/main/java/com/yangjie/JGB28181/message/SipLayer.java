@@ -304,6 +304,7 @@ public class SipLayer implements SipListener{
 			} else {
 				Dialog response = server.getResponse();
 				CacheUtil.gbServerMap.remove(deviceProtocolKey);
+				server.stopServer();
 				Request byeRequest = response.createRequest(Request.BYE);
 				ClientTransaction clientTransaction = (isTCP(byeRequest) ? mTCPSipProvider:mUDPSipProvider).getNewClientTransaction(byeRequest);
 				response.sendRequest(clientTransaction);
