@@ -520,11 +520,11 @@ public class SipLayer implements SipListener{
 	}
 
 	public void sendInvite(Device device,String sessionName,String callId,String channelId,int port,String ssrc,
-			boolean isTcp) throws Exception{
+			boolean isTcp, String receiverSerialNum, String receiverAddress) throws Exception{
 		String fromTag = IDUtils.id();
 		Host host = device.getHost();
 		String realm = channelId.substring(0,8);
-		Request request = createRequest(channelId,host.getAddress(),host.getWanIp(),host.getWanPort(),device.getProtocol(),
+		Request request = createRequest(receiverAddress,receiverAddress,host.getWanIp(),host.getWanPort(),device.getProtocol(),
 				mSipId,mSipRealm,fromTag,
 				channelId,realm,null,
 				callId,20,Request.INVITE);

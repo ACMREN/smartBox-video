@@ -2,10 +2,7 @@ package com.yangjie.JGB28181.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yangjie.JGB28181.bean.Device;
-import com.yangjie.JGB28181.bean.DeviceChannel;
-import com.yangjie.JGB28181.bean.PushStreamDevice;
-import com.yangjie.JGB28181.bean.RecordStreamDevice;
+import com.yangjie.JGB28181.bean.*;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.constants.ResultConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
@@ -409,7 +406,11 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             }
 
             // 6. 下发invite指令
-            mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, channelId, port, ssrc, isTcp);
+            Host host = device.getHost();
+            String receiverIp = host.getWanIp();
+            Integer receiverPort = host.getWanPort();
+            String receiverAddress = receiverIp + ":" + receiverPort;
+            mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, channelId, port, ssrc, isTcp, deviceId, receiverAddress);
 
             // 7. 等待指令响应
             SyncFuture<?> receive = mMessageManager.receive(callId);

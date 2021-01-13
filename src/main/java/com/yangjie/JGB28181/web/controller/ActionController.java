@@ -364,6 +364,36 @@ public class ActionController implements OnProcessListener {
 	}
 
 	/**
+	 * 测试向下级平台请求国标视频流
+	 * @return
+	 */
+	@PostMapping(value = "testLowDevicePlay")
+	public GBResult testLowDevicePlay(String deviceSerialNum, String channelId) throws Exception {
+		Device device = new Device();
+		Host host = new Host();
+		host.setAddress("172.0.0.85:5060");
+		host.setWanIp("172.0.0.85");
+		host.setWanPort(5060);
+		device.setHost(host);
+		device.setProtocol("UDP");
+
+		String streamName = StreamNameUtils.play(deviceSerialNum, channelId);
+		// 4.2.1 创建推流地址
+		String address = pushRtmpAddress.concat(streamName);
+		// 4.2.2 创建callId
+		String callId = null;
+		callId = IDUtils.id();
+		// 4.2.3 创建ssrc
+		String ssrc = mSipLayer.getSsrc(true);
+		// 4.2.4 创建端口号
+		int port = mSipLayer.getPort(false);
+
+		mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, channelId, port, ssrc, false, "34020000002000000002", "172.0.0.85:15061");
+
+		return GBResult.ok();
+	}
+
+	/**
 	 * 主动搜索onvif摄像头
 	 * @return
 	 */
