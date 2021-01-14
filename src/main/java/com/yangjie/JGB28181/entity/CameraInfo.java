@@ -90,6 +90,8 @@ public class CameraInfo implements Serializable {
         this.linkStatus = LinkStatusEnum.REGISTERED.getCode();
         this.linkType = LinkTypeEnum.getDataByName(cameraInfoVo.getLinkType()).getCode();
         this.netType = NetTypeEnum.getDataByName(cameraInfoVo.getNetType()).getCode();
+        this.deviceSerialNum = cameraInfoVo.getDeviceSerialNum();
+        this.parentSerialNum = cameraInfoVo.getParentSerialNum();
     }
 
     public CameraInfo() {

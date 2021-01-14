@@ -470,6 +470,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
                 ipDeviceIdMap.put(wanIp, cid);
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
+
             data.setParentSerialNum(GBDevice.getParentSerialNum());
             data.setPushStreamDeviceId(GBDevice.getDeviceId());
             data.setChannelId(GBDevice.getChannelId());
