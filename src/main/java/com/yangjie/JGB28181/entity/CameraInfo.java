@@ -47,6 +47,11 @@ public class CameraInfo implements Serializable {
     private String deviceSerialNum;
 
     /**
+     * 父设备编号
+     */
+    private String parentSerialNum;
+
+    /**
      * ip地址
      */
     private String ip;

@@ -216,8 +216,10 @@ public class ActionController implements OnProcessListener {
 		if (null != cameraInfo) {
 			String cameraIp = cameraInfo.getIp();
 			if (LinkTypeEnum.GB28181.getCode() == cameraInfo.getLinkType().intValue()) {
+				String deviceSerialNum = cameraInfo.getDeviceSerialNum();
+				String parentSerialNum = cameraInfo.getParentSerialNum();
 				// 如果摄像头的注册类型是gb28181，那么就用国标的方式进行推流
-				return cameraInfoService.gbPlay(cameraIp, deviceId, 0, 0, toFlv, toHls);
+				return cameraInfoService.gbPlay(parentSerialNum, deviceSerialNum, cameraIp, deviceId, 0, 0, toFlv, toHls);
 			} else if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
 				// 如果摄像头注册方法只是onvif，那么用rtsp的方法进行推流
 				String rtspLink = cameraInfo.getRtspLink();

@@ -183,7 +183,6 @@ public class TCPHandler extends GBStreamHandler<ByteBuf> {
 				log.error("TCPHandler 异常 >>> {}",HexStringUtils.toHexString(copyData));
 			}finally {
 				copyData = null;
-				release(msg);
 			}
 		}
 	}

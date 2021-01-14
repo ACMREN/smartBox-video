@@ -206,9 +206,9 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
     }
 
     @Override
-    public GBResult gbPlay(String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv,
+    public GBResult gbPlay(String parentSerialNum, String deviceSerialNum, String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv,
                                Integer toHls) {
-        JSONObject dataJson = DeviceUtils.getLiveCamInfoVoByMatchIp(cameraIp);
+        JSONObject dataJson = DeviceUtils.getLiveCamInfoVoByMatchIp(cameraIp, deviceSerialNum, parentSerialNum);
         String deviceStr = null;
         String pushStreamDeviceId = null;
         if (null != dataJson) {
@@ -221,12 +221,11 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             Map<String, DeviceChannel> channelMap = device.getChannelMap();
             String channelId = null;
             for (String key : channelMap.keySet()) {
-                DeviceChannel deviceChannel = channelMap.get(key);
-                if (null != deviceChannel) {
+                if (deviceSerialNum.equals(key)) {
                     channelId = key;
                 }
             }
-            return this.gbDevicePlay(new GBDevicePlayCondition(deviceId, pushStreamDeviceId, channelId, "TCP", 0, null, 0, isRecord, 0, toFlv, 1, 0, null, null, null));
+            return this.gbDevicePlay(new GBDevicePlayCondition(deviceId, parentSerialNum, channelId, "TCP", 0, null, 0, isRecord, 0, toFlv, 1, 0, null, null, null));
         }
         return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
     }
