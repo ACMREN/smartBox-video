@@ -412,6 +412,7 @@ public class SipLayer implements SipListener{
 					subDevice.setHost(host);
 					subDevice.setChannelId(itemContent);
 					subDevice.setParentSerialNum(parentSerialNum);
+					subDevice.setDeviceId(channelDeviceId);
 
 					subDeviceList.add(subDevice);
 				}
