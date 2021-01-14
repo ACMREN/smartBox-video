@@ -10,7 +10,7 @@ public class CameraInfoVo extends DeviceBaseInfoVo {
     private Integer cid;
     private Integer deviceBaseId;
     private String rtspLink;
-    private String deviceSerialNum;
+    private String pushStreamDeviceId;
     private String parentSerialNum;
 
     public CameraInfoVo() {
