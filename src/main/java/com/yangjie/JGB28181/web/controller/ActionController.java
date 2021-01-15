@@ -674,7 +674,7 @@ public class ActionController implements OnProcessListener {
 	}
 
 	@PostMapping("PTZAngleControl")
-	public GBResult PTZAngleControl(ControlCondition controlCondition) {
+	public GBResult PTZAngleControl(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();
 		List<Integer> deviceIds = new ArrayList<>();
 		JSONObject ptzPos = controlCondition.getPtzPos();
