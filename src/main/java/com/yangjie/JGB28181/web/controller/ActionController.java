@@ -686,7 +686,6 @@ public class ActionController implements OnProcessListener {
 		Integer parseP = CameraControlServiceImpl.DecToHexMa(p);
 		Integer parseT = CameraControlServiceImpl.DecToHexMa(t);
 		Integer parseZ = CameraControlServiceImpl.DecToHexMa(z);
-		System.out.println("parsing Position p:" + parseP + ", t:" + parseT + ", z:" + parseZ);
 		JSONObject settingJson = new JSONObject();
 		settingJson.put("pPos", parseP);
 		settingJson.put("tPos", parseT);

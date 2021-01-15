@@ -137,6 +137,11 @@ public class CameraControlServiceImpl implements ICameraControlService {
             net_dvr_ptzpos.write();
             System.out.println("=============结束写入位置参数=============");
             System.out.println("=============位置参数：p:" + pPos + ",t:" + tPos + ", z:" + zPos + "=============");
+            Double parseP = HexToDecMa(pPos.shortValue());
+            Double parseT = HexToDecMa(tPos.shortValue());
+            Double parseZ = HexToDecMa(zPos.shortValue());
+            System.out.println("=============转换位置参数：parseP:" + parseP + ",parseT:" + parseT + ", parseZ:" + parseZ + "=============");
+
 
             hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
             return GBResult.ok();
