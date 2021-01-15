@@ -225,7 +225,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
                     channelId = key;
                 }
             }
-            return this.gbDevicePlay(new GBDevicePlayCondition(deviceId, parentSerialNum, channelId, "TCP", 0, null, 0, isRecord, 0, toFlv, 1, 0, null, null, null));
+            return this.gbDevicePlay(new GBDevicePlayCondition(deviceId, parentSerialNum, channelId, "TCP", 0, null, toHls, isRecord, 0, toFlv, 1, 0, null, null, null));
         }
         return GBResult.build(ResultConstants.CHANNEL_NO_EXIST_CODE, ResultConstants.CHANNEL_NO_EXIST);
     }
