@@ -35,6 +35,8 @@ public class ControlCondition {
     private String begin;
     // 结束时间
     private String end;
+    // ptz云台位置设定值
+    private JSONObject ptzPos;
 
 
 

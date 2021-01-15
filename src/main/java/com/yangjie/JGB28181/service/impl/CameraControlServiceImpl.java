@@ -189,4 +189,8 @@ public class CameraControlServiceImpl implements ICameraControlService {
     public static Double HexToDecMa(short pos) {
         return Double.valueOf((pos / 4096) * 1000 + ((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16));
     }
+
+    public static Integer DecToHexMa(Double pos) {
+        return (int) Math.floor(4096 * (pos / 1000) + 256 * (pos % 1000 ) / 100 + 16 * (pos % 100 ) / 10 + pos % 10);
+    }
 }

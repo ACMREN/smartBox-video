@@ -673,6 +673,42 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	@PostMapping("PTZAngleControl")
+	public GBResult PTZAngleControl(ControlCondition controlCondition) {
+		Integer deviceBaseId = controlCondition.getDeviceId();
+		List<Integer> deviceIds = new ArrayList<>();
+		JSONObject ptzPos = controlCondition.getPtzPos();
+		deviceIds.add(deviceBaseId);
+
+		Double p = ptzPos.getDouble("p");
+		Double t = ptzPos.getDouble("t");
+		Double z = ptzPos.getDouble("z");
+		Integer parseP = CameraControlServiceImpl.DecToHexMa(p);
+		Integer parseT = CameraControlServiceImpl.DecToHexMa(t);
+		Integer parseZ = CameraControlServiceImpl.DecToHexMa(z);
+		JSONObject settingJson = new JSONObject();
+		settingJson.put("pPos", parseP);
+		settingJson.put("tPos", parseT);
+		settingJson.put("zPos", parseZ);
+
+		DeviceBaseInfo deviceBaseInfo = deviceManagerService.getDeviceBaseInfoList(deviceIds).get(0);
+		CameraInfo cameraInfo = deviceManagerService.getCameraInfoList(deviceIds).get(0);
+		String specification = deviceBaseInfo.getSpecification();
+		// 1. 验证设备信息
+		GBResult verifyResult = deviceManagerService.verifyDeviceInfo(specification, cameraInfo);
+		int verifyCode = verifyResult.getCode();
+		if (verifyCode != 200) {
+			return verifyResult;
+		}
+		CameraPojo rtspPojo = (CameraPojo) verifyResult.getData();
+
+		// 2. 设置设备的ptz云台位置
+		cameraControlService.setDVRConfig(specification, rtspPojo.getIp(), 8000, rtspPojo.getUsername(),
+				rtspPojo.getPassword(), HCNetSDK.NET_DVR_SET_PTZPOS, settingJson);
+
+		return GBResult.ok();
+	}
+
 	/**
 	 * 按照日期统计录像/截图数量和文件大小
 	 * @param controlCondition
