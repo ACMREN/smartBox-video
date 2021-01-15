@@ -337,7 +337,8 @@ public class SipLayer implements SipListener{
 		//不在线回复400
 		if(MESSAGE_KEEP_ALIVE.equals(cmd)){
 			if(RedisUtil.checkExist(SUB_DEVICE_PREFIX + deviceId)){
-				RedisUtil.expire(SUB_DEVICE_PREFIX + deviceId, expiredTime);
+				String value = RedisUtil.get(SUB_DEVICE_PREFIX + deviceId);
+				RedisUtil.set(SUB_DEVICE_PREFIX + deviceId, value);
 			}else {
 				response = mMessageFactory.createResponse(Response.BAD_REQUEST,request);
 			}
