@@ -318,6 +318,7 @@ public class SipLayer implements SipListener{
 		Request request = evt.getRequest();
 		SAXReader reader = new SAXReader();
 		//reader.setEncoding("GB2312");
+		ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
 		Document xml = reader.read(new ByteArrayInputStream(request.getRawContent()));
 
 		Element rootElement = xml.getRootElement();
@@ -344,6 +345,8 @@ public class SipLayer implements SipListener{
 		
 		//目录响应，保存到redis
 		else if(MESSAGE_CATALOG.equals(cmd) && QNAME_RESPONSE.equals(name)){
+			Element parentSerialNumElement = rootElement.element(ELEMENT_DEVICE_ID);
+			String parentSerialNum = parentSerialNumElement.getText().trim();
 
 			Element deviceListElement = rootElement.element(ELEMENT_DEVICE_LIST);
 			if(deviceListElement == null){
@@ -375,7 +378,9 @@ public class SipLayer implements SipListener{
 					device.setChannelCatalogMap(channelCatalogMap);
 				}
 				//遍历DeviceList
+				List<Device> subDeviceList = new ArrayList<>();
 				while (deviceListIterator.hasNext()) {
+					Device subDevice = new Device();
 					Element itemDevice = deviceListIterator.next();
 
 					Element channelDeviceElement = itemDevice.element(ELEMENT_DEVICE_ID);
@@ -399,7 +404,19 @@ public class SipLayer implements SipListener{
 					channelCatalogMap.put(channelDeviceId, itemContent);
 
 					channelMap.put(channelDeviceId, deviceChannel);
+
+					Host host = new Host();
+					host.setWanPort(viaHeader.getPort());
+					host.setWanIp(viaHeader.getHost());
+					host.setAddress(viaHeader.getHost() + ":" + viaHeader.getPort());
+					subDevice.setHost(host);
+					subDevice.setChannelId(itemContent);
+					subDevice.setParentSerialNum(parentSerialNum);
+					subDevice.setDeviceId(channelDeviceId);
+
+					subDeviceList.add(subDevice);
 				}
+				device.setSubDeviceList(subDeviceList);
 				subDeviceMap.put(deviceId, device);
 
 

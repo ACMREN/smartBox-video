@@ -35,6 +35,16 @@ public class Device {
 	private String deviceType;
 
 	/**
+	 * 父设备的编号
+	 */
+	private String parentSerialNum;
+
+	/**
+	 * 通道id
+	 */
+	private String channelId;
+
+	/**
 	 * 通道列表
 	 */
 	private Map<String,DeviceChannel> channelMap;
@@ -43,6 +53,11 @@ public class Device {
 	 * 通道catalog信息列表
 	 */
 	private Map<String, String> channelCatalogMap;
+
+	/**
+	 * 子设备的列表
+	 */
+	private List<Device> subDeviceList;
 
 
 	public String getDeviceId() {

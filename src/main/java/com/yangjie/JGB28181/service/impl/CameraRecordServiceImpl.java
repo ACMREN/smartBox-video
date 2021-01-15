@@ -40,7 +40,9 @@ public class CameraRecordServiceImpl implements ICameraRecordService {
             CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceId);
             // 国标设备开启录像
             if (cameraInfo.getLinkType().intValue() == LinkTypeEnum.GB28181.getCode()) {
-                result = cameraInfoService.gbPlay(cameraInfo.getIp(), deviceId, 1, 1, 0, 0);
+                String deviceSerialNum = cameraInfo.getDeviceSerialNum();
+                String parentSerialNum = cameraInfo.getParentSerialNum();
+                result = cameraInfoService.gbPlay(parentSerialNum, deviceSerialNum, cameraInfo.getIp(), deviceId, 1, 1, 0, 0);
                 return judgeRecordIsOpen(result, deviceId);
             }
             // rtsp设备开启录像

@@ -26,7 +26,7 @@ public interface CameraInfoService extends IService<CameraInfo> {
 
     CameraPojo openStream(CameraPojo pojo);
 
-    GBResult gbPlay(String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv, Integer toHls);
+    GBResult gbPlay(String parentSerialNum, String deviceSerialNum, String cameraIp, Integer deviceId, Integer isRecord, Integer isSwitch, Integer toFlv, Integer toHls);
 
     GBResult gbDevicePlay(GBDevicePlayCondition gbDevicePlayCondition) throws Exception;
 

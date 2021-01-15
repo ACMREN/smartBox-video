@@ -47,6 +47,11 @@ public class CameraInfo implements Serializable {
     private String deviceSerialNum;
 
     /**
+     * 父设备编号
+     */
+    private String parentSerialNum;
+
+    /**
      * ip地址
      */
     private String ip;
@@ -85,6 +90,8 @@ public class CameraInfo implements Serializable {
         this.linkStatus = LinkStatusEnum.REGISTERED.getCode();
         this.linkType = LinkTypeEnum.getDataByName(cameraInfoVo.getLinkType()).getCode();
         this.netType = NetTypeEnum.getDataByName(cameraInfoVo.getNetType()).getCode();
+        this.deviceSerialNum = cameraInfoVo.getPushStreamDeviceId();
+        this.parentSerialNum = cameraInfoVo.getParentSerialNum();
     }
 
     public CameraInfo() {

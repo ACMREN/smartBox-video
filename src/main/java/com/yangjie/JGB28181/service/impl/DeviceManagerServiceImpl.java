@@ -128,7 +128,10 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             Set<Device> deviceSet = new HashSet<>();
             for (String value : deviceStrMap.values()) {
                 Device device = JSONObject.parseObject(value, Device.class);
-                deviceSet.add(device);
+                if (!CollectionUtils.isEmpty(device.getSubDeviceList())) {
+                    List<Device> subDeviceList = device.getSubDeviceList();
+                    deviceSet.addAll(subDeviceList);
+                }
             }
             return deviceSet;
         }
@@ -493,11 +496,10 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
                 ipDeviceIdMap.put(wanIp, cid);
             }
             LiveCamInfoVo data = new LiveCamInfoVo();
+
+            data.setParentSerialNum(GBDevice.getParentSerialNum());
             data.setPushStreamDeviceId(GBDevice.getDeviceId());
-            for (String channelId : GBDevice.getChannelCatalogMap().keySet()) {
-                data.setChannelId(channelId);
-                break;
-            }
+            data.setChannelId(GBDevice.getChannelId());
             data.setDeviceId(cid);
             data.setIp(wanIp);
             data.setDeviceName("");
