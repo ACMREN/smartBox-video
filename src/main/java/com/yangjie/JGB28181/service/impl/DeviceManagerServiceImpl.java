@@ -55,6 +55,35 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
     private static Map<String, Integer> ipDeviceIdMap = new HashMap<>(20);
 
+    /**
+     * 私有IP：
+     * A类  10.0.0.0-10.255.255.255
+     * B类  172.16.0.0-172.31.255.255
+     * C类  192.168.0.0-192.168.255.255
+     *
+     * 127这个网段是环回地址
+     * localhost
+     */
+    static List<Pattern> ipFilterRegexList = new ArrayList<>();
+
+    static {
+        Set<String> ipFilter = new HashSet<String>();
+        ipFilter.add("^10\\.(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[0-9])"
+                + "\\.(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[0-9])" + "\\.(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[0-9])$");
+        // B类地址范围: 172.16.0.0---172.31.255.255
+        ipFilter.add("^172\\.(1[6789]|2[0-9]|3[01])\\" + ".(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[0-9])\\"
+                + ".(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[0-9])$");
+        // C类地址范围: 192.168.0.0---192.168.255.255
+        ipFilter.add("^192\\.168\\.(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[0-9])\\"
+                + ".(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[0-9])$");
+        ipFilter.add("127.0.0.1");
+        ipFilter.add("0.0.0.0");
+        ipFilter.add("localhost");
+        for (String tmp : ipFilter) {
+            ipFilterRegexList.add(Pattern.compile(tmp));
+        }
+    }
+
     @Override
     public GBResult getLiveCamList() {
         return null;
@@ -275,18 +304,19 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
         logger.info("==============================更新设备开始======================");
 
         // 1. 根据onvif协议搜索内网摄像头
-        Set<String> deviceSet = this.discoverDevice();
+//        Set<String> deviceSet = this.discoverDevice();
+        Set<String> deviceSet = new HashSet<>();
 
         // 2. 在redis中查询国标设备
         Set<Device> GBDeviceSet = this.getAllGBDevice();
 
         // 3. 整理步骤1，2中的数据，去重
-        Set<String> onvifDuplicateSet = new HashSet<>();
-        Set<String> onvifNoDuplicateSet = new HashSet<>();
-        this.removeDuplicateDevice(deviceSet, GBDeviceSet, onvifDuplicateSet, onvifNoDuplicateSet);
+//        Set<String> onvifDuplicateSet = new HashSet<>();
+//        Set<String> onvifNoDuplicateSet = new HashSet<>();
+//        this.removeDuplicateDevice(deviceSet, GBDeviceSet, onvifDuplicateSet, onvifNoDuplicateSet);
 
         // 4. 把去重后的onvif设备和国标设备放入到数据结构中
-        List<LiveCamInfoVo> unregisteredDataList = this.packageVoList(onvifDuplicateSet, onvifNoDuplicateSet, GBDeviceSet);
+        List<LiveCamInfoVo> unregisteredDataList = this.packageVoList(GBDeviceSet);
 
         // 5. 从数据库中获取已注册的摄像头
         List<CameraInfo> cameraInfoList = cameraInfoService.getAllData();
@@ -424,21 +454,18 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
     /**
      * 包装onvif设备和国标设备为VO
-     * @param onvifDuplicateSet
-     * @param onvifNoDuplicateSet
      * @param GBDeviceSet
      * @return
      */
-    private List<LiveCamInfoVo> packageVoList(Set<String> onvifDuplicateSet, Set<String> onvifNoDuplicateSet,
-                                              Set<Device> GBDeviceSet) {
+    private List<LiveCamInfoVo> packageVoList(Set<Device> GBDeviceSet) {
         List<LiveCamInfoVo> dataList = new ArrayList<>();
         String updateTime = DateUtils.getFormatDateTime(new Date());
         Random random = new Random();
         // 把国标设备放入到结果list中
-        this.packageGBDeviceToLiveCamVo(GBDeviceSet, dataList, onvifDuplicateSet, random, updateTime);
+        this.packageGBDeviceToLiveCamVo(GBDeviceSet, dataList, random, updateTime);
 
         // 把onvif设备放入到结果list中
-        this.packageOnvifDeviceToLiveCamVo(onvifNoDuplicateSet, dataList, random, updateTime);
+//        this.packageOnvifDeviceToLiveCamVo(onvifNoDuplicateSet, dataList, random, updateTime);
         return dataList;
     }
 
@@ -446,12 +473,11 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
      * 包装国标设备为VO
      * @param GBDeviceSet
      * @param dataList
-     * @param onvifDuplicateSet
      * @param random
      * @param updateTime
      */
-    private void packageGBDeviceToLiveCamVo(Set<Device> GBDeviceSet, List<LiveCamInfoVo> dataList, Set<String> onvifDuplicateSet,
-                                            Random random, String updateTime) {
+    private void packageGBDeviceToLiveCamVo(Set<Device> GBDeviceSet, List<LiveCamInfoVo> dataList, Random random,
+                                            String updateTime) {
         for (Device GBDevice : GBDeviceSet) {
             String wanIp = GBDevice.getHost().getWanIp();
             String deviceType = GBDevice.getDeviceType();
@@ -482,13 +508,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
             data.setLastUpdateTime(updateTime);
             // 判断设备的网络类型
             boolean isWan = false;
-            for (String onvifDuplicateUrl : onvifDuplicateSet) {
-                if (onvifDuplicateUrl.contains(wanIp)) {
-                    // 如果是onvif能搜索到，则是局域网类型
-                    isWan = true;
-                    break;
-                }
-            }
+            isWan = this.ipIsInner(wanIp);
             if (isWan) {
                 data.setNetType(NetTypeEnum.WAN.getName());
             } else {
@@ -498,6 +518,24 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
             dataList.add(data);
         }
+    }
+
+    /**
+     * 判断IP是否内网IP
+     * @Title: ipIsInner
+     * @param ip
+     * @return: boolean
+     */
+    public static boolean ipIsInner(String ip) {
+        boolean isInnerIp = false;
+        for (Pattern tmp : ipFilterRegexList) {
+            Matcher matcher = tmp.matcher(ip);
+            if (matcher.find()) {
+                isInnerIp = true;
+                break;
+            }
+        }
+        return isInnerIp;
     }
 
     /**
