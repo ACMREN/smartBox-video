@@ -10,6 +10,7 @@ import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
 import com.yangjie.JGB28181.service.ICameraControlService;
+import org.opencv.core.Mat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -196,6 +197,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
     }
 
     public static Integer DecToHexMa(Double pos) {
-        return (int) Math.floor(4096 * (pos / 1000) + 256 * (pos % 1000 ) / 100 + 16 * (pos % 100 ) / 10 + pos % 10);
+        return (int) Math.floor(4096 * Math.round(pos / 1000) + 256 * Math.round((pos % 1000 ) / 100) + 16 * Math.round((pos % 100 ) / 10) + pos % 10);
     }
 }
