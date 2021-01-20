@@ -673,6 +673,11 @@ public class ActionController implements OnProcessListener {
 		return GBResult.ok();
 	}
 
+	/**
+	 * ptz云台角度控制
+	 * @param controlCondition
+	 * @return
+	 */
 	@PostMapping("PTZAngleControl")
 	public GBResult PTZAngleControl(@RequestBody ControlCondition controlCondition) {
 		Integer deviceBaseId = controlCondition.getDeviceId();

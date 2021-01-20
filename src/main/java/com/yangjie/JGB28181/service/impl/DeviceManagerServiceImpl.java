@@ -6,19 +6,23 @@ import com.yangjie.JGB28181.bean.Device;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.constants.DeviceConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.common.thread.HeartbeatThread;
 import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.common.utils.DateUtils;
 import com.yangjie.JGB28181.common.utils.DeviceUtils;
 import com.yangjie.JGB28181.common.utils.RedisUtil;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.DeviceBaseInfo;
+import com.yangjie.JGB28181.entity.GbServerInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
 import com.yangjie.JGB28181.entity.enumEntity.*;
 import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
 import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
 import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
+import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.DeviceBaseInfoService;
+import com.yangjie.JGB28181.service.GbServerInfoService;
 import com.yangjie.JGB28181.service.IDeviceManagerService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
@@ -52,6 +56,9 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
     @Autowired
     private CameraInfoService cameraInfoService;
+
+    @Autowired
+    private GbServerInfoService gbServerInfoService;
 
     private static Map<String, Integer> ipDeviceIdMap = new HashMap<>(20);
 
@@ -123,7 +130,7 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
     @Override
     public Set<Device> getAllGBDevice() {
-        Map<String, String> deviceStrMap = RedisUtil.scanAllKeys();
+        Map<String, String> deviceStrMap = RedisUtil.scanAllKeys(SipLayer.SUB_DEVICE_PREFIX);
         if (null != deviceStrMap) {
             Set<Device> deviceSet = new HashSet<>();
             for (String value : deviceStrMap.values()) {
@@ -328,9 +335,49 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
         // 6. 数据库中的摄像头数据与步骤四中的数据进行去重
         Set<LiveCamInfoVo> resultSet = this.removeDuplicateLiveCamData(registeredDataList, unregisteredDataList);
 
+        // 7. 更新上级平台的状态
+        this.updateHigherServerStatus();
+
+        // 8. 关闭已经移除注册的服务器的心跳线程
+        this.stopHigherServerHeartbeatThread();
+
         DeviceManagerController.liveCamVoList = new ArrayList<>(resultSet);
 
         logger.info("==============================更新设备完成======================");
+    }
+
+    /**
+     * 更新上级平台的状态
+     */
+    private void updateHigherServerStatus() {
+        Map<String, String> higherServerMap = RedisUtil.scanAllKeys(SipLayer.SERVER_DEVICE_PREFIX);
+        Set<String> higherServerIds = higherServerMap.keySet();
+        List<GbServerInfo> gbServerInfos = gbServerInfoService.list(null);
+        for (GbServerInfo gbServerInfo : gbServerInfos) {
+            String deviceSerialNum = gbServerInfo.getDeviceSerialNum();
+            if (higherServerIds.contains(deviceSerialNum)) {
+                gbServerInfo.setStatus(1);
+                continue;
+            }
+            gbServerInfo.setStatus(0);
+        }
+        gbServerInfoService.updateBatchById(gbServerInfos);
+    }
+
+    /**
+     * 关闭已经移除注册的服务器的心跳线程
+     */
+    private void stopHigherServerHeartbeatThread() {
+        List<GbServerInfo> gbServerInfos = gbServerInfoService.list(null);
+        Set<String> threadKeys = SipLayer.higherServerHeartbeatMap.keySet();
+        List<String> registerServerSerialNum = gbServerInfos.stream().map(GbServerInfo::getDeviceSerialNum).collect(Collectors.toList());
+        for (String threadKey : threadKeys) {
+            if (!registerServerSerialNum.contains(threadKey)) {
+                HeartbeatThread thread = (HeartbeatThread) SipLayer.higherServerHeartbeatMap.get(threadKey);
+                thread.stopSendKeepAlive();
+                SipLayer.higherServerHeartbeatMap.remove(threadKey);
+            }
+        }
     }
 
     @Override

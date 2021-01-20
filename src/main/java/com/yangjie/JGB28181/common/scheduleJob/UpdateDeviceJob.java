@@ -37,9 +37,9 @@ public class UpdateDeviceJob {
     private CameraInfoService cameraInfoService;
 
     /**
-     * 每1分钟更新一次设备
+     * 每30秒更新一次设备
      */
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void updateDevice() throws IOException {
         deviceManagerService.updateDevice();
     }
