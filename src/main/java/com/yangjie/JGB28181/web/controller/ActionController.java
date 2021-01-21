@@ -870,6 +870,8 @@ public class ActionController implements OnProcessListener {
 		String fileName = "record_1609153795179.flv";
 		String filePath = "/data/record/rtsp_61_1/20201228/";
 		String[] cmdArray = new String[]{
+				"/bin/sh",
+				"-c",
 				"cd " + filePath,
 				"yamdi -i " + fileName + "-o tmp.flv",
 				"rm -rf " + fileName,
