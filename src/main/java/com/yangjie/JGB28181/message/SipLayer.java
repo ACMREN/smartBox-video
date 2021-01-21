@@ -941,7 +941,6 @@ public class SipLayer implements SipListener{
 				}
 				// 如果是keepAlive消息有回应，则进行数据的更新
 				if (statusCode == Response.OK) {
-
 					CallIdHeader callIdHeader = (CallIdHeader) response.getHeader(CallIdHeader.NAME);
 					ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 					String uri = toHeader.getAddress().getURI().toString();
