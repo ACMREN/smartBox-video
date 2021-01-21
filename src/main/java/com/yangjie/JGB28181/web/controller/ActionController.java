@@ -869,12 +869,12 @@ public class ActionController implements OnProcessListener {
 	public void addMetadataToVideoRecord() throws IOException, InterruptedException {
 		String fileName = "record_1609153795179.flv";
 		String filePath = "/data/record/rtsp_61_1/20201228/";
-		String[] cmdArray = new String[20];
-
-		cmdArray[0] = "cd " + filePath;
-		cmdArray[1] = "yamdi -i " + fileName + "-o tmp.flv";
-		cmdArray[2] = "rm -rf " + fileName;
-		cmdArray[3] = "mv tmp.flv " + fileName;
+		String[] cmdArray = new String[]{
+				"cd " + filePath,
+				"yamdi -i " + fileName + "-o tmp.flv",
+				"rm -rf " + fileName,
+				"mv tmp.flv " + fileName,
+		};
 
 		Process process = Runtime.getRuntime().exec(cmdArray);
 		int result = process.waitFor();
