@@ -874,9 +874,9 @@ public class ActionController implements OnProcessListener {
 				"-c",
 				"cd " + filePath,
 				"yamdi -i " + fileName + "-o tmp.flv",
-				"sleep 0.01",
-				"rm -rf " + fileName,
-				"mv tmp.flv " + fileName,
+//				"sleep 0.01",
+//				"rm -rf " + fileName,
+//				"mv tmp.flv " + fileName,
 		};
 
 		Process process = Runtime.getRuntime().exec(cmdArray);
