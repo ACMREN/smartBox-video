@@ -307,6 +307,20 @@ public class RtmpRecorder extends Observer {
         recordVideoInfoService.saveOrUpdate(this.recordVideoInfo);
     }
 
+    private void addMetadataToRecordVideo(String fileName, String filePath) {
+        try {
+            String cmd = "cd " + filePath + ";yamdi -i " + fileName + " -o tmp.flv;" + "sleep 0.01;" + "rm -rf " + fileName + ";mv tmp.flv " + fileName;
+            String[] cmdArray = new String[]{"/bin/sh", "-c", cmd};
+
+            Process process = Runtime.getRuntime().exec(cmdArray);
+            process.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 超过单个文件最长时间则进行重新录像
      * @throws FrameRecorder.Exception
@@ -319,6 +333,11 @@ public class RtmpRecorder extends Observer {
             recordVideoInfo.setFileSize(file.length());
             // 更新原有的录像文件信息
             this.saveRecordFileInfo(recordVideoInfo);
+            // 给录像文件插入元数据
+            int index = file.getPath().lastIndexOf("/");
+            String filePath = file.getPath().substring(0, index);
+            String fileName = file.getName();
+            this.addMetadataToRecordVideo(fileName, filePath);
 
             address = RecordNameUtils.recordVideoFileAddress(streamName);
             file = new File(address);
@@ -343,6 +362,11 @@ public class RtmpRecorder extends Observer {
             recordVideoInfo.setFileSize(file.length());
             // 更新原有的录像文件信息
             this.saveRecordFileInfo(recordVideoInfo);
+            // 给录像文件插入元数据
+            int index = file.getPath().lastIndexOf("/");
+            String filePath = file.getPath().substring(0, index);
+            String fileName = file.getName();
+            this.addMetadataToRecordVideo(fileName, filePath);
 
             address = RecordNameUtils.recordVideoFileAddress(streamName);
             file = new File(address);
