@@ -91,11 +91,11 @@ public class RedisUtil {
 		}
 	}
 
-	public static Map<String, String> scanAllKeys() {
-		return scanAllKeys(DEFAULT_DB);
+	public static Map<String, String> scanAllKeys(String searchKey) {
+		return scanAllKeys(DEFAULT_DB, searchKey);
 	}
 
-	public static Map<String, String> scanAllKeys(int dbIndex) {
+	public static Map<String, String> scanAllKeys(int dbIndex, String searchKey) {
 		Jedis jedis = getJedis();
 		if (jedis == null) {
 			return null;
@@ -106,7 +106,7 @@ public class RedisUtil {
 			String cursor = "0";
 			Map<String, String> resultMap = new HashMap();
 			ScanParams params = new ScanParams();
-			params.match(SipLayer.SUB_DEVICE_PREFIX + "*");
+			params.match(searchKey + "*");
 			while (!isFinished) {
 				ScanResult<String> scanResult = jedis.scan(cursor, params);
 				cursor = scanResult.getCursor();

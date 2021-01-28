@@ -10,6 +10,7 @@ import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
 import com.yangjie.JGB28181.service.ICameraControlService;
+import org.opencv.core.Mat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -137,6 +138,11 @@ public class CameraControlServiceImpl implements ICameraControlService {
             net_dvr_ptzpos.write();
             System.out.println("=============结束写入位置参数=============");
             System.out.println("=============位置参数：p:" + pPos + ",t:" + tPos + ", z:" + zPos + "=============");
+            Double parseP = HexToDecMa(pPos.shortValue());
+            Double parseT = HexToDecMa(tPos.shortValue());
+            Double parseZ = HexToDecMa(zPos.shortValue());
+            System.out.println("=============转换位置参数：parseP:" + parseP + ",parseT:" + parseT + ", parseZ:" + parseZ + "=============");
+
 
             hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
             return GBResult.ok();
@@ -188,5 +194,9 @@ public class CameraControlServiceImpl implements ICameraControlService {
 
     public static Double HexToDecMa(short pos) {
         return Double.valueOf((pos / 4096) * 1000 + ((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16));
+    }
+
+    public static Integer DecToHexMa(Double pos) {
+        return (int) Math.floor(4096*Math.floor(pos/1000)+ 256*Math.floor((pos%1000)/100)+16*Math.floor((pos%100)/10)+pos%10);
     }
 }

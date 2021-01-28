@@ -33,8 +33,11 @@ import javax.sip.message.Response;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
+import com.yangjie.JGB28181.common.thread.HeartbeatThread;
 import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
+import com.yangjie.JGB28181.entity.GbServerInfo;
+import com.yangjie.JGB28181.entity.bo.HigherServerInfoBo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
 import com.yangjie.JGB28181.media.server.Server;
@@ -45,6 +48,7 @@ import com.yangjie.JGB28181.media.server.handler.TCPHandler;
 import com.yangjie.JGB28181.media.server.handler.UDPHandler;
 import com.yangjie.JGB28181.message.session.SyncFuture;
 import com.yangjie.JGB28181.service.CameraInfoService;
+import com.yangjie.JGB28181.service.GbServerInfoService;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import gov.nist.javax.sip.message.SIPRequest;
@@ -78,6 +82,9 @@ public class SipLayer implements SipListener{
 
 	@Autowired
 	private CameraInfoService cameraInfoService;
+
+	@Autowired
+	private GbServerInfoService gbServerInfoService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private SipStackImpl mSipStack;
@@ -123,6 +130,7 @@ public class SipLayer implements SipListener{
 
 	public static final String CLIENT_DEVICE_PREFIX = "client_";
 	public static final String SUB_DEVICE_PREFIX = "sub_";
+	public static final String SERVER_DEVICE_PREFIX = "server_";
 
 	private static final int STREAM_MEDIA_START_PORT = 20000;
 	private static final int STREAM_MEDIA_END_PORT = 21000;
@@ -149,6 +157,12 @@ public class SipLayer implements SipListener{
 	private static Map<String, String> deviceCatalogMap = new HashMap<>(20);
 
 	private static Map<String, JSONObject> inviteCallIdMap = new HashMap<>(20);
+
+	private static Map<String, String> keepAliveCallIdMap = new HashMap<>(20);
+
+	public static Map<String, Integer> higherServerExpiredTimeMap = new HashMap<>(20);
+
+	public static Map<String, Thread> higherServerHeartbeatMap = new HashMap<>(20);
 
 	public SipLayer(String sipId,String sipRealm,String password,String localIp,int localPort,String streamMediaIp){
 		this.mSipId = sipId;
@@ -337,8 +351,7 @@ public class SipLayer implements SipListener{
 		//不在线回复400
 		if(MESSAGE_KEEP_ALIVE.equals(cmd)){
 			if(RedisUtil.checkExist(SUB_DEVICE_PREFIX + deviceId)){
-				String value = RedisUtil.get(SUB_DEVICE_PREFIX + deviceId);
-				RedisUtil.set(SUB_DEVICE_PREFIX + deviceId, value);
+				RedisUtil.expire(SUB_DEVICE_PREFIX + deviceId, expiredTime);
 			}else {
 				response = mMessageFactory.createResponse(Response.BAD_REQUEST,request);
 			}
@@ -595,6 +608,21 @@ public class SipLayer implements SipListener{
 		connectServerInfo.setDomain(serverDomain);
 		connectServerInfo.setPw(password);
 
+		// 把级联的服务器放入到redis中
+		Device device = new Device();
+		device.setDeviceId(serverId);
+		Host host = new Host();
+		host.setWanIp(serverIp);
+		host.setWanPort(Integer.valueOf(serverPort));
+		host.setAddress(serverIp + ":" + serverPort);
+		device.setHost(host);
+		device.setProtocol("UDP");
+		String connectServerJson = JSONObject.toJSONString(device);
+		String key = SipLayer.SERVER_DEVICE_PREFIX + serverId;
+		Integer expireTime = higherServerExpiredTimeMap.get(SERVER_DEVICE_PREFIX + serverId);
+		RedisUtil.set(key, expireTime, connectServerJson);
+		SipLayer.higherServerExpiredTimeMap.put(key, expireTime);
+
 		sendRequest(request);
 	}
 
@@ -630,25 +658,33 @@ public class SipLayer implements SipListener{
 	 * @throws InvalidArgumentException
 	 * @throws SipException
 	 */
-	public void sendKeepAlive(long cseq)
-			throws ParseException, InvalidArgumentException, SipException {
-		String callId = IDUtils.id();
-		String fromTag = IDUtils.id();
-		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
-		// 获取级联的上级服务器的参数
-		String serverAddress = connectServerInfo.getHost() + ":" + connectServerInfo.getPort();
-		String serverId = connectServerInfo.getId();
-		Request request = createRequest(serverId, serverAddress, clientInfo.getHost(), Integer.valueOf(clientInfo.getPort()), "UDP",
-				clientInfo.getId(), clientInfo.getDomain(), fromTag, serverId, clientInfo.getDomain(), null,
-				callId, cseq, Request.MESSAGE);
-		// 设置存活的消息体
-		String keepAliveContent = SipContentHelper.generateKeepAliveContent(clientInfo.getId(), "20");
-		// 设置请求头类型
-		ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "MANSCDP+xml");
-		request.setContent(keepAliveContent, contentTypeHeader);
-		request.addHeader(contentTypeHeader);
+	public void sendKeepAlive(long cseq) {
+		try {
+			String callId = IDUtils.id();
+			String fromTag = IDUtils.id();
+			keepAliveCallIdMap.put(callId, "keepAlive");
+			ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
+			// 获取级联的上级服务器的参数
+			String serverAddress = connectServerInfo.getHost() + ":" + connectServerInfo.getPort();
+			String serverId = connectServerInfo.getId();
+			Request request = createRequest(serverId, serverAddress, clientInfo.getHost(), Integer.valueOf(clientInfo.getPort()), "UDP",
+					clientInfo.getId(), clientInfo.getDomain(), fromTag, serverId, clientInfo.getDomain(), null,
+					callId, cseq, Request.MESSAGE);
+			// 设置存活的消息体
+			String keepAliveContent = SipContentHelper.generateKeepAliveContent(clientInfo.getId(), "20");
+			// 设置请求头类型
+			ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "MANSCDP+xml");
+			request.setContent(keepAliveContent, contentTypeHeader);
+			request.addHeader(contentTypeHeader);
 
-		sendRequest(request);
+			sendRequest(request);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (InvalidArgumentException e) {
+			e.printStackTrace();
+		} catch (SipException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public ServerTransaction sendTrying(RequestEvent event, Request request) throws Exception {
@@ -723,7 +759,7 @@ public class SipLayer implements SipListener{
 		FromHeader fromHeader = mHeaderFactory.createFromHeader(fromNameAddress, fromTag);
 
 		//callId
-		CallIdHeader callIdHeader = protocol.equals(TCP)?mTCPSipProvider.getNewCallId():mUDPSipProvider.getNewCallId();;
+		CallIdHeader callIdHeader = protocol.equals(TCP)?mTCPSipProvider.getNewCallId():mUDPSipProvider.getNewCallId();
 		callIdHeader.setCallId(callId);
 
 		//Cseq
@@ -879,23 +915,20 @@ public class SipLayer implements SipListener{
 							connectServerInfo.getPort(), connectServerInfo.getPw(), callId, tag, responseParam, nonce, uri, 1);
 				}
 				if (statusCode == Response.OK) {
-					CacheUtil.executor.execute(() -> {
-						// 发送存活数据包
-						while (true) {
-							try {
-								Thread.sleep(60*1000);
-								this.sendKeepAlive(20);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							} catch (ParseException e) {
-								e.printStackTrace();
-							} catch (InvalidArgumentException e) {
-								e.printStackTrace();
-							} catch (SipException e) {
-								e.printStackTrace();
-							}
-						}
-					});
+					// 更新redis的时间
+					ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+					String uri = toHeader.getAddress().getURI().toString();
+					String serverSerialNum = uri.split(":")[1].split("@")[0];
+					String key = SipLayer.SERVER_DEVICE_PREFIX + serverSerialNum;
+					Integer expiredTime = higherServerExpiredTimeMap.get(key);
+					RedisUtil.expire(key, expiredTime);
+
+					// 开启心跳包发送线程
+					GbServerInfo higherServerInfo = gbServerInfoService.getOne(new QueryWrapper<GbServerInfo>()
+							.eq("device_serial_num", serverSerialNum));
+					HeartbeatThread heartbeatThread = new HeartbeatThread();
+					heartbeatThread.setSipLayer(this);
+					heartbeatThread.startSendKeepAlive(higherServerInfo);
 				}
 			} else if (Request.MESSAGE.equals(method)) {
 				int statusCode = response.getStatusCode();
@@ -905,6 +938,21 @@ public class SipLayer implements SipListener{
 					String fromTag = IDUtils.id();
 					sendRegister(connectServerInfo.getId(), connectServerInfo.getDomain(), connectServerInfo.getHost(), connectServerInfo.getPort(),
 							connectServerInfo.getPw(), callId, fromTag, null, null, null, mCseq);
+				}
+				// 如果是keepAlive消息有回应，则进行数据的更新
+				if (statusCode == Response.OK) {
+					CallIdHeader callIdHeader = (CallIdHeader) response.getHeader(CallIdHeader.NAME);
+					ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+					String uri = toHeader.getAddress().getURI().toString();
+					String serverId = uri.split(":")[1].split("@")[0];
+					String callId = callIdHeader.getCallId();
+					// 如果keepAliveMap中含有这个callId，则说明服务器还在线
+					// 更新redis中的时间
+					if (keepAliveCallIdMap.containsKey(callId)) {
+						Integer expiredTime = higherServerExpiredTimeMap.get(SERVER_DEVICE_PREFIX + serverId);
+						RedisUtil.expire(SERVER_DEVICE_PREFIX + serverId, expiredTime);
+						keepAliveCallIdMap.remove(callId);
+					}
 				}
 			}
 

@@ -65,3 +65,23 @@ CREATE TABLE `snapshot_info` (
     alarm_type TINYINT(2) DEFAULT 0 COMMENT '报警类型：1-人工视频报警； 2-运动目标检测报警； 3-遗留物检测报警； 4-物体移除检测报警； 5-绊线检测报警；6-入侵检测报警； 7-逆行检测报警； 8-徘徊检测报警； 9-流量统计报警； 10-密度检测报警； 11-视频异常检测报警； 12-快速移动报警',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='截图文件信息表';
+
+CREATE TABLE `gb_server_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    device_serial_num VARCHAR(30) NOT NULL COMMENT '设备编号',
+    domain VARCHAR(20) NOT NULL COMMENT '设备国标域',
+    ip VARCHAR (10) NOT NULL COMMENT 'ip地址',
+    port INT(10) NOT NULL COMMENT '端口',
+    password VARCHAR(100) DEFAULT NULL COMMENT '认证密码',
+    local_serial_num VARCHAR(30) DEFAULT NULL COMMENT '本地认证用户',
+    local_ip VARCHAR(10) DEFAULT NULL COMMENT '本地ip',
+    local_port INT(10) DEFAULT NULL COMMENT '本地端口',
+    expire_time INT(10) NOT NULL COMMENT '过期时间',
+    register_interval INT(10) NOT NULL COMMENT '注册间隔',
+    heart_beat_interval INT(10) NOT NULL COMMENT '心跳间隔',
+    catalog_size TINYINT(10) DEFAULT NULL COMMENT '目录分组大小',
+    charset_code VARCHAR(10) NOT NULL COMMENT '字符集',
+    protocol VARCHAR(10) DEFAULT NULL COMMENT '传输协议',
+    status TINYINT(10) DEFAULT 0 COMMENT '在线状态：0-不在线，1-在线',
+    PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='父设备信息表';

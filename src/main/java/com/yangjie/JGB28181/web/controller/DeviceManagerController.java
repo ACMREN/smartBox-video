@@ -2,13 +2,14 @@ package com.yangjie.JGB28181.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yangjie.JGB28181.bean.Device;
+import com.yangjie.JGB28181.bean.Host;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.IDUtils;
-import com.yangjie.JGB28181.entity.CameraInfo;
-import com.yangjie.JGB28181.entity.DeviceBaseInfo;
-import com.yangjie.JGB28181.entity.PageListVo;
-import com.yangjie.JGB28181.entity.TreeInfo;
+import com.yangjie.JGB28181.common.utils.RedisUtil;
+import com.yangjie.JGB28181.entity.*;
 import com.yangjie.JGB28181.entity.bo.CameraConfigBo;
+import com.yangjie.JGB28181.entity.bo.HigherServerInfoBo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
 import com.yangjie.JGB28181.entity.enumEntity.TreeTypeEnum;
@@ -21,10 +22,7 @@ import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.entity.vo.TreeInfoVo;
 import com.yangjie.JGB28181.media.server.handler.TestClientHandler;
 import com.yangjie.JGB28181.message.SipLayer;
-import com.yangjie.JGB28181.service.CameraInfoService;
-import com.yangjie.JGB28181.service.DeviceBaseInfoService;
-import com.yangjie.JGB28181.service.IDeviceManagerService;
-import com.yangjie.JGB28181.service.TreeInfoService;
+import com.yangjie.JGB28181.service.*;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -86,6 +84,9 @@ public class DeviceManagerController {
 
     @Autowired
     private SipLayer mSipLayer;
+
+    @Autowired
+    private GbServerInfoService gbServerInfoService;
 
     public static ServerInfoBo serverInfoBo = new ServerInfoBo();
 
@@ -562,17 +563,67 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
-    @RequestMapping(value = "testSendRegister")
-    public GBResult testSendRegister(@RequestBody ServerInfoBo serverInfoBo) {
-        String serverId = serverInfoBo.getId();
-        String serverDomain = serverInfoBo.getDomain();
-        String serverIp = serverInfoBo.getHost();
-        String serverPort = serverInfoBo.getPort();
-        String password = serverInfoBo.getPw();
+    /**
+     * 对级联的上级平台进行注册
+     * @param higherServerInfoBo
+     * @return
+     */
+    @RequestMapping(value = "sendRegister")
+    public GBResult sendRegister(@RequestBody HigherServerInfoBo higherServerInfoBo) {
+        Integer id = higherServerInfoBo.getDatabaseId();
+        String serverId = higherServerInfoBo.getId();
+        String serverDomain = higherServerInfoBo.getDomain();
+        String serverIp = higherServerInfoBo.getHost();
+        String serverPort = higherServerInfoBo.getPort();
+        String password = higherServerInfoBo.getPw();
+        String localSerialNum = higherServerInfoBo.getLocalSerialNum();
+        String localIp = higherServerInfoBo.getLocalIp();
+        Integer localPort = higherServerInfoBo.getLocalPort();
+        Integer expireTime = higherServerInfoBo.getExpireTime();
+        Integer registerInterval = higherServerInfoBo.getRegisterInterval();
+        Integer heartBeatInterval = higherServerInfoBo.getHeartBeatInterval();
+        Integer catalogSize = higherServerInfoBo.getCatalogSize();
+        String charsetCode = higherServerInfoBo.getCharsetCode();
+        String protocol = higherServerInfoBo.getProtocol();
         Long cseq = 1L;
         String callId = IDUtils.id();
         String fromTag = IDUtils.id();
         callId = "platform-" + callId;
+
+        // 保存数据到数据库
+        GbServerInfo gbServerInfo = new GbServerInfo();
+        gbServerInfo.setId(id);
+        gbServerInfo.setDeviceSerialNum(serverId);
+        gbServerInfo.setDomain(serverDomain);
+        gbServerInfo.setIp(serverIp);
+        gbServerInfo.setPort(Integer.valueOf(serverPort));
+        gbServerInfo.setPassword(password);
+        gbServerInfo.setLocalSerialNum(DeviceManagerController.serverInfoBo.getId());
+        gbServerInfo.setLocalIp(DeviceManagerController.serverInfoBo.getHost());
+        gbServerInfo.setLocalPort(Integer.valueOf(DeviceManagerController.serverInfoBo.getPort()));
+        gbServerInfo.setExpireTime(expireTime);
+        gbServerInfo.setRegisterInterval(registerInterval);
+        gbServerInfo.setHeartBeatInterval(heartBeatInterval);
+        gbServerInfo.setCatalogSize(1);
+        gbServerInfo.setCharsetCode("UTF8");
+        gbServerInfo.setProtocol("UDP");
+        gbServerInfo.setStatus(0);
+        gbServerInfoService.saveOrUpdate(gbServerInfo);
+
+        // 把级联的服务器放入到redis中
+        Device device = new Device();
+        device.setDeviceId(serverId);
+        Host host = new Host();
+        host.setWanIp(serverIp);
+        host.setWanPort(Integer.valueOf(serverPort));
+        host.setAddress(serverIp + ":" + serverPort);
+        device.setHost(host);
+        device.setProtocol("UDP");
+        String connectServerJson = JSONObject.toJSONString(device);
+        String key = SipLayer.SERVER_DEVICE_PREFIX + serverId;
+        RedisUtil.set(key, expireTime, connectServerJson);
+        SipLayer.higherServerExpiredTimeMap.put(key, expireTime);
+
         try	{
             mSipLayer.sendRegister(serverId, serverDomain, serverIp, serverPort, password, callId, fromTag, null, null, null, cseq);
         } catch (Exception e) {
@@ -580,6 +631,16 @@ public class DeviceManagerController {
         }
 
         return GBResult.ok();
+    }
+
+    /**
+     * 获取所有的上级平台
+     * @return
+     */
+    @PostMapping(value = "getAllHigherServer")
+    public GBResult getAllHigherServer() {
+        List<GbServerInfo> gbServerInfos = gbServerInfoService.getBaseMapper().selectList(null);
+        return GBResult.ok(gbServerInfos);
     }
 
     @PostMapping("test")
