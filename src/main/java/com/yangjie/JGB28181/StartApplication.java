@@ -1,5 +1,6 @@
 package com.yangjie.JGB28181;
 
+import com.yangjie.JGB28181.bean.WebSocketServer;
 import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.media.server.remux.RtmpRecorder;
 import com.yangjie.JGB28181.media.server.remux.RtspToRtmpPusher;
@@ -26,6 +27,7 @@ public class StartApplication extends SpringBootServletInitializer
 		// 将上下文传入CameraPush类中，用于检测tcp连接是否正常
 		final ApplicationContext applicationContext = SpringApplication.run(StartApplication.class, args);
 		RtspToRtmpPusher.setApplicationContext(applicationContext);
+		WebSocketServer.setApplicationContext(applicationContext);
 	}
 
 	/*
@@ -33,8 +35,6 @@ public class StartApplication extends SpringBootServletInitializer
      */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		System.setProperty("org.bytedeco.javacpp.maxphysicalbytes", "0");
-		System.setProperty("org.bytedeco.javacpp.maxbytes", "0");
 		return builder.sources(StartApplication.class);
 	}
 }

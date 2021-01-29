@@ -7,6 +7,7 @@ import com.yangjie.JGB28181.service.IARService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -22,6 +23,8 @@ public class WebSocketServer {
 
     private static Map<String, Session> clients = new HashMap<>();
 
+    private static ApplicationContext applicationContext;
+
     private String token = null;
 
     public static Map<Integer, CameraPojo> deviceCameraPojoMap = new HashMap<>(20);
@@ -31,16 +34,30 @@ public class WebSocketServer {
     @Autowired
     IARService arService;
 
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+        WebSocketServer.applicationContext = applicationContext;
+    }
+
     @OnOpen
     public void onOpen(Session session, @PathParam("token")String token) {
         logger.info("有设备请求加入websocket，用户id：" + token);
         this.token = token;
         clients.put(token, session);
+        this.sendMessage("test", null);
     }
 
     @OnClose
     public void onClose(Session session) {
-
+        if (clients.containsValue(session)) {
+            for (String item : clients.keySet()) {
+                Session session1 = clients.get(item);
+                if (session.equals(session1)) {
+                    logger.info("有设备关闭了websocket，token：" + token);
+                    clients.remove(token);
+                    break;
+                }
+            }
+        }
     }
 
     @OnMessage
@@ -73,6 +90,7 @@ public class WebSocketServer {
     }
 
     private JSONObject getARStream(Integer deviceBaseId) {
+        arService = (IARService) applicationContext.getBean("arService");
         CameraPojo cameraPojo = deviceCameraPojoMap.get(deviceBaseId);
         // 判断是否已经存在对应的推流
         if (null == cameraPojo) {
