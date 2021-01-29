@@ -130,12 +130,22 @@
 		<dependency>
 			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv</artifactId>
-			<version>1.5.2</version>
+			<version>1.5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bytedeco</groupId>
 			<artifactId>ffmpeg-platform</artifactId>
 			<version>4.2.1-1.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>opencv-platform</artifactId>
+			<version>4.4.0-1.5.4</version>
 		</dependency>
 
 		<!--	soap和ws-discovery	-->

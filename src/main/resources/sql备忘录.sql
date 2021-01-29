@@ -85,3 +85,11 @@ CREATE TABLE `gb_server_info` (
     status TINYINT(10) DEFAULT 0 COMMENT '在线状态：0-不在线，1-在线',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='父设备信息表';
+
+CREATE TABLE `entity_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    type TINYINT(20) NOT NULL DEFAULT 1 COMMENT '三维实体类型：1-模型，2-多边形',
+    name VARCHAR(20) DEFAULT NULL COMMENT '三维实体名称',
+    data TEXT DEFAULT NULL COMMENT '数据',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='三维实体数据表';

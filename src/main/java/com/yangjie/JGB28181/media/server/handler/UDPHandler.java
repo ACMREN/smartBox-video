@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.web.controller.ActionController;
 import io.netty.bootstrap.Bootstrap;
@@ -85,19 +86,20 @@ public class UDPHandler  extends GBStreamHandler<DatagramPacket>  {
 		ByteBuf byteBuf =  msg.content();
 		if (toHigherServer == 1) {
 			ByteBuf byteBuf1 = byteBuf.copy();
-			if (CollectionUtils.isEmpty(callIdChannelMap)) {
+			if (null == UDPChannel) {
 				EventLoopGroup group = new NioEventLoopGroup();
 				b = new Bootstrap();
 				b.group(group);
 				b.channel(NioDatagramChannel.class);
 				b.option(ChannelOption.SO_BROADCAST, true);
 				b.handler(new TestClientHandler());
-				Channel channel = b.bind(0).sync().channel();
-				callIdChannelMap.put(higherCallId, channel);
+				UDPChannel = b.bind(0).sync().channel();
 			}
 
-			for (Channel channel : callIdChannelMap.values()) {
-				channel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(higherServerIp, higherServerPort)));
+			for (JSONObject item : UDPHigherServerInfoList) {
+				String remoteIp = item.getString("ip");
+				Integer remotePort = item.getInteger("port");
+				UDPChannel.writeAndFlush(new DatagramPacket(byteBuf1, new InetSocketAddress(remoteIp, remotePort)));
 			}
 		}
 

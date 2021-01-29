@@ -445,7 +445,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
     private GBResult judgePushStreamRecordExist(PushStreamDevice pushStreamDevice, RecordStreamDevice recordStreamDevice,
                                             Integer isRecord, Integer toPushStream, Integer toHigherServer, String higherServerIp,
                                             Integer higherServerPort, Boolean isTcp, String deviceIdProtocolKey, Integer toFlv,
-                                                String higherCallId) {
+                                            String higherCallId) {
         GBResult result = GBResult.ok();
         // 1. 判断是否存在推流
         if (pushStreamDevice != null && toPushStream == 1) {
@@ -462,7 +462,7 @@ public class CameraInfoServiceImpl extends ServiceImpl<CameraInfoMapper, CameraI
             // 设置推送参数
             if (null != handler) {
                 server.setToHigherServer(1);
-                handler.connectNewRemoteAddress(higherServerIp, higherServerPort, higherCallId);
+                handler.connectNewRemoteAddress(higherServerIp, higherServerPort, higherCallId, isTcp);
             }
             return result = GBResult.ok();
         }

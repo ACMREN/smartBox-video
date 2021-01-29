@@ -6,9 +6,12 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +73,8 @@ public class TCPHandler extends GBStreamHandler<ByteBuf> {
 		CacheUtil.deviceHandlerMap.put(deviceProtocolKey, this);
 	}
 
+	EventLoopGroup group = new NioEventLoopGroup();
+	Channel channel = null;
 
 	@Override
 	public void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
@@ -82,6 +87,7 @@ public class TCPHandler extends GBStreamHandler<ByteBuf> {
 		// 1. 判断是否开启了推送到其它平台
 		if (null != toHigherServer && toHigherServer == 1) {
 			ByteBuf byteBuf1 = byteBuf.copy();
+
 			// 1.1 判断通道是否开启
 			if (CollectionUtils.isEmpty(callIdChannelMap)) {
 				// 1.2 判断线程组是否已经开启

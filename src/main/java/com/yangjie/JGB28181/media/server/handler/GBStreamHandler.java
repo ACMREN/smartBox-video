@@ -1,5 +1,6 @@
 package com.yangjie.JGB28181.media.server.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -7,6 +8,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class GBStreamHandler<I> extends SimpleChannelInboundHandler<I> {
@@ -19,6 +21,10 @@ public abstract class GBStreamHandler<I> extends SimpleChannelInboundHandler<I> 
 
     protected Integer higherServerPort;
 
+    protected List<JSONObject> UDPHigherServerInfoList;
+
+    protected Channel UDPChannel = null;
+
     protected Integer toHigherServer = 0;
 
     protected Integer toPushStream = 0;
@@ -30,7 +36,7 @@ public abstract class GBStreamHandler<I> extends SimpleChannelInboundHandler<I> 
      * @param remoteIp
      * @param remotePort
      */
-    public void connectNewRemoteAddress(String remoteIp, Integer remotePort, String higherCallId) {
+    public void connectNewRemoteAddress(String remoteIp, Integer remotePort, String higherCallId, boolean isTcp) {
         if (null == this.toHigherServer || this.toHigherServer == 0) {
             this.setToHigherServer(1);
             this.setHigherCallId(higherCallId);
@@ -39,9 +45,15 @@ public abstract class GBStreamHandler<I> extends SimpleChannelInboundHandler<I> 
         } else {
             if (null != b) {
                 try {
-                    ChannelFuture future = b.connect(new InetSocketAddress(remoteIp, remotePort)).sync();
-                    Channel channel = future.channel();
-                    callIdChannelMap.put(higherCallId, channel);
+                    if (isTcp) {
+                        ChannelFuture future = b.connect(new InetSocketAddress(remoteIp, remotePort)).sync();
+                        Channel channel = future.channel();
+                        callIdChannelMap.put(higherCallId, channel);
+                    } else {
+                        JSONObject higherServerInfo = new JSONObject();
+                        higherServerInfo.put("ip", remoteIp);
+                        higherServerInfo.put("port", remotePort);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

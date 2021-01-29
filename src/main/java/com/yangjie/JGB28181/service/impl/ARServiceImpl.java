@@ -8,7 +8,6 @@ import com.yangjie.JGB28181.bean.WebSocketServer;
 import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.result.MediaData;
-import com.yangjie.JGB28181.common.thread.CameraThread;
 import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
@@ -16,9 +15,6 @@ import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.IARService;
-import com.yangjie.JGB28181.web.controller.DeviceManagerController;
-import org.bytedeco.ffmpeg.avcodec.AVPacket;
-import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.javacv.*;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_core.Point;
@@ -34,6 +30,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 
 import static org.bytedeco.opencv.global.opencv_imgproc.circle;
+
 
 @Service("arService")
 public class ARServiceImpl implements IARService {
@@ -81,7 +78,7 @@ public class ARServiceImpl implements IARService {
         scalarList.add(getColor(0,0,255));
     }
 
-    private static Scalar getColor(int r,int g, int b){
+    private static Scalar getColor(int r, int g, int b){
         Scalar s = new Scalar();
         s.red(r);
         s.green(g);

@@ -1,12 +1,12 @@
 package com.yangjie.JGB28181.web.controller;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.sip.Dialog;
 import javax.sip.SipException;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -23,23 +23,23 @@ import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.condition.ControlCondition;
 import com.yangjie.JGB28181.entity.condition.DeviceBaseCondition;
 import com.yangjie.JGB28181.entity.vo.FileCountInfoVo;
-import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
 import com.yangjie.JGB28181.entity.vo.RecordVideoInfoVo;
 import com.yangjie.JGB28181.entity.vo.SnapshotInfoVo;
+import com.yangjie.JGB28181.media.server.Server;
+import com.yangjie.JGB28181.media.server.TCPServer;
+import com.yangjie.JGB28181.media.server.UDPServer;
 import com.yangjie.JGB28181.media.server.handler.TestClientHandler;
-import com.yangjie.JGB28181.media.server.handler.TestClientUDPHandler;
-import com.yangjie.JGB28181.media.server.remux.*;
-import com.yangjie.JGB28181.media.server.remux.Observer;
 import com.yangjie.JGB28181.service.*;
 import com.yangjie.JGB28181.service.impl.CameraControlServiceImpl;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,14 +53,11 @@ import org.springframework.web.bind.annotation.*;
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.result.MediaData;
-import com.yangjie.JGB28181.common.constants.ResultConstants;
 import com.yangjie.JGB28181.media.callback.OnProcessListener;
-import com.yangjie.JGB28181.media.server.Server;
 import com.yangjie.JGB28181.media.session.PushStreamDeviceManager;
 import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.message.config.ConfigProperties;
 import com.yangjie.JGB28181.message.session.MessageManager;
-import com.yangjie.JGB28181.message.session.SyncFuture;
 
 
 @RestController
@@ -865,21 +862,54 @@ public class ActionController implements OnProcessListener {
 		}
 	}
 
-	@PostMapping("addMetadataToVideoRecord")
-	public void addMetadataToVideoRecord() throws IOException, InterruptedException {
-		String fileName = "record_1609153795179.flv";
-		String filePath = "/data/record/rtsp_61_1/20201228/";
-		String cmd = "cd " + filePath + ";yamdi -i " + fileName + " -o tmp.flv;" + "sleep 0.01;" + "rm -rf " + fileName + ";mv tmp.flv " + fileName;
-		String[] cmdArray = new String[]{
-				"/bin/sh",
-				"-c",
-				cmd
-		};
+	@RequestMapping("testClient")
+	public void testClient() throws Exception {
+		String deviceStr = RedisUtil.get(SipLayer.SUB_DEVICE_PREFIX + "34020000001320000005");
+		Device device = JSONObject.parseObject(deviceStr, Device.class);
+		String deviceSerialNum = device.getDeviceId();
+		Map<String, DeviceChannel> channelMap = device.getChannelMap();
+		String channelId = null;
+		for (String item : channelMap.keySet()) {
+			if (!StringUtils.isEmpty(item)) {
+				channelId = item;
+				break;
+			}
+		}
+		String address = device.getHost().getAddress();
 
-		Process process = Runtime.getRuntime().exec(cmdArray);
-		int result = process.waitFor();
-		System.out.println(result);
+		String streamName = StreamNameUtils.play(deviceSerialNum, channelId);
+		// 创建callId
+		String callId = IDUtils.id();
+		// 创建ssrc
+		String ssrc = mSipLayer.getSsrc(true);
+		// 创建端口号
+		int port = mSipLayer.getPort(true);
+
+		// 开启服务器
+		Server server = new TCPServer();
+		server.startServer(new ConcurrentLinkedDeque<>(), Integer.valueOf(ssrc), port, false, streamName, 20, 0, 1,
+				"172.0.0.85", 30000, "abc");
+
+		mSipLayer.sendInvite(device, SipLayer.SESSION_NAME_PLAY, callId, channelId, port, ssrc, true, deviceSerialNum, address);
 	}
+
+	@RequestMapping("testUDP")
+	public void testUDP() throws InterruptedException {
+		Bootstrap b = new Bootstrap();
+		EventLoopGroup group = new NioEventLoopGroup();
+		b = new Bootstrap();
+		b.group(group);
+		b.channel(NioDatagramChannel.class);
+		b.option(ChannelOption.SO_BROADCAST, true);
+		b.handler(new TestClientHandler());
+		Channel channel = b.bind(0).sync().channel();
+
+		channel.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
+				"谚语字典查询?", CharsetUtil.UTF_8), new InetSocketAddress(
+				"172.0.0.85",30000))).sync();
+	}
+
+
 
 	@Override
 	public void onError(String callId) {
