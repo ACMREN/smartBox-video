@@ -311,11 +311,11 @@ public class ARServiceImpl implements IARService {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             recorder.stop();
             recorder.close();
             grabber.stop();
             grabber.close();
-            e.printStackTrace();
         }
     }
 
