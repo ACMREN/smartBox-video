@@ -15,6 +15,7 @@ import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.IARService;
+import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.*;
 import org.bytedeco.opencv.opencv_core.Mat;
@@ -328,6 +329,7 @@ public class ARServiceImpl implements IARService {
         grabber = new FFmpegFrameGrabber(rtspLink);
         grabber.setOption("hwaccel", "cuda");
         grabber.setVideoCodecName("h264_cuvid");
+//        grabber.setVideoCodec();
         grabber.setVideoOption("rtsp_transport", "tcp");
         avutil.av_log_set_level(avutil.AV_LOG_ERROR);
         grabber.start();
@@ -343,7 +345,8 @@ public class ARServiceImpl implements IARService {
         recorder.setFormat("flv");
         recorder.setFrameRate(grabber.getFrameRate());
         recorder.setVideoBitrate(grabber.getVideoBitrate());
-        recorder.setVideoCodecName("h264_nvenc");
+//        recorder.setVideoCodecName("h264_nvenc");
+        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.start();
     }
 
