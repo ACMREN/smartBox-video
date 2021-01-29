@@ -93,3 +93,10 @@ CREATE TABLE `entity_info` (
     data TEXT DEFAULT NULL COMMENT '数据',
     PRIMARY KEY(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='三维实体数据表';
+
+CREATE TABLE `ar_config_info` (
+    id INT(20) AUTO_INCREMENT COMMENT '自增id',
+    device_base_id INT(10) NOT NULL COMMENT '设备基础id',
+    data TEXT DEFAULT NULL COMMENT '数据',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ar基础设置表';

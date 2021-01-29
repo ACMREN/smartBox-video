@@ -429,7 +429,6 @@ public class ARServiceImpl implements IARService {
 
         isKeyFrame = false;
 
-        System.out.println(posMap.toString());
         webSocketServer.onMessage(posMap.toString());
 
         return isKeyFrame;
@@ -441,7 +440,6 @@ public class ARServiceImpl implements IARService {
      * @return
      */
     private static Double HexToDecMa(short pos) {
-        System.out.println(pos);
         return Double.valueOf((pos / 4096) * 1000 +((pos % 4096) / 256) * 100 + ((pos % 256) / 16) * 10 + (pos % 16));
     }
 }
