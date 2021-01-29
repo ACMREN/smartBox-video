@@ -3,9 +3,11 @@ package com.yangjie.JGB28181.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.common.result.GBResult;
+import com.yangjie.JGB28181.entity.ArConfigInfo;
 import com.yangjie.JGB28181.entity.EntityInfo;
 import com.yangjie.JGB28181.entity.enumEntity.EntityTypeEnum;
 import com.yangjie.JGB28181.entity.vo.EntityInfoVo;
+import com.yangjie.JGB28181.service.ArConfigInfoService;
 import com.yangjie.JGB28181.service.EntityInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +25,50 @@ public class ARController {
 
     @Autowired
     private EntityInfoService entityInfoService;
+
+    @Autowired
+    private ArConfigInfoService arConfigInfoService;
+
+    /**
+     * 获取ar基础配置
+     * @param deviceId
+     * @return
+     */
+    @GetMapping("ARConfig")
+    public GBResult getARConfig(@RequestParam("deviceId")Integer deviceId) {
+        ArConfigInfo arConfigInfo = arConfigInfoService.getBaseMapper()
+                .selectOne(new QueryWrapper<ArConfigInfo>().eq("device_base_id", deviceId));
+
+        return GBResult.ok(arConfigInfo);
+    }
+
+    /**
+     * 新增/更新ar基础配置
+     * @param arConfigInfo
+     * @return
+     */
+    @PostMapping("ARConfig")
+    public GBResult saveARConfig(@RequestBody ArConfigInfo arConfigInfo) {
+        arConfigInfoService.save(arConfigInfo);
+
+        return GBResult.ok();
+    }
+
+    /**
+     * 删除ar基础配置
+     * @param deleteJson
+     * @return
+     */
+    @DeleteMapping("ARConfig")
+    public GBResult deleteARConfig(@RequestBody JSONObject deleteJson) {
+        List<Integer> arIds = deleteJson.getObject("arIds", ArrayList.class);
+
+        for (Integer item : arIds) {
+            arConfigInfoService.removeById(item);
+        }
+
+        return GBResult.ok();
+    }
 
     /**
      * 获取三维实体信息
