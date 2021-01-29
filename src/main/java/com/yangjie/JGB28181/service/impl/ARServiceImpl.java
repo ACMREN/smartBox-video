@@ -15,6 +15,7 @@ import com.yangjie.JGB28181.entity.bo.Config;
 import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.service.CameraInfoService;
 import com.yangjie.JGB28181.service.IARService;
+import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.*;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_core.Point;
@@ -328,6 +329,7 @@ public class ARServiceImpl implements IARService {
         grabber.setOption("hwaccel", "cuda");
         grabber.setVideoCodecName("h264_cuvid");
         grabber.setVideoOption("rtsp_transport", "tcp");
+        avutil.av_log_set_level(avutil.AV_LOG_ERROR);
         grabber.start();
     }
 
