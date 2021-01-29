@@ -248,6 +248,7 @@ public class ARServiceImpl implements IARService {
         cameraPojo.setIsSwitch(pojo.getIsSwitch());
         cameraPojo.setRecordDir(recordDir);
         cameraPojo.setApplicationContext(applicationContext);
+        WebSocketServer.deviceCameraPojoMap.put(Integer.valueOf(pojo.getDeviceId()), cameraPojo);
 
         // 执行任务
         new Thread(() -> {
