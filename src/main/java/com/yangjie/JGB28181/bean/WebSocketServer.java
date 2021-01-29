@@ -31,8 +31,12 @@ public class WebSocketServer {
 
     public static Map<Integer, Boolean> deviceKeyFrameMap = new HashMap<>(20);
 
+    private static IARService arService;
+
     @Autowired
-    IARService arService;
+    public void setArService (IARService arService) {
+        WebSocketServer.arService = arService;
+    }
 
     public static void setApplicationContext(ApplicationContext applicationContext) {
         WebSocketServer.applicationContext = applicationContext;
@@ -90,7 +94,6 @@ public class WebSocketServer {
     }
 
     private JSONObject getARStream(Integer deviceBaseId) {
-        arService = (IARService) applicationContext.getBean("arService");
         CameraPojo cameraPojo = deviceCameraPojoMap.get(deviceBaseId);
         // 判断是否已经存在对应的推流
         if (null == cameraPojo) {

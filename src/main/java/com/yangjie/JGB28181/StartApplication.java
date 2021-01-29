@@ -27,7 +27,6 @@ public class StartApplication extends SpringBootServletInitializer
 		// 将上下文传入CameraPush类中，用于检测tcp连接是否正常
 		final ApplicationContext applicationContext = SpringApplication.run(StartApplication.class, args);
 		RtspToRtmpPusher.setApplicationContext(applicationContext);
-		WebSocketServer.setApplicationContext(applicationContext);
 	}
 
 	/*
