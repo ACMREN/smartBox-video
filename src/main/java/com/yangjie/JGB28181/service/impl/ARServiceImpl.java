@@ -109,7 +109,6 @@ public class ARServiceImpl implements IARService {
             GBResult result = this.rtspDevicePlay(cameraPojo);
             int code = result.getCode();
             if (code == 200) {
-                List<JSONObject> resultList = new ArrayList<>();
                 MediaData mediaData = (MediaData) result.getData();
 
                 JSONObject resultJson = new JSONObject();
@@ -117,8 +116,7 @@ public class ARServiceImpl implements IARService {
                 resultJson.put("deviceId", deviceBaseId);
                 resultJson.put("source", address);
 
-                resultList.add(resultJson);
-                return GBResult.ok(resultList);
+                return GBResult.ok(resultJson);
             }
         }
 
