@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.entity.*;
 import com.yangjie.JGB28181.entity.enumEntity.EntityTypeEnum;
-import com.yangjie.JGB28181.entity.vo.ArConfigInfoVo;
 import com.yangjie.JGB28181.entity.vo.EntityInfoVo;
 import com.yangjie.JGB28181.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,17 +47,19 @@ public class ARController {
         ArConfigInfo arConfigInfo = arConfigInfoService.getBaseMapper()
                 .selectOne(new QueryWrapper<ArConfigInfo>().eq("device_base_id", deviceId));
 
+        if (null == arConfigInfo) {
+            return GBResult.ok();
+        }
         return GBResult.ok(arConfigInfo.getData());
     }
 
     /**
      * 新增/更新ar基础配置
-     * @param arConfigInfoVo
+     * @param dataJson
      * @return
      */
     @PostMapping("ARConfig")
-    public GBResult saveARConfig(@RequestBody ArConfigInfoVo arConfigInfoVo) {
-        JSONObject dataJson = arConfigInfoVo.getData();
+    public GBResult saveARConfig(@RequestBody JSONObject dataJson) {
         Integer deviceId = dataJson.getJSONObject("video").getInteger("deviceId");
 
         ArConfigInfo arConfigInfo = new ArConfigInfo();
