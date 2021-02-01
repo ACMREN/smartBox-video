@@ -563,6 +563,22 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
+    @PostMapping("getCascadeOutput")
+    public GBResult getCascadeList(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+        Integer pageNo = deviceBaseCondition.getPageNo();
+        Integer pageSize = deviceBaseCondition.getPageSize();
+        Integer offset = (pageNo - 1) * pageSize;
+
+        List<GbServerInfo> gbServerInfos = gbServerInfoService.getBaseMapper()
+                .selectList(new QueryWrapper<GbServerInfo>()
+                        .last("limit " + offset + ", " + pageSize));
+        Integer totalCount = gbServerInfoService.count();
+
+        PageListVo pageListVo = new PageListVo(gbServerInfos, pageNo, pageSize, totalCount);
+
+        return GBResult.ok(pageListVo);
+    }
+
     /**
      * 对级联的上级平台进行注册
      * @param higherServerInfoBo

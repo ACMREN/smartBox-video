@@ -17,4 +17,7 @@ public class DeviceBaseCondition {
     private Integer toHigherServer;
     // 平台id
     private List<Integer> pid;
+
+    private Integer pageNo;
+    private Integer pageSize;
 }

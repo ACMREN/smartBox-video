@@ -8,5 +8,5 @@ public class EntityInfoVo {
     private Integer id;
     private String type;
     private String name;
-    private JSONObject data;
+    private JSONObject config;
 }

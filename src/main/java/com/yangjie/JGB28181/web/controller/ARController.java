@@ -371,7 +371,7 @@ public class ARController {
                 entityInfoVo.setId(item.getId());
                 entityInfoVo.setType(EntityTypeEnum.getDataByCode(item.getId()).getName());
                 entityInfoVo.setName(item.getName());
-                entityInfoVo.setData(JSONObject.parseObject(item.getData()));
+                entityInfoVo.setConfig(JSONObject.parseObject(item.getData()));
                 entityInfoVos.add(entityInfoVo);
             }
         }
@@ -400,13 +400,13 @@ public class ARController {
     @PostMapping("/entitys")
     public GBResult saveEntity(@RequestBody EntityInfoVo entityInfoVo) {
         Integer id = entityInfoVo.getId();
-        JSONObject dataJson = entityInfoVo.getData();
+        JSONObject dataJson = entityInfoVo.getConfig();
 
         EntityInfo entityInfo = new EntityInfo();
         entityInfo.setId(entityInfoVo.getId());
         entityInfo.setType(EntityTypeEnum.getDataByName(entityInfo.getName()).getCode());
         entityInfo.setName(entityInfoVo.getName());
-        entityInfo.setData(entityInfoVo.getData().toJSONString());
+        entityInfo.setData(entityInfoVo.getConfig().toJSONString());
         entityInfoService.saveOrUpdate(entityInfo);
 
         if (null == id){
