@@ -415,7 +415,7 @@ public class ARController {
             entityInfoService.saveOrUpdate(entityInfo);
         }
 
-        return GBResult.ok(entityInfo.getId());
+        return GBResult.ok(entityInfo.getData());
     }
 
     @DeleteMapping("/entitys")
