@@ -59,6 +59,10 @@ public class ARController {
      */
     @PostMapping("ARConfig")
     public GBResult saveARConfig(@RequestBody ArConfigInfo arConfigInfo) {
+        JSONObject dataJson = arConfigInfo.getData();
+        Integer deviceId = dataJson.getJSONObject("video").getInteger("deviceId");
+        arConfigInfo.setDeviceBaseId(deviceId);
+
         arConfigInfoService.save(arConfigInfo);
 
         return GBResult.ok(arConfigInfo.getId());
@@ -320,7 +324,7 @@ public class ARController {
                 entityInfoVo.setId(item.getId());
                 entityInfoVo.setType(EntityTypeEnum.getDataByCode(item.getId()).getName());
                 entityInfoVo.setName(item.getName());
-                entityInfoVo.setData(item.getData());
+                entityInfoVo.setData(JSONObject.parseObject(item.getData()));
                 entityInfoVos.add(entityInfoVo);
             }
         }

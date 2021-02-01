@@ -1,5 +1,6 @@
 package com.yangjie.JGB28181.entity;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
@@ -34,7 +35,7 @@ public class ArConfigInfo implements Serializable {
     /**
      * 数据
      */
-    private String data;
+    private JSONObject data;
 
 
 }
