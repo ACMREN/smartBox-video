@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.entity.*;
 import com.yangjie.JGB28181.entity.enumEntity.EntityTypeEnum;
+import com.yangjie.JGB28181.entity.vo.ArConfigInfoVo;
 import com.yangjie.JGB28181.entity.vo.EntityInfoVo;
 import com.yangjie.JGB28181.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,14 +55,19 @@ public class ARController {
 
     /**
      * 新增/更新ar基础配置
-     * @param arConfigInfo
+     * @param arConfigInfoVo
      * @return
      */
     @PostMapping("ARConfig")
-    public GBResult saveARConfig(@RequestBody ArConfigInfo arConfigInfo) {
-        JSONObject dataJson = arConfigInfo.getData();
+    public GBResult saveARConfig(@RequestBody ArConfigInfoVo arConfigInfoVo) {
+        JSONObject dataJson = arConfigInfoVo.getData();
+        Integer id = arConfigInfoVo.getId();
         Integer deviceId = dataJson.getJSONObject("video").getInteger("deviceId");
+
+        ArConfigInfo arConfigInfo = new ArConfigInfo();
+        arConfigInfo.setId(id);
         arConfigInfo.setDeviceBaseId(deviceId);
+        arConfigInfo.setData(dataJson.toJSONString());
 
         arConfigInfoService.save(arConfigInfo);
 
@@ -344,7 +350,7 @@ public class ARController {
         entityInfo.setId(entityInfoVo.getId());
         entityInfo.setType(EntityTypeEnum.getDataByName(entityInfo.getName()).getCode());
         entityInfo.setName(entityInfoVo.getName());
-        entityInfo.setData(entityInfo.getData());
+        entityInfo.setData(entityInfoVo.getData().toJSONString());
         entityInfoService.saveOrUpdate(entityInfo);
 
         return GBResult.ok(entityInfo.getId());

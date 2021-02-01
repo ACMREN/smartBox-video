@@ -35,7 +35,7 @@ public class ArConfigInfo implements Serializable {
     /**
      * 数据
      */
-    private JSONObject data;
+    private String data;
 
 
 }
