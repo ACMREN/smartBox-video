@@ -404,7 +404,7 @@ public class ARController {
 
         EntityInfo entityInfo = new EntityInfo();
         entityInfo.setId(entityInfoVo.getId());
-        entityInfo.setType(EntityTypeEnum.getDataByName(entityInfo.getName()).getCode());
+        entityInfo.setType(EntityTypeEnum.getDataByName(entityInfoVo.getName()).getCode());
         entityInfo.setName(entityInfoVo.getName());
         entityInfo.setData(entityInfoVo.getConfig().toJSONString());
         entityInfoService.saveOrUpdate(entityInfo);
