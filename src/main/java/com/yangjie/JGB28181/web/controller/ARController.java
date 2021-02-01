@@ -61,15 +61,13 @@ public class ARController {
     @PostMapping("ARConfig")
     public GBResult saveARConfig(@RequestBody ArConfigInfoVo arConfigInfoVo) {
         JSONObject dataJson = arConfigInfoVo.getData();
-        Integer id = arConfigInfoVo.getId();
         Integer deviceId = dataJson.getJSONObject("video").getInteger("deviceId");
 
         ArConfigInfo arConfigInfo = new ArConfigInfo();
-        arConfigInfo.setId(id);
         arConfigInfo.setDeviceBaseId(deviceId);
         arConfigInfo.setData(dataJson.toJSONString());
 
-        arConfigInfoService.getBaseMapper().update(arConfigInfo, new QueryWrapper<ArConfigInfo>().eq("device_base_id", deviceId));
+        arConfigInfoService.saveOrUpdate(arConfigInfo);
 
         return GBResult.ok(arConfigInfo.getData());
     }
@@ -83,7 +81,7 @@ public class ARController {
     public GBResult deleteARConfig(@RequestBody JSONObject deleteJson) {
         List<Integer> deviceIds = deleteJson.getObject("deviceIds", ArrayList.class);
 
-        arConfigInfoService.remove(new QueryWrapper<ArConfigInfo>().in("device_base_id", deviceIds));
+        arConfigInfoService.removeByIds(deviceIds);
 
         return GBResult.ok();
     }
