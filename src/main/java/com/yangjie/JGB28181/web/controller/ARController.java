@@ -50,7 +50,7 @@ public class ARController {
         ArConfigInfo arConfigInfo = arConfigInfoService.getBaseMapper()
                 .selectOne(new QueryWrapper<ArConfigInfo>().eq("device_base_id", deviceId));
 
-        return GBResult.ok(arConfigInfo);
+        return GBResult.ok(arConfigInfo.getData());
     }
 
     /**
@@ -69,9 +69,9 @@ public class ARController {
         arConfigInfo.setDeviceBaseId(deviceId);
         arConfigInfo.setData(dataJson.toJSONString());
 
-        arConfigInfoService.save(arConfigInfo);
+        arConfigInfoService.getBaseMapper().update(arConfigInfo, new QueryWrapper<ArConfigInfo>().eq("device_base_id", deviceId));
 
-        return GBResult.ok(arConfigInfo.getId());
+        return GBResult.ok(arConfigInfo.getData());
     }
 
     /**
@@ -81,9 +81,9 @@ public class ARController {
      */
     @DeleteMapping("ARConfig")
     public GBResult deleteARConfig(@RequestBody JSONObject deleteJson) {
-        List<Integer> arIds = deleteJson.getObject("arIds", ArrayList.class);
+        List<Integer> deviceIds = deleteJson.getObject("deviceIds", ArrayList.class);
 
-        arConfigInfoService.removeByIds(arIds);
+        arConfigInfoService.remove(new QueryWrapper<ArConfigInfo>().in("device_base_id", deviceIds));
 
         return GBResult.ok();
     }
@@ -115,10 +115,15 @@ public class ARController {
      * @return
      */
     @GetMapping("pois")
-    public GBResult getPois(@RequestParam("pIds")List<Integer> pIds) {
+    public GBResult getPois(@RequestParam("ids")List<Integer> pIds) {
         List<ArTagInfo> arTagInfos = arTagInfoService.getBaseMapper().selectList(new QueryWrapper<ArTagInfo>().in("id", pIds));
 
-        return GBResult.ok(arTagInfos);
+        List<String> dataStrList = new ArrayList<>();
+        for (ArTagInfo item : arTagInfos) {
+            dataStrList.add(item.getData());
+        }
+
+        return GBResult.ok(dataStrList);
     }
 
     /**
@@ -141,7 +146,13 @@ public class ARController {
         arTagInfo.setData(dataJson.toJSONString());
         arTagInfoService.saveOrUpdate(arTagInfo);
 
-        return GBResult.ok(arTagInfo.getId());
+        if (null == id) {
+            dataJson.put("pId", arTagInfo.getId());
+            arTagInfo.setData(dataJson.toJSONString());
+            arTagInfoService.saveOrUpdate(arTagInfo);
+        }
+
+        return GBResult.ok(dataJson.toJSONString());
     }
 
     /**
@@ -151,7 +162,7 @@ public class ARController {
      */
     @DeleteMapping("pois")
     public GBResult deletePois(@RequestBody JSONObject deleteJson) {
-        List<Integer> pIds = deleteJson.getObject("pIds", ArrayList.class);
+        List<Integer> pIds = deleteJson.getObject("ids", ArrayList.class);
 
         arTagInfoService.removeByIds(pIds);
 
@@ -173,16 +184,21 @@ public class ARController {
     }
 
     @GetMapping("poiTemps")
-    public GBResult getTagStyle(@RequestParam("templateIds")List<Integer> templateIds) {
+    public GBResult getTagStyle(@RequestParam("ids")List<Integer> templateIds) {
         List<ArTemplateInfo> arTemplateInfos = arTemplateInfoService.getBaseMapper().selectList(new QueryWrapper<ArTemplateInfo>()
                 .in("id", templateIds));
 
-        return GBResult.ok(arTemplateInfos);
+        List<String> dataStrList = new ArrayList<>();
+        for (ArTemplateInfo item : arTemplateInfos) {
+            dataStrList.add(item.getData());
+        }
+
+        return GBResult.ok(dataStrList);
     }
 
     @PostMapping("poiTemps")
     public GBResult saveTagStyles(@RequestBody JSONObject dataJson) {
-        Integer id = dataJson.getInteger("sId");
+        Integer id = dataJson.getInteger("templateId");
         String name = dataJson.getString("templateName");
 
         ArTemplateInfo arTemplateInfo = new ArTemplateInfo();
@@ -192,12 +208,18 @@ public class ARController {
 
         arTemplateInfoService.saveOrUpdate(arTemplateInfo);
 
-        return GBResult.ok(arTemplateInfo.getId());
+        if (null == id){
+            dataJson.put("templateId", id);
+            arTemplateInfo.setData(dataJson.toJSONString());
+            arTemplateInfoService.saveOrUpdate(arTemplateInfo);
+        }
+
+        return GBResult.ok(arTemplateInfo.getData());
     }
 
     @DeleteMapping("poiTemps")
     public GBResult deleteTagStyle(@RequestBody JSONObject deleteJson) {
-        List<Integer> templateIds = deleteJson.getObject("templateIds", ArrayList.class);
+        List<Integer> templateIds = deleteJson.getObject("ids", ArrayList.class);
 
         arTemplateInfoService.removeByIds(templateIds);
 
@@ -219,11 +241,16 @@ public class ARController {
     }
 
     @GetMapping("poiStyles")
-    public GBResult getStyle(@RequestParam("sIds")List<Integer> sIds) {
+    public GBResult getStyle(@RequestParam("ids")List<Integer> sIds) {
         List<ArStyleInfo> arStyleInfos = arStyleInfoService.getBaseMapper().selectList(new QueryWrapper<ArStyleInfo>()
                 .in("id", sIds));
 
-        return GBResult.ok(arStyleInfos);
+        List<String> dataStrList = new ArrayList<>();
+        for (ArStyleInfo item : arStyleInfos) {
+            dataStrList.add(item.getData());
+        }
+
+        return GBResult.ok(dataStrList);
     }
 
     @PostMapping("poiStyles")
@@ -236,12 +263,18 @@ public class ARController {
         arStyleInfo.setStyleName(name);
         arStyleInfo.setData(dataJson.toJSONString());
 
-        return GBResult.ok(arStyleInfo.getId());
+        if (null == id){
+            dataJson.put("sId", id);
+            arStyleInfo.setData(dataJson.toJSONString());
+            arStyleInfoService.saveOrUpdate(arStyleInfo);
+        }
+
+        return GBResult.ok(arStyleInfo.getData());
     }
 
     @DeleteMapping("poiStyles")
     public GBResult deleteStyle(@RequestBody JSONObject deleteJson) {
-        List<Integer> sIds = deleteJson.getObject("sIds", ArrayList.class);
+        List<Integer> sIds = deleteJson.getObject("ids", ArrayList.class);
 
         arStyleInfoService.removeByIds(sIds);
 
@@ -265,11 +298,16 @@ public class ARController {
     }
 
     @GetMapping("scenes")
-    public GBResult getScene(@RequestParam("sceneIds")List<Integer> sceneIds) {
+    public GBResult getScene(@RequestParam("ids")List<Integer> sceneIds) {
         List<ArSceneInfo> arSceneInfos = arSceneInfoService.getBaseMapper().selectList(new QueryWrapper<ArSceneInfo>()
                 .in("id", sceneIds));
 
-        return GBResult.ok(arSceneInfos);
+        List<String> dataStrList = new ArrayList<>();
+        for (ArSceneInfo item : arSceneInfos) {
+            dataStrList.add(item.getData());
+        }
+
+        return GBResult.ok(dataStrList);
     }
 
     @PostMapping
@@ -286,12 +324,18 @@ public class ARController {
 
         arSceneInfoService.saveOrUpdate(arSceneInfo);
 
-        return GBResult.ok(arSceneInfo);
+        if (null == id){
+            dataJson.put("sceneId", id);
+            arSceneInfo.setData(dataJson.toJSONString());
+            arSceneInfoService.saveOrUpdate(arSceneInfo);
+        }
+
+        return GBResult.ok(arSceneInfo.getData());
     }
 
     @DeleteMapping("scenes")
     public GBResult deleteScene(@RequestBody JSONObject deleteJson) {
-        List<Integer> sceneIds = deleteJson.getObject("sceneIds", ArrayList.class);
+        List<Integer> sceneIds = deleteJson.getObject("ids", ArrayList.class);
 
         arSceneInfoService.removeByIds(sceneIds);
 
@@ -346,12 +390,21 @@ public class ARController {
      */
     @PostMapping("/entitys")
     public GBResult saveEntity(@RequestBody EntityInfoVo entityInfoVo) {
+        Integer id = entityInfoVo.getId();
+        JSONObject dataJson = entityInfoVo.getData();
+
         EntityInfo entityInfo = new EntityInfo();
         entityInfo.setId(entityInfoVo.getId());
         entityInfo.setType(EntityTypeEnum.getDataByName(entityInfo.getName()).getCode());
         entityInfo.setName(entityInfoVo.getName());
         entityInfo.setData(entityInfoVo.getData().toJSONString());
         entityInfoService.saveOrUpdate(entityInfo);
+
+        if (null == id){
+            dataJson.put("eId", id);
+            entityInfo.setData(dataJson.toJSONString());
+            entityInfoService.saveOrUpdate(entityInfo);
+        }
 
         return GBResult.ok(entityInfo.getId());
     }
