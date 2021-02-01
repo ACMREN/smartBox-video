@@ -100,3 +100,34 @@ CREATE TABLE `ar_config_info` (
     data TEXT DEFAULT NULL COMMENT '数据',
     PRIMARY KEY(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ar基础设置表';
+
+CREATE TABLE `ar_tag_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    device_base_id INT(10) NOT NULL COMMENT '设备基础id',
+    type INT(10) DEFAULT NULL COMMENT '标签类型',
+    name VARCHAR(20) DEFAULT NULL COMMENT '标签名称',
+    data TEXT DEFAULT NULL COMMENT '数据',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ar标签信息表';
+
+CREATE TABLE `ar_template_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    template_name VARCHAR(20) DEFAULT NULL COMMENT '标签模板名称',
+    data TEXT DEFAULT NULL COMMENT '数据',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ar标签模板表';
+
+CREATE TABLE `ar_style_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    style_name VARCHAR(20) DEFAULT NULL COMMENT '标签样式名称',
+    data TEXT DEFAULT NULL COMMENT '数据',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ar标签样式表';
+
+CREATE TABLE `ar_scene_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    device_base_id INT(10) NOT NULL COMMENT '设备基础id',
+    name VARCHAR(20) DEFAULT NULL COMMENT '场景名称',
+    data TEXT DEFAULT NULL COMMENT '数据',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ar场景信息表';
