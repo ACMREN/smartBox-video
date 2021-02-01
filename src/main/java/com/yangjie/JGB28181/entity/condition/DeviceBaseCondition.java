@@ -15,4 +15,6 @@ public class DeviceBaseCondition {
     private List<Integer> deviceIds;
 
     private Integer toHigherServer;
+    // 平台id
+    private List<Integer> pid;
 }

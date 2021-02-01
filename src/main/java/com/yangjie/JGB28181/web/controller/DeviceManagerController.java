@@ -570,21 +570,23 @@ public class DeviceManagerController {
      */
     @RequestMapping(value = "sendRegister")
     public GBResult sendRegister(@RequestBody HigherServerInfoBo higherServerInfoBo) {
-        Integer id = higherServerInfoBo.getDatabaseId();
-        String serverId = higherServerInfoBo.getId();
+        Integer id = higherServerInfoBo.getPid();
+        String serverId = higherServerInfoBo.getDstSIP();
         String serverDomain = higherServerInfoBo.getDomain();
-        String serverIp = higherServerInfoBo.getHost();
-        String serverPort = higherServerInfoBo.getPort();
-        String password = higherServerInfoBo.getPw();
-        String localSerialNum = higherServerInfoBo.getLocalSerialNum();
-        String localIp = higherServerInfoBo.getLocalIp();
-        Integer localPort = higherServerInfoBo.getLocalPort();
-        Integer expireTime = higherServerInfoBo.getExpireTime();
-        Integer registerInterval = higherServerInfoBo.getRegisterInterval();
-        Integer heartBeatInterval = higherServerInfoBo.getHeartBeatInterval();
+        String serverIp = higherServerInfoBo.getDstIp();
+        Integer serverPort = higherServerInfoBo.getDstPort();
+        String password = higherServerInfoBo.getPassword();
+        String localSerialNum = higherServerInfoBo.getSelfSIP();
+        String localIp = higherServerInfoBo.getSelfIp();
+        Integer localPort = higherServerInfoBo.getSelfPort();
+        Integer expireTime = higherServerInfoBo.getRegValid();
+        Integer registerInterval = higherServerInfoBo.getRegPeriod();
+        Integer heartBeatInterval = higherServerInfoBo.getRegHeart();
         Integer catalogSize = higherServerInfoBo.getCatalogSize();
-        String charsetCode = higherServerInfoBo.getCharsetCode();
-        String protocol = higherServerInfoBo.getProtocol();
+        String charsetCode = higherServerInfoBo.getCharSet();
+        String transProtocol = higherServerInfoBo.getTransProtocol();
+        String streamProtocol = higherServerInfoBo.getStreamProtocol();
+        List<Integer> cameraList = higherServerInfoBo.getCameraList();
         Long cseq = 1L;
         String callId = IDUtils.id();
         String fromTag = IDUtils.id();
@@ -596,7 +598,7 @@ public class DeviceManagerController {
         gbServerInfo.setDeviceSerialNum(serverId);
         gbServerInfo.setDomain(serverDomain);
         gbServerInfo.setIp(serverIp);
-        gbServerInfo.setPort(Integer.valueOf(serverPort));
+        gbServerInfo.setPort(serverPort);
         gbServerInfo.setPassword(password);
         gbServerInfo.setLocalSerialNum(DeviceManagerController.serverInfoBo.getId());
         gbServerInfo.setLocalIp(DeviceManagerController.serverInfoBo.getHost());
@@ -605,9 +607,16 @@ public class DeviceManagerController {
         gbServerInfo.setRegisterInterval(registerInterval);
         gbServerInfo.setHeartBeatInterval(heartBeatInterval);
         gbServerInfo.setCatalogSize(1);
-        gbServerInfo.setCharsetCode("UTF8");
-        gbServerInfo.setProtocol("UDP");
+        gbServerInfo.setCharsetCode(charsetCode);
+        gbServerInfo.setTransProtocol(transProtocol);
+        gbServerInfo.setStreamProtocol(streamProtocol);
         gbServerInfo.setStatus(0);
+        StringBuilder sb = new StringBuilder();
+        for (Integer deviceBaseId : cameraList) {
+            sb.append(deviceBaseId).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        gbServerInfo.setCameraList(sb.toString());
         gbServerInfoService.saveOrUpdate(gbServerInfo);
 
         // 把级联的服务器放入到redis中
@@ -618,19 +627,33 @@ public class DeviceManagerController {
         host.setWanPort(Integer.valueOf(serverPort));
         host.setAddress(serverIp + ":" + serverPort);
         device.setHost(host);
-        device.setProtocol("UDP");
+        device.setProtocol(transProtocol);
         String connectServerJson = JSONObject.toJSONString(device);
         String key = SipLayer.SERVER_DEVICE_PREFIX + serverId;
         RedisUtil.set(key, expireTime, connectServerJson);
         SipLayer.higherServerExpiredTimeMap.put(key, expireTime);
 
         try	{
-            mSipLayer.sendRegister(serverId, serverDomain, serverIp, serverPort, password, callId, fromTag, null, null, null, cseq);
+            mSipLayer.sendRegister(serverId, serverDomain, serverIp, serverPort.toString(), password, callId, fromTag, null, null, null, cseq);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return GBResult.ok();
+    }
+
+    @PostMapping("getCascadeOutputDetail")
+    public GBResult getCascadeOutputDetail(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+        List<Integer> pid = deviceBaseCondition.getPid();
+
+        List<GbServerInfo> gbServerInfos = gbServerInfoService.listByIds(pid);
+        List<HigherServerInfoBo> higherServerInfoBos = new ArrayList<>();
+        for (GbServerInfo item : gbServerInfos) {
+            HigherServerInfoBo higherServerInfoBo = new HigherServerInfoBo(item);
+            higherServerInfoBos.add(higherServerInfoBo);
+        }
+
+        return GBResult.ok(higherServerInfoBos);
     }
 
     /**

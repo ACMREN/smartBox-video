@@ -346,8 +346,8 @@ public class ARController {
      * @param pageSize
      * @return
      */
-    @GetMapping("/entitys")
-    public GBResult getEntity(@RequestParam("type")String type, @RequestParam("pageNo")Integer pageNo,
+    @GetMapping("/entityList")
+    public GBResult getEntityList(@RequestParam("type")String type, @RequestParam("pageNo")Integer pageNo,
                               @RequestParam("pageSize")Integer pageSize) {
         Integer offset = (pageNo - 1) * pageSize;
         List<EntityInfo> entityInfos = new ArrayList<>();
@@ -379,6 +379,18 @@ public class ARController {
         PageListVo pageListVo = new PageListVo(entityInfos, pageNo, pageSize, totalCount);
 
         return GBResult.ok(pageListVo);
+    }
+
+    @GetMapping("entitys")
+    public GBResult getEntitys(@RequestParam("ids")List<Integer> ids) {
+        List<EntityInfo> entityInfos = entityInfoService.listByIds(ids);
+
+        List<String> dataStrList = new ArrayList<>();
+        for (EntityInfo item : entityInfos) {
+            dataStrList.add(item.getData());
+        }
+
+        return GBResult.ok(dataStrList);
     }
 
     /**

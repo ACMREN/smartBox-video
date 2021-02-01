@@ -27,6 +27,16 @@ public class GbServerInfo implements Serializable {
     private Integer id;
 
     /**
+     * 名称
+     */
+    private String name;
+
+    /**
+     * 项目
+     */
+    private String project;
+
+    /**
      * 设备编号
      */
     private String deviceSerialNum;
@@ -92,14 +102,42 @@ public class GbServerInfo implements Serializable {
     private String charsetCode;
 
     /**
-     * 传输协议
+     * 信令传输协议
      */
-    private String protocol;
+    private String transProtocol;
+
+    /**
+     * 推流传输协议
+     */
+    private String streamProtocol;
+
+    /**
+     * 传输方式
+     */
+    private String type;
 
     /**
      * 在线状态：0-不在线，1-在线
      */
     private Integer status;
 
+    /**
+     * 级联摄像头列表
+     */
+    private String cameraList;
 
+    /**
+     * 创建时间
+     */
+    private String createTime;
+
+    /**
+     * 最后更新时间
+     */
+    private String lastUpdateTime;
+
+    /**
+     * 监控数量
+     */
+    private Integer cameraNum;
 }
