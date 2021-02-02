@@ -354,9 +354,10 @@ public class ARController {
         List<EntityInfoVo> entityInfoVos = new ArrayList<>();
         Integer totalCount = 0;
         if (!StringUtils.isEmpty(type)) {
+            int typeCode = EntityTypeEnum.getDataByName(type).getCode();
             entityInfos = entityInfoService.getBaseMapper()
                     .selectList(new QueryWrapper<EntityInfo>()
-                            .eq("type", type)
+                            .eq("type", typeCode)
                             .last("limit " + offset + ", " + pageSize));
             totalCount = entityInfoService.count(new QueryWrapper<EntityInfo>().eq("type", type));
         } else {
