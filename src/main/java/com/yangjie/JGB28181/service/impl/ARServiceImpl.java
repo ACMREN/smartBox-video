@@ -294,10 +294,10 @@ public class ARServiceImpl implements IARService {
                     continue;
                 }
                 if (null != isGetKeyFrame && isGetKeyFrame) {
-                    if(interval == 50){
+                    if(interval == 25){
                         isKeyFrame = this.packageKeyFrameInfo(converter, frame, pointList);
                     }
-                    if(interval > 50){
+                    if(interval > 25){
                         interval = 0;
                         colorStr = "";
                         colorList = new ArrayList<>(10);
