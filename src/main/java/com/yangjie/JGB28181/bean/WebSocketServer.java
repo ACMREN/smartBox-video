@@ -89,7 +89,7 @@ public class WebSocketServer {
             }
             result.put("command", command);
             result.put("data", resultJson);
-            this.sendMessage(GBResult.ok(result).toString(), token);
+            this.sendMessage(result.toJSONString(), token);
         }
     }
 
