@@ -69,6 +69,8 @@ CREATE TABLE `snapshot_info` (
 CREATE TABLE `gb_server_info` (
     id INT(10) AUTO_INCREMENT COMMENT '自增id',
     device_serial_num VARCHAR(30) NOT NULL COMMENT '设备编号',
+    name VARCHAR(20) DEFAULT NULL COMMENT '名称',
+    project VARCHAR(20) DEFAULT NULL COMMENT '项目',
     domain VARCHAR(20) NOT NULL COMMENT '设备国标域',
     ip VARCHAR (10) NOT NULL COMMENT 'ip地址',
     port INT(10) NOT NULL COMMENT '端口',
@@ -81,8 +83,14 @@ CREATE TABLE `gb_server_info` (
     heart_beat_interval INT(10) NOT NULL COMMENT '心跳间隔',
     catalog_size TINYINT(10) DEFAULT NULL COMMENT '目录分组大小',
     charset_code VARCHAR(10) NOT NULL COMMENT '字符集',
-    protocol VARCHAR(10) DEFAULT NULL COMMENT '传输协议',
+    type VARCHAR(20) DEFAULT 'direct' COMMENT '传输方式',
+    trans_protocol VARCHAR(10) DEFAULT NULL COMMENT '传输协议',
+    stream_protocol VARCHAR(10) DEFAULT NULL COMMENT '推流传输协议',
     status TINYINT(10) DEFAULT 0 COMMENT '在线状态：0-不在线，1-在线',
+    camera_list VARCHAR(100) DEFAULT NULL COMMENT '摄像头列表',
+    create_time DATETIME DEFAULT NULL COMMENT '创建时间',
+    last_update_time DATETIME DEFAULT NULL COMMENT '最后更新时间',
+    camera_num TINYINT(10) DEFAULT NULL COMMENT '监控数量',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='父设备信息表';
 

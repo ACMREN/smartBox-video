@@ -395,7 +395,7 @@ public class ARController {
 
     /**
      * 新增/修改三维实体信息
-     * @param entityInfoVo
+     * @param dataJson
      */
     @PostMapping("/entitys")
     public GBResult saveEntity(@RequestBody JSONObject dataJson) {
@@ -411,7 +411,7 @@ public class ARController {
         entityInfoService.saveOrUpdate(entityInfo);
 
         if (null == id){
-            dataJson.put("eId", id);
+            dataJson.put("eId", entityInfo.getId());
             entityInfo.setData(dataJson.toJSONString());
             entityInfoService.saveOrUpdate(entityInfo);
         }
