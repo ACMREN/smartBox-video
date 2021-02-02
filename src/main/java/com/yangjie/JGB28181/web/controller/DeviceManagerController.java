@@ -563,6 +563,12 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
+    @PostMapping("getCascadeInput")
+    public GBResult getCascadeInput(@RequestParam("pageNo")Integer pageNo, @RequestParam("pageSize")Integer pageSize) {
+
+        return GBResult.ok();
+    }
+
     @PostMapping("getCascadeOutput")
     public GBResult getCascadeList(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         Integer pageNo = deviceBaseCondition.getPageNo();

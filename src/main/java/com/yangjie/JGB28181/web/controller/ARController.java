@@ -252,6 +252,7 @@ public class ARController {
         arStyleInfo.setId(id);
         arStyleInfo.setStyleName(name);
         arStyleInfo.setData(dataJson.toJSONString());
+        arStyleInfoService.saveOrUpdate(arStyleInfo);
 
         if (null == id){
             dataJson.put("sId", id);
