@@ -359,7 +359,7 @@ public class ARController {
             for (EntityInfo item : entityInfos) {
                 EntityInfoVo entityInfoVo = new EntityInfoVo();
                 entityInfoVo.setId(item.getId());
-                entityInfoVo.setType(EntityTypeEnum.getDataByCode(item.getId()).getName());
+                entityInfoVo.setType(EntityTypeEnum.getDataByCode(item.getType()).getName());
                 entityInfoVo.setName(item.getName());
                 entityInfoVo.setConfig(JSONObject.parseObject(item.getData()));
                 entityInfoVos.add(entityInfoVo);
