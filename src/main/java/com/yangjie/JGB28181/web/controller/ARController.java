@@ -73,13 +73,10 @@ public class ARController {
 
     /**
      * 删除ar基础配置
-     * @param deleteJson
      * @return
      */
     @DeleteMapping("ARConfig")
-    public GBResult deleteARConfig(@RequestBody JSONObject deleteJson) {
-        List<Integer> deviceIds = deleteJson.getObject("deviceIds", ArrayList.class);
-
+    public GBResult deleteARConfig(@RequestParam("deviceIds")List<Integer> deviceIds) {
         arConfigInfoService.removeByIds(deviceIds);
 
         return GBResult.ok();
@@ -158,10 +155,8 @@ public class ARController {
      * @return
      */
     @DeleteMapping("pois")
-    public GBResult deletePois(@RequestBody JSONObject deleteJson) {
-        List<Integer> pIds = deleteJson.getObject("ids", ArrayList.class);
-
-        arTagInfoService.removeByIds(pIds);
+    public GBResult deletePois(@RequestParam("ids")List<Integer> ids) {
+        arTagInfoService.removeByIds(ids);
 
         return GBResult.ok();
     }
@@ -215,10 +210,8 @@ public class ARController {
     }
 
     @DeleteMapping("poiTemps")
-    public GBResult deleteTagStyle(@RequestBody JSONObject deleteJson) {
-        List<Integer> templateIds = deleteJson.getObject("ids", ArrayList.class);
-
-        arTemplateInfoService.removeByIds(templateIds);
+    public GBResult deleteTagStyle(@RequestParam("ids")List<Integer> ids) {
+        arTemplateInfoService.removeByIds(ids);
 
         return GBResult.ok();
     }
@@ -270,10 +263,8 @@ public class ARController {
     }
 
     @DeleteMapping("poiStyles")
-    public GBResult deleteStyle(@RequestBody JSONObject deleteJson) {
-        List<Integer> sIds = deleteJson.getObject("ids", ArrayList.class);
-
-        arStyleInfoService.removeByIds(sIds);
+    public GBResult deleteStyle(@RequestParam("ids")List<Integer> ids) {
+        arStyleInfoService.removeByIds(ids);
 
         return GBResult.ok();
     }
@@ -331,10 +322,8 @@ public class ARController {
     }
 
     @DeleteMapping("scenes")
-    public GBResult deleteScene(@RequestBody JSONObject deleteJson) {
-        List<Integer> sceneIds = deleteJson.getObject("ids", ArrayList.class);
-
-        arSceneInfoService.removeByIds(sceneIds);
+    public GBResult deleteScene(@RequestParam("ids")List<Integer> ids) {
+        arSceneInfoService.removeByIds(ids);
 
         return GBResult.ok();
     }
@@ -421,10 +410,9 @@ public class ARController {
     }
 
     @DeleteMapping("/entitys")
-    public GBResult deleteEntity(@RequestBody JSONObject deleteJson) {
-        List<Integer> eIds = deleteJson.getObject("eIds", ArrayList.class);
+    public GBResult deleteEntity(@RequestParam("ids")List<Integer> ids) {
 
-        entityInfoService.removeByIds(eIds);
+        entityInfoService.removeByIds(ids);
 
         return GBResult.ok();
     }
