@@ -47,7 +47,6 @@ public class WebSocketServer {
         logger.info("有设备请求加入websocket，用户id：" + token);
         this.token = token;
         clients.put(token, session);
-        this.sendMessage("test", null);
     }
 
     @OnClose
