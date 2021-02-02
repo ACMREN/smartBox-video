@@ -57,7 +57,9 @@ public class ARServiceImpl implements IARService {
     private FFmpegFrameRecorder recorder = null;
     private FFmpegFrameGrabber grabber = null;
 
-    private static Map<String, Object> posMap = new HashMap<>(20);
+    private Integer deviceId;
+
+    private static JSONObject resultJson = new JSONObject();
 
     private Long startTime = 0L;
     private Long useTime = 0L;
@@ -271,6 +273,7 @@ public class ARServiceImpl implements IARService {
         String ip = cameraPojo.getIp();
         String username = cameraPojo.getUsername();
         String password = cameraPojo.getPassword();
+        this.deviceId = Integer.valueOf(cameraPojo.getDeviceId());
 
         this.setUpGrabber(rtspLink);
         this.setUpRecorder(rtmpLink);
@@ -286,7 +289,7 @@ public class ARServiceImpl implements IARService {
         List<Point> pointList = this.setUpPointList();
         try {
             while (true) {
-                Boolean isGetKeyFrame = WebSocketServer.deviceKeyFrameMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+                Boolean isGetKeyFrame = WebSocketServer.deviceKeyFrameMap.get(deviceId);
 
                 frame = grabber.grab();
                 if (null == frame) {
@@ -390,9 +393,9 @@ public class ARServiceImpl implements IARService {
             hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
             net_dvr_ptzpos.read();
 
-            posMap.put("\"p\"", "\"" + HexToDecMa(net_dvr_ptzpos.wPanPos).toString()+"\"");
-            posMap.put("\"t\"", "\"" + HexToDecMa(net_dvr_ptzpos.wTiltPos).toString()+"\"");
-            posMap.put("\"z\"", "\"" + HexToDecMa(net_dvr_ptzpos.wZoomPos).toString()+"\"");
+            resultJson.put("p", HexToDecMa(net_dvr_ptzpos.wPanPos).toString());
+            resultJson.put("t", HexToDecMa(net_dvr_ptzpos.wTiltPos).toString());
+            resultJson.put("z", HexToDecMa(net_dvr_ptzpos.wZoomPos).toString());
         }
     }
 
@@ -430,13 +433,14 @@ public class ARServiceImpl implements IARService {
      */
     private boolean sendPTZPos(boolean isKeyFrame) {
 
-        posMap.put("\"isKeyFrame\"", "\""+isKeyFrame +"\"");
-        posMap.put("\"timestamp\"", "\""+useTime.toString() +"\"");
-        posMap.put("\"colorStr\"", "\""+colorStr +"\"");
+        resultJson.put("deviceId", deviceId);
+        resultJson.put("keyFrame", isKeyFrame);
+        resultJson.put("timestamp", useTime.toString());
+        resultJson.put("keyFrameCode", colorStr);
 
         isKeyFrame = false;
 
-        webSocketServer.onMessage(posMap.toString());
+        webSocketServer.sendMessage(resultJson.toJSONString(), null);
 
         return isKeyFrame;
     }
