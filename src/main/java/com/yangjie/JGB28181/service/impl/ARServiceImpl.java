@@ -77,8 +77,6 @@ public class ARServiceImpl implements IARService {
         scalarList.add(getColor(255,0,0));
         scalarList.add(getColor(255,0,255));
         scalarList.add(getColor(255,255,0));
-        scalarList.add(getColor(255,255,255));
-        scalarList.add(getColor(0,0,0));
         scalarList.add(getColor(0,255,0));
         scalarList.add(getColor(0,0,255));
     }
@@ -413,10 +411,10 @@ public class ARServiceImpl implements IARService {
      */
     private boolean packageKeyFrameInfo(OpenCVFrameConverter.ToMat converter, Frame frame, List<Point> pointList) {
         Random random = new Random();
-        colorList.add(random.nextInt(8));
-        colorList.add(random.nextInt(8));
-        colorList.add(random.nextInt(8));
-        colorList.add(random.nextInt(8));
+        colorList.add(random.nextInt(6));
+        colorList.add(random.nextInt(6));
+        colorList.add(random.nextInt(6));
+        colorList.add(random.nextInt(6));
 
         for (Integer item : colorList) {
             colorStr += item.toString();
