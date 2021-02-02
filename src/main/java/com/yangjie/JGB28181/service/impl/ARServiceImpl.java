@@ -381,6 +381,9 @@ public class ARServiceImpl implements IARService {
      */
     private void getPTZPos(String ip, String username, String password) {
         HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+        System.out.println("ip:" + ip);
+        System.out.println("username:" + username);
+        System.out.println("password:" + password);
 
         if (lUserID.intValue() <= 0) {
             lUserID = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
@@ -395,10 +398,6 @@ public class ARServiceImpl implements IARService {
 
             hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
             net_dvr_ptzpos.read();
-
-            System.out.println("panPos:" + net_dvr_ptzpos.wPanPos);
-            System.out.println("tiltPos:" + net_dvr_ptzpos.wTiltPos);
-            System.out.println("zoomPos:" + net_dvr_ptzpos.wZoomPos);
 
             resultJson.put("p", HexToDecMa(net_dvr_ptzpos.wPanPos).toString());
             resultJson.put("t", HexToDecMa(net_dvr_ptzpos.wTiltPos).toString());
