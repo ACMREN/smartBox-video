@@ -381,9 +381,8 @@ public class ARServiceImpl implements IARService {
      */
     private void getPTZPos(String ip, String username, String password) {
         HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
-        System.out.println("ip:" + ip);
-        System.out.println("username:" + username);
-        System.out.println("password:" + password);
+
+        boolean initSuc = hcNetSDK.NET_DVR_Init();
 
         if (lUserID.intValue() <= 0) {
             lUserID = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
