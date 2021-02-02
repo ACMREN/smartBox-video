@@ -255,7 +255,7 @@ public class ARController {
         arStyleInfoService.saveOrUpdate(arStyleInfo);
 
         if (null == id){
-            dataJson.put("sId", id);
+            dataJson.put("sId", arStyleInfo.getId());
             arStyleInfo.setData(dataJson.toJSONString());
             arStyleInfoService.saveOrUpdate(arStyleInfo);
         }
