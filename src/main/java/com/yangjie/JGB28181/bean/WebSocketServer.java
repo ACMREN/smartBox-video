@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.websocket.*;
@@ -30,6 +31,10 @@ public class WebSocketServer {
     public static Map<Integer, CameraPojo> deviceCameraPojoMap = new HashMap<>(20);
 
     public static Map<Integer, Boolean> deviceKeyFrameMap = new HashMap<>(20);
+
+    public static Map<Integer, Thread> deviceThreadMap = new HashMap<>(20);
+
+    public static Map<String, Set<Integer>> tokenStreamSetMap = new HashMap<>(100);
 
     private static IARService arService;
 
@@ -55,6 +60,21 @@ public class WebSocketServer {
             for (String item : clients.keySet()) {
                 Session session1 = clients.get(item);
                 if (session.equals(session1)) {
+                    // 判断是否需要关闭推流
+                    Set<Integer> streamSet = tokenStreamSetMap.get(item);
+                    if (!CollectionUtils.isEmpty(streamSet)) {
+                        for (Integer stream : streamSet) {
+                            CameraPojo cameraPojo = deviceCameraPojoMap.get(stream);
+                            int count = cameraPojo.getCount();
+                            if (count - 1 == 0) {
+                                Thread thread = WebSocketServer.deviceThreadMap.remove(stream);
+                                thread.interrupt();
+                            } else {
+                                cameraPojo.setCount(count - 1);
+                            }
+                        }
+                    }
+
                     logger.info("有设备关闭了websocket，token：" + token);
                     clients.remove(token);
                     break;
@@ -82,6 +102,11 @@ public class WebSocketServer {
                 if (command.equals("getVideoStream")) {
                     JSONObject arStream = this.getARStream(deviceBaseId);
                     if (null != arStream) {
+                        Set<Integer> streamSet = WebSocketServer.tokenStreamSetMap.get(token);
+                        if (CollectionUtils.isEmpty(streamSet)) {
+                            streamSet = new HashSet<>();
+                        }
+                        streamSet.add(deviceBaseId);
                         resultJson.add(arStream);
                     }
                 }
@@ -105,6 +130,7 @@ public class WebSocketServer {
         } else {
             // 如果已经存在推流，直接返回
             String flvAddress = cameraPojo.getFlv();
+            cameraPojo.setCount(cameraPojo.getCount() + 1);
             JSONObject result = new JSONObject();
             result.put("deviceId", deviceBaseId);
             result.put("source", flvAddress);

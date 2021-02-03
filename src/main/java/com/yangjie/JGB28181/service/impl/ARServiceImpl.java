@@ -252,7 +252,7 @@ public class ARServiceImpl implements IARService {
         WebSocketServer.deviceCameraPojoMap.put(Integer.valueOf(pojo.getDeviceId()), cameraPojo);
 
         // 执行任务
-        new Thread(() -> {
+        Thread streamThread = new Thread(() -> {
             try {
                 this.pushARStream(cameraPojo);
             } catch (FrameGrabber.Exception e) {
@@ -260,7 +260,10 @@ public class ARServiceImpl implements IARService {
             } catch (FrameRecorder.Exception e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
+        WebSocketServer.deviceThreadMap.put(deviceId, streamThread);
+        streamThread.start();
+
 
         return cameraPojo;
     }
