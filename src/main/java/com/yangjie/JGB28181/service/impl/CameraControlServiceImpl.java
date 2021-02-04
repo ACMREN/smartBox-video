@@ -182,15 +182,15 @@ public class CameraControlServiceImpl implements ICameraControlService {
             return GBResult.build(500, "初始化设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
         // 2.登录设备
-        String key = ip + ":" + port;
-        NativeLong lUserId = deviceLoginStatusMap.get(key);
+        NativeLong lUserId = deviceLoginStatusMap.get(ip);
+        System.out.println("get lUserID from map, lUserID : " + lUserId);
         if (null == lUserId || lUserId.intValue() <= 0) {
             lUserId = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
-            deviceLoginStatusMap.put(key, lUserId);
             if (lUserId.intValue() < 0) {
                 logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
                 return GBResult.build(500, "登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
             }
+            deviceLoginStatusMap.put(ip, lUserId);
         }
 
         return GBResult.ok(lUserId);
