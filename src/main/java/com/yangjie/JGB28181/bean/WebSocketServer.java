@@ -69,6 +69,7 @@ public class WebSocketServer {
                             if (count - 1 == 0) {
                                 Thread thread = WebSocketServer.deviceThreadMap.remove(stream);
                                 thread.interrupt();
+                                logger.info("设备关闭推流，设备id" + stream);
                             } else {
                                 cameraPojo.setCount(count - 1);
                             }
