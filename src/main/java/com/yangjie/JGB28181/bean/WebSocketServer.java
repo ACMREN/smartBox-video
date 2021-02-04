@@ -58,14 +58,14 @@ public class WebSocketServer {
     public void onClose(Session session) {
         if (clients.containsValue(session)) {
             for (String item : clients.keySet()) {
-                Session session1 = clients.get(item);
+                Session session1 = clients.remove(item);
                 if (session.equals(session1)) {
                     // 判断是否需要关闭推流
                     Set<Integer> streamSet = tokenStreamSetMap.get(item);
                     if (!CollectionUtils.isEmpty(streamSet)) {
                         for (Integer stream : streamSet) {
                             System.out.println(stream);
-                            CameraPojo cameraPojo = deviceCameraPojoMap.get(stream);
+                            CameraPojo cameraPojo = deviceCameraPojoMap.remove(stream);
                             int count = cameraPojo.getCount();
                             if (count - 1 == 0) {
                                 Thread thread = WebSocketServer.deviceThreadMap.remove(stream);
@@ -80,7 +80,6 @@ public class WebSocketServer {
                     }
 
                     logger.info("有设备关闭了websocket，token：" + token);
-                    clients.remove(token);
                     break;
                 }
             }
