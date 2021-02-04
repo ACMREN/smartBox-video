@@ -85,7 +85,8 @@ public class CameraControlServiceImpl implements ICameraControlService {
         }
 
         // 2.控制云台移动
-        boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed_Other(lUserID, new NativeLong(1), PTZCommand, isStop, speed);
+        NativeLong lUserId = (NativeLong) initResult.getData();
+        boolean result = hcNetSDK.NET_DVR_PTZControlWithSpeed_Other(lUserId, new NativeLong(1), PTZCommand, isStop, speed);
         if (!result) {
             logger.info("控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError());
             return GBResult.build(500, "控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError(), null);
@@ -191,7 +192,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
             }
         }
 
-        return GBResult.ok();
+        return GBResult.ok(lUserId);
     }
 
     public static Double HexToDecMa(short pos) {
