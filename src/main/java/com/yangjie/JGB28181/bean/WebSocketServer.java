@@ -34,6 +34,8 @@ public class WebSocketServer {
 
     public static Map<Integer, Thread> deviceThreadMap = new HashMap<>(20);
 
+    public static Map<Integer, Thread> deviceDataThreadMap = new HashMap<>(20);
+
     public static Map<String, Set<Integer>> tokenStreamSetMap = new HashMap<>(100);
 
     private static IARService arService;
@@ -68,10 +70,14 @@ public class WebSocketServer {
                             CameraPojo cameraPojo = deviceCameraPojoMap.remove(stream);
                             int count = cameraPojo.getCount();
                             if (count - 1 == 0) {
-                                Thread thread = WebSocketServer.deviceThreadMap.remove(stream);
-                                if (null != thread) {
-                                    thread.interrupt();
+                                Thread streamThread = WebSocketServer.deviceThreadMap.remove(stream);
+                                if (null != streamThread) {
+                                    streamThread.interrupt();
                                     logger.info("设备关闭推流，设备id" + stream);
+                                }
+                                Thread sendDataThread = WebSocketServer.deviceDataThreadMap.remove(stream);
+                                if (null != sendDataThread) {
+                                    sendDataThread.interrupt();
                                 }
                             } else {
                                 cameraPojo.setCount(count - 1);
