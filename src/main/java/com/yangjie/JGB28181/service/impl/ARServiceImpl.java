@@ -351,8 +351,8 @@ public class ARServiceImpl implements IARService {
         recorder.setFormat("flv");
         recorder.setFrameRate(grabber.getFrameRate());
         recorder.setVideoBitrate(grabber.getVideoBitrate());
-        recorder.setVideoCodecName("h264_nvenc");
-//        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+//        recorder.setVideoCodecName("h264_nvenc");
+        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.start();
     }
 
