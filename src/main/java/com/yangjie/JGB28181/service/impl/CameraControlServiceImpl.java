@@ -147,6 +147,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
             hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
             hcNetSDK.NET_DVR_Logout_V30(lUserID);
+            hcNetSDK.NET_DVR_Cleanup();
             return GBResult.ok();
         }
 
