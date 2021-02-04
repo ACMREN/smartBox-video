@@ -283,7 +283,7 @@ public class ARServiceImpl implements IARService {
         boolean isKeyFrame = false;
         startTime = System.currentTimeMillis();
 
-//        new Thread(() -> this.getPTZPos(ip, username, password)).start();
+        new Thread(() -> this.getPTZPos(ip, username, password)).start();
 
         Frame frame = null;
         OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
