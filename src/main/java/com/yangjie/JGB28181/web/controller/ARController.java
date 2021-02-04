@@ -299,7 +299,7 @@ public class ARController {
         return GBResult.ok(dataStrList);
     }
 
-    @PostMapping
+    @PostMapping("scenes")
     public GBResult saveScene(@RequestBody JSONObject dataJson) {
         Integer id = dataJson.getInteger("sceneId");
         Integer deviceId = dataJson.getInteger("deviceId");
