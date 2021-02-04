@@ -4,25 +4,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import com.yangjie.JGB28181.bean.ControlParam;
-import com.yangjie.JGB28181.bean.HikvisionControlParam;
 import com.yangjie.JGB28181.common.result.GBResult;
 import com.yangjie.JGB28181.common.utils.HCNetSDK;
 import com.yangjie.JGB28181.entity.enumEntity.HikvisionPTZCommandEnum;
 import com.yangjie.JGB28181.service.ICameraControlService;
-import org.opencv.core.Mat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class CameraControlServiceImpl implements ICameraControlService {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private NativeLong lUserID = new NativeLong(0);
+
+    public static Map<String, NativeLong> deviceLoginStatusMap = new HashMap<>(20);
 
     @Override
     public GBResult cameraMove(String producer, String ip, Integer port, String userName, String password,
@@ -146,8 +145,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
 
             hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
-            hcNetSDK.NET_DVR_Logout_V30(lUserID);
-            hcNetSDK.NET_DVR_Cleanup();
             return GBResult.ok();
         }
 
@@ -184,9 +181,11 @@ public class CameraControlServiceImpl implements ICameraControlService {
             return GBResult.build(500, "初始化设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
         }
         // 2.登录设备
-        if (lUserID.intValue() <= 0) {
-            lUserID = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
-            if (lUserID.intValue() < 0) {
+        String key = ip + ":" + port;
+        NativeLong lUserId = deviceLoginStatusMap.get(key);
+        if (lUserId.intValue() <= 0) {
+            lUserId = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
+            if (lUserId.intValue() < 0) {
                 logger.info("登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError());
                 return GBResult.build(500, "登录设备失败，错误码：" + hcNetSDK.NET_DVR_GetLastError(), null);
             }
