@@ -144,7 +144,9 @@ public class WebSocketServer {
             sendAll(message);
         } else {
             Session session = clients.get(token);
-            session.getAsyncRemote().sendText(message);
+            synchronized (this) {
+                session.getAsyncRemote().sendText(message);
+            }
         }
     }
 
@@ -154,7 +156,9 @@ public class WebSocketServer {
      */
     private void sendAll(String message) {
         for (Map.Entry<String, Session> sessionEntry : clients.entrySet()) {
-            sessionEntry.getValue().getAsyncRemote().sendText(message);
+            synchronized (this) {
+                sessionEntry.getValue().getAsyncRemote().sendText(message);
+            }
         }
     }
 
