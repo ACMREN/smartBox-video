@@ -56,6 +56,8 @@ public class ARServiceImpl implements IARService {
 
     private Integer deviceId;
 
+    private static Map<String, NativeLong> deviceLoginStatusMap = new HashMap<>(20);
+
     private static JSONObject resultJson = new JSONObject();
 
     private Long startTime = 0L;
@@ -392,11 +394,14 @@ public class ARServiceImpl implements IARService {
 
         boolean initSuc = hcNetSDK.NET_DVR_Init();
 
-        if (lUserID.intValue() <= 0) {
-            lUserID = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
-            if (lUserID.intValue() > 0) {
+        String key = ip;
+        NativeLong lUserId = deviceLoginStatusMap.get(key);
+        if (null != lUserId && lUserId.intValue() <= 0) {
+            lUserId = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
+            if (lUserId.intValue() > 0) {
                 System.out.println("login success! " + lUserID);
             }
+            deviceLoginStatusMap.put(key, lUserId);
         }
 
         while (true) {
