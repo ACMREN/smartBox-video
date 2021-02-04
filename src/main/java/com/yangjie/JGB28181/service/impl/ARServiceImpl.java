@@ -54,9 +54,6 @@ public class ARServiceImpl implements IARService {
     @Value("${config.streamMediaIp}")
     private String streamMediaIp;
 
-    private FFmpegFrameRecorder recorder = null;
-    private FFmpegFrameGrabber grabber = null;
-
     private Integer deviceId;
 
     private static JSONObject resultJson = new JSONObject();
@@ -97,7 +94,7 @@ public class ARServiceImpl implements IARService {
     }
 
     @Override
-    public GBResult playARStream(Integer deviceBaseId) {
+    public GBResult playARStream(Integer deviceBaseId, String token) {
         CameraInfo cameraInfo = cameraInfoService.getDataByDeviceBaseId(deviceBaseId);
         // 只有rtsp设备才能进行ar设置
         if (LinkTypeEnum.RTSP.getCode() == cameraInfo.getLinkType().intValue()) {
@@ -109,7 +106,7 @@ public class ARServiceImpl implements IARService {
             cameraPojo.setIsRecord(0);
             cameraPojo.setIsSwitch(0);
 
-            GBResult result = this.rtspDevicePlay(cameraPojo);
+            GBResult result = this.rtspDevicePlay(cameraPojo, token);
             int code = result.getCode();
             if (code == 200) {
                 MediaData mediaData = (MediaData) result.getData();
@@ -131,12 +128,12 @@ public class ARServiceImpl implements IARService {
      * @param pojo
      * @return
      */
-    private GBResult rtspDevicePlay(CameraPojo pojo) {
+    private GBResult rtspDevicePlay(CameraPojo pojo, String token) {
         GBResult result = null;
         // 校验参数
         if (this.verifyRtspPlayParameters(pojo.getIp(), pojo.getUsername(), pojo.getPassword(), pojo.getChannel(), pojo.getStream())) {
             // 处理AR推流
-            result = this.startOpenStream(pojo);
+            result = this.startOpenStream(pojo, token);
         }
         return result;
     }
@@ -174,9 +171,9 @@ public class ARServiceImpl implements IARService {
      * @param pojo
      * @return
      */
-    private GBResult startOpenStream(CameraPojo pojo) {
+    private GBResult startOpenStream(CameraPojo pojo, String token) {
         GBResult result = null;
-        CameraPojo cameraPojo = this.openStream(pojo);
+        CameraPojo cameraPojo = this.openStream(pojo, token);
         String url = cameraPojo.getFlv();
         result = GBResult.ok(new MediaData(url, cameraPojo.getToken()));
         logger.info("打开：" + cameraPojo.getRtsp());
@@ -189,7 +186,7 @@ public class ARServiceImpl implements IARService {
      * @param pojo
      * @return
      */
-    public CameraPojo openStream(CameraPojo pojo) {
+    public CameraPojo openStream(CameraPojo pojo, String token1) {
         CameraPojo cameraPojo = new CameraPojo();
         // 生成token
         String token = UUID.randomUUID().toString();
@@ -254,10 +251,11 @@ public class ARServiceImpl implements IARService {
         // 执行任务
         Thread streamThread = new Thread(() -> {
             try {
-                this.pushARStream(cameraPojo);
+                this.pushARStream(cameraPojo, token1);
             } catch (FrameGrabber.Exception e) {
                 e.printStackTrace();
             } catch (FrameRecorder.Exception e) {
+                System.out.println(Thread.currentThread().getId());
                 e.printStackTrace();
             }
         });
@@ -268,7 +266,9 @@ public class ARServiceImpl implements IARService {
         return cameraPojo;
     }
 
-    private void pushARStream(CameraPojo cameraPojo) throws FrameGrabber.Exception, FrameRecorder.Exception {
+    private void pushARStream(CameraPojo cameraPojo, String token) throws FrameGrabber.Exception, FrameRecorder.Exception {
+        FFmpegFrameRecorder recorder = null;
+        FFmpegFrameGrabber grabber = null;
         String rtspLink = cameraPojo.getRtsp();
         String rtmpLink = cameraPojo.getRtmp();
         String ip = cameraPojo.getIp();
@@ -276,18 +276,18 @@ public class ARServiceImpl implements IARService {
         String password = cameraPojo.getPassword();
         this.deviceId = Integer.valueOf(cameraPojo.getDeviceId());
 
-        this.setUpGrabber(rtspLink);
-        this.setUpRecorder(rtmpLink);
+        grabber = this.setUpGrabber(grabber, rtspLink);
+        recorder = this.setUpRecorder(recorder, grabber, rtmpLink);
 
         int interval = 0;
         boolean isKeyFrame = false;
         startTime = System.currentTimeMillis();
 
-        new Thread(() -> this.getPTZPos(ip, username, password)).start();
+//        new Thread(() -> this.getPTZPos(ip, username, password)).start();
 
         Frame frame = null;
         OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
-        List<Point> pointList = this.setUpPointList();
+        List<Point> pointList = this.setUpPointList(grabber);
         try {
             while (true) {
                 Boolean isGetKeyFrame = WebSocketServer.deviceKeyFrameMap.get(deviceId);
@@ -312,7 +312,7 @@ public class ARServiceImpl implements IARService {
                 if (null != isGetKeyFrame && isGetKeyFrame) {
                     useTime = recorder.getTimestamp();
 
-                    isKeyFrame = this.sendPTZPos(isKeyFrame);
+                    isKeyFrame = this.sendPTZPos(isKeyFrame, token);
 
                     interval++;
                 }
@@ -331,7 +331,7 @@ public class ARServiceImpl implements IARService {
      * @param rtspLink
      * @throws FrameGrabber.Exception
      */
-    private void setUpGrabber(String rtspLink) throws FrameGrabber.Exception {
+    private FFmpegFrameGrabber setUpGrabber(FFmpegFrameGrabber grabber, String rtspLink) throws FrameGrabber.Exception {
         grabber = new FFmpegFrameGrabber(rtspLink);
         grabber.setOption("hwaccel", "cuda");
         grabber.setVideoCodecName("h264_cuvid");
@@ -339,6 +339,8 @@ public class ARServiceImpl implements IARService {
         grabber.setVideoOption("rtsp_transport", "tcp");
         avutil.av_log_set_level(avutil.AV_LOG_ERROR);
         grabber.start();
+
+        return grabber;
     }
 
     /**
@@ -346,7 +348,8 @@ public class ARServiceImpl implements IARService {
      * @param rtmpLink
      * @throws FrameRecorder.Exception
      */
-    private void setUpRecorder(String rtmpLink) throws FrameRecorder.Exception {
+    private FFmpegFrameRecorder setUpRecorder(FFmpegFrameRecorder recorder, FFmpegFrameGrabber grabber, String rtmpLink) throws FrameRecorder.Exception {
+        System.out.println(rtmpLink);
         recorder = new FFmpegFrameRecorder(rtmpLink, grabber.getImageWidth(), grabber.getImageHeight(), 0);
         recorder.setFormat("flv");
         recorder.setFrameRate(grabber.getFrameRate());
@@ -354,13 +357,15 @@ public class ARServiceImpl implements IARService {
         recorder.setVideoCodecName("h264_nvenc");
 //        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.start();
+
+        return recorder;
     }
 
     /**
      * 设置关键帧的点位位置
      * @return
      */
-    private List<Point> setUpPointList() {
+    private List<Point> setUpPointList(FFmpegFrameGrabber grabber) {
         Point tl = point(0, 0);
         Point tr = point(grabber.getImageWidth(), 0);
         Point bl = point(0, grabber.getImageHeight());
@@ -437,7 +442,7 @@ public class ARServiceImpl implements IARService {
      * @param isKeyFrame
      * @return
      */
-    private boolean sendPTZPos(boolean isKeyFrame) {
+    private boolean sendPTZPos(boolean isKeyFrame, String token) {
 
         resultJson.put("deviceId", deviceId);
         resultJson.put("keyFrame", isKeyFrame);
@@ -446,7 +451,7 @@ public class ARServiceImpl implements IARService {
 
         isKeyFrame = false;
 
-        webSocketServer.sendMessage(resultJson.toJSONString(), null);
+        webSocketServer.sendMessage(resultJson.toJSONString(), token);
 
         return isKeyFrame;
     }

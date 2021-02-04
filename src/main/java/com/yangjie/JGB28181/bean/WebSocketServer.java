@@ -64,12 +64,15 @@ public class WebSocketServer {
                     Set<Integer> streamSet = tokenStreamSetMap.get(item);
                     if (!CollectionUtils.isEmpty(streamSet)) {
                         for (Integer stream : streamSet) {
+                            System.out.println(stream);
                             CameraPojo cameraPojo = deviceCameraPojoMap.get(stream);
                             int count = cameraPojo.getCount();
                             if (count - 1 == 0) {
                                 Thread thread = WebSocketServer.deviceThreadMap.remove(stream);
-                                thread.interrupt();
-                                logger.info("设备关闭推流，设备id" + stream);
+                                if (null != thread) {
+                                    thread.interrupt();
+                                    logger.info("设备关闭推流，设备id" + stream);
+                                }
                             } else {
                                 cameraPojo.setCount(count - 1);
                             }
@@ -101,13 +104,14 @@ public class WebSocketServer {
                     deviceKeyFrameMap.put(deviceBaseId, false);
                 }
                 if (command.equals("getVideoStream")) {
-                    JSONObject arStream = this.getARStream(deviceBaseId);
+                    JSONObject arStream = this.getARStream(deviceBaseId, token);
                     if (null != arStream) {
                         Set<Integer> streamSet = WebSocketServer.tokenStreamSetMap.get(token);
                         if (CollectionUtils.isEmpty(streamSet)) {
                             streamSet = new HashSet<>();
                         }
                         streamSet.add(deviceBaseId);
+                        WebSocketServer.tokenStreamSetMap.put(token, streamSet);
                         resultJson.add(arStream);
                     }
                 }
@@ -118,11 +122,11 @@ public class WebSocketServer {
         }
     }
 
-    private JSONObject getARStream(Integer deviceBaseId) {
+    private JSONObject getARStream(Integer deviceBaseId, String token) {
         CameraPojo cameraPojo = deviceCameraPojoMap.get(deviceBaseId);
         // 判断是否已经存在对应的推流
         if (null == cameraPojo) {
-            GBResult result = arService.playARStream(deviceBaseId);
+            GBResult result = arService.playARStream(deviceBaseId, token);
             int code = result.getCode();
             if (code == 200) {
                 JSONObject resultJson = (JSONObject) result.getData();
@@ -145,8 +149,10 @@ public class WebSocketServer {
             sendAll(message);
         } else {
             Session session = clients.get(token);
-            synchronized (this) {
-                session.getAsyncRemote().sendText(message);
+            synchronized (session) {
+                if (null != session) {
+                    session.getAsyncRemote().sendText(message);
+                }
             }
         }
     }
@@ -157,8 +163,10 @@ public class WebSocketServer {
      */
     private void sendAll(String message) {
         for (Map.Entry<String, Session> sessionEntry : clients.entrySet()) {
-            synchronized (this) {
-                sessionEntry.getValue().getAsyncRemote().sendText(message);
+            synchronized (sessionEntry.getValue()) {
+                if (null != sessionEntry) {
+                    sessionEntry.getValue().getAsyncRemote().sendText(message);
+                }
             }
         }
     }
