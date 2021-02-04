@@ -183,7 +183,6 @@ public class CameraControlServiceImpl implements ICameraControlService {
         }
         // 2.登录设备
         NativeLong lUserId = deviceLoginStatusMap.get(ip);
-        System.out.println("get lUserID from map, lUserID : " + lUserId);
         if (null == lUserId || lUserId.intValue() <= 0) {
             lUserId = hcNetSDK.NET_DVR_Login_V30(ip, port.shortValue(), userName, password, null);//登陆
             if (lUserId.intValue() < 0) {
