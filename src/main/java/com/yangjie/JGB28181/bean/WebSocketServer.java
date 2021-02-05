@@ -2,12 +2,8 @@ package com.yangjie.JGB28181.bean;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yangjie.JGB28181.common.result.GBResult;
-import com.yangjie.JGB28181.common.thread.CameraThread;
-import com.yangjie.JGB28181.common.utils.CacheUtil;
 import com.yangjie.JGB28181.entity.bo.CameraPojo;
-import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.service.IARService;
-import com.yangjie.JGB28181.web.controller.ActionController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +16,6 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @ServerEndpoint("/video/{token}")
@@ -38,8 +33,6 @@ public class WebSocketServer {
     public static Map<Integer, Boolean> deviceKeyFrameMap = new HashMap<>(20);
 
     public static Map<Integer, Thread> deviceThreadMap = new HashMap<>(20);
-
-    public static Map<Integer, Thread> deviceDataThreadMap = new HashMap<>(20);
 
     public static Map<String, Set<Integer>> tokenStreamSetMap = new HashMap<>(100);
 
@@ -69,46 +62,28 @@ public class WebSocketServer {
                 if (session.equals(session1)) {
                     // 判断是否需要关闭推流
                     Set<Integer> streamSet = tokenStreamSetMap.get(item);
-                    if (CollectionUtils.isEmpty(streamSet)) {
-                        return;
-                    }
-                    for (Integer stream : streamSet) {
-                        CameraPojo cameraPojo = deviceCameraPojoMap.get(stream);
-                        int count = cameraPojo.getCount();
-                        if (count - 1 == 0) {
-                            CacheUtil.callEndMap.put(cameraPojo.getToken(), true);
-                            this.removeStreamDelay(cameraPojo, stream);
-                        } else {
-                            cameraPojo.setCount(count - 1);
+                    if (!CollectionUtils.isEmpty(streamSet)) {
+                        for (Integer stream : streamSet) {
+                            System.out.println(stream);
+                            CameraPojo cameraPojo = deviceCameraPojoMap.remove(stream);
+                            int count = cameraPojo.getCount();
+                            if (count - 1 == 0) {
+                                Thread thread = WebSocketServer.deviceThreadMap.remove(stream);
+                                if (null != thread) {
+                                    thread.interrupt();
+                                    logger.info("设备关闭推流，设备id" + stream);
+                                }
+                            } else {
+                                cameraPojo.setCount(count - 1);
+                            }
                         }
                     }
 
-                    return;
+                    logger.info("有设备关闭了websocket，token：" + token);
+                    break;
                 }
             }
         }
-    }
-
-    private void removeStreamDelay(CameraPojo cameraPojo, Integer stream) {
-        String callId = cameraPojo.getToken();
-        CacheUtil.scheduledExecutorService.schedule(() -> {
-            Boolean endSymbol = CacheUtil.callEndMap.get(callId);
-            if (!endSymbol) {
-                return;
-            }
-            logger.info("=======================关闭推流，开始================");
-            Thread streamThread = WebSocketServer.deviceThreadMap.remove(stream);
-            if (null != streamThread) {
-                streamThread.interrupt();
-                logger.info("设备关闭推流，设备id" + stream);
-            }
-            Thread sendDataThread = WebSocketServer.deviceDataThreadMap.remove(stream);
-            if (null != sendDataThread) {
-                sendDataThread.interrupt();
-            }
-            deviceCameraPojoMap.remove(stream);
-            logger.info("=======================关闭推流，完成================");
-        }, 2, TimeUnit.MINUTES);
     }
 
     @OnMessage
@@ -160,7 +135,6 @@ public class WebSocketServer {
             // 如果已经存在推流，直接返回
             String flvAddress = cameraPojo.getFlv();
             cameraPojo.setCount(cameraPojo.getCount() + 1);
-            CacheUtil.callEndMap.put(cameraPojo.getToken(), false);
             JSONObject result = new JSONObject();
             result.put("deviceId", deviceBaseId);
             result.put("source", flvAddress);
