@@ -26,7 +26,7 @@ public class GbClientInfoVo {
     private String project;
     private String address;
     private JSONObject location;
-    private List<LiveCamInfoVo> liveCamInfoVos = new ArrayList<>();
+    private List<LiveCamInfoVo> cameraList = new ArrayList<>();
 
     public GbClientInfoVo(GbClientInfo gbClientInfo) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -43,12 +43,8 @@ public class GbClientInfoVo {
         this.project = gbClientInfo.getProject();
         this.address = gbClientInfo.getAddress();
         location = new JSONObject();
-        if (!StringUtils.isEmpty(gbClientInfo.getLinkType())) {
-            location.put("lng", gbClientInfo.getLongitude());
-        }
-        if (!StringUtils.isEmpty(gbClientInfo.getLatitude())) {
-            location.put("lat", gbClientInfo.getLatitude());
-        }
+        location.put("lng", StringUtils.isEmpty(gbClientInfo.getLongitude())? null : gbClientInfo.getLongitude());
+        location.put("lat", StringUtils.isEmpty(gbClientInfo.getLatitude())? null : gbClientInfo.getLatitude());
         this.setUpGbClientCameraList();
     }
 
@@ -58,7 +54,7 @@ public class GbClientInfoVo {
             String parentSerialNum = item.getParentSerialNum();
             String ip = item.getIp();
             if (this.deviceSerialNum.equals(parentSerialNum) && this.ip.equals(ip)) {
-                this.liveCamInfoVos.add(item);
+                this.cameraList.add(item);
             }
         }
     }
