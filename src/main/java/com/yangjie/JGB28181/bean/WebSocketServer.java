@@ -34,6 +34,8 @@ public class WebSocketServer {
 
     public static Map<Integer, Thread> deviceThreadMap = new HashMap<>(20);
 
+    public static Map<Integer, Thread> deviceDataThreadMap = new HashMap<>(20);
+
     public static Map<String, Set<Integer>> tokenStreamSetMap = new HashMap<>(100);
 
     private static IARService arService;
