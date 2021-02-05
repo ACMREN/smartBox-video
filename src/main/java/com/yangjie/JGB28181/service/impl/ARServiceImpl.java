@@ -63,8 +63,6 @@ public class ARServiceImpl implements IARService {
     private Long startTime = 0L;
     private Long useTime = 0L;
 
-    private NativeLong lUserID = new NativeLong(0);
-
     private static List<Scalar> scalarList = new ArrayList<>();
 
     private static List<Integer> colorList = new ArrayList<>(10);
@@ -400,7 +398,7 @@ public class ARServiceImpl implements IARService {
         if (null != lUserId && lUserId.intValue() <= 0) {
             lUserId = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
             if (lUserId.intValue() > 0) {
-                System.out.println("login success! " + lUserID);
+                System.out.println("login success! " + lUserId);
             }
             deviceLoginStatusMap.put(key, lUserId);
         }
@@ -409,7 +407,7 @@ public class ARServiceImpl implements IARService {
             HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
             Pointer pointer = net_dvr_ptzpos.getPointer();
 
-            hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
+            hcNetSDK.NET_DVR_GetDVRConfig(lUserId, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
             net_dvr_ptzpos.read();
 
             resultJson.put("p", HexToDecMa(net_dvr_ptzpos.wPanPos).toString());
