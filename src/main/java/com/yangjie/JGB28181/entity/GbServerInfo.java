@@ -3,6 +3,11 @@ package com.yangjie.JGB28181.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import java.util.List;
+
+import com.yangjie.JGB28181.entity.bo.HigherServerInfoBo;
+import com.yangjie.JGB28181.entity.vo.GbClientInfoVo;
+import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -140,4 +145,33 @@ public class GbServerInfo implements Serializable {
      * 监控数量
      */
     private Integer cameraNum;
+
+    public GbServerInfo(HigherServerInfoBo higherServerInfoBo) {
+        this.id = higherServerInfoBo.getPid();
+        this.deviceSerialNum = higherServerInfoBo.getDstSIP();
+        this.domain = higherServerInfoBo.getDomain();
+        this.ip = higherServerInfoBo.getDstIp();
+        this.port = higherServerInfoBo.getDstPort();
+        this.password = higherServerInfoBo.getPassword();
+        this.localSerialNum = DeviceManagerController.serverInfoBo.getId();
+        this.localIp = DeviceManagerController.serverInfoBo.getHost();
+        this.localPort = Integer.valueOf(DeviceManagerController.serverInfoBo.getPort());
+        this.expireTime = higherServerInfoBo.getRegValid();
+        this.registerInterval = higherServerInfoBo.getRegPeriod();
+        this.heartBeatInterval = higherServerInfoBo.getRegHeart();
+        this.catalogSize = 1;
+        this.charsetCode = higherServerInfoBo.getCharSet();
+        this.transProtocol = higherServerInfoBo.getTransProtocol();
+        this.streamProtocol = higherServerInfoBo.getStreamProtocol();
+        this.status = 0;
+        StringBuilder sb = new StringBuilder();
+        for (Integer deviceBaseId : higherServerInfoBo.getCameraList()) {
+            sb.append(deviceBaseId).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        this.cameraList = sb.toString();
+    }
+
+    public GbServerInfo() {
+    }
 }

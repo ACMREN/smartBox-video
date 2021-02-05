@@ -16,10 +16,7 @@ import com.yangjie.JGB28181.entity.enumEntity.TreeTypeEnum;
 import com.yangjie.JGB28181.entity.condition.DeviceBaseCondition;
 import com.yangjie.JGB28181.entity.condition.SearchDeviceTreeCondition;
 import com.yangjie.JGB28181.entity.condition.SearchLiveCamCondition;
-import com.yangjie.JGB28181.entity.vo.CameraInfoVo;
-import com.yangjie.JGB28181.entity.vo.DeviceBaseInfoVo;
-import com.yangjie.JGB28181.entity.vo.LiveCamInfoVo;
-import com.yangjie.JGB28181.entity.vo.TreeInfoVo;
+import com.yangjie.JGB28181.entity.vo.*;
 import com.yangjie.JGB28181.media.server.handler.TestClientHandler;
 import com.yangjie.JGB28181.message.SipLayer;
 import com.yangjie.JGB28181.service.*;
@@ -33,6 +30,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.CharsetUtil;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ResourceUtils;
@@ -87,6 +89,9 @@ public class DeviceManagerController {
 
     @Autowired
     private GbServerInfoService gbServerInfoService;
+
+    @Autowired
+    private GbClientInfoService gbClientInfoService;
 
     public static ServerInfoBo serverInfoBo = new ServerInfoBo();
 
@@ -563,10 +568,38 @@ public class DeviceManagerController {
         return GBResult.ok();
     }
 
-    @PostMapping("getCascadeInput")
-    public GBResult getCascadeInput(@RequestParam("pageNo")Integer pageNo, @RequestParam("pageSize")Integer pageSize) {
+    @PostMapping("getCascadeInputDetail")
+    public GBResult getCascadeInputDetail(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+        List<Integer> pid = deviceBaseCondition.getPid();
 
-        return GBResult.ok();
+        List<GbClientInfo> gbClientInfos = gbClientInfoService.listByIds(pid);
+        List<GbClientInfoVo> resultList = new ArrayList<>();
+
+        for (GbClientInfo item : gbClientInfos) {
+            GbClientInfoVo data = new GbClientInfoVo(item);
+            resultList.add(data);
+        }
+
+        return GBResult.ok(resultList);
+    }
+
+    @PostMapping("getCascadeInput")
+    public GBResult getCascadeInput(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+        Integer pageNo = deviceBaseCondition.getPageNo();
+        Integer pageSize = deviceBaseCondition.getPageSize();
+        Integer offset = (pageNo - 1) * pageSize;
+        List<GbClientInfo> dataList = gbClientInfoService.list(new QueryWrapper<GbClientInfo>().last("limit " + offset + ", " + pageSize));
+        Integer totalCount = gbServerInfoService.count();
+        List<GbClientInfoVo> resultList = new ArrayList<>();
+
+        for (GbClientInfo item : dataList) {
+            GbClientInfoVo data = new GbClientInfoVo(item);
+            resultList.add(data);
+        }
+
+        PageListVo pageListVo = new PageListVo(resultList, pageNo, pageSize, totalCount);
+
+        return GBResult.ok(pageListVo);
     }
 
     @PostMapping("getCascadeOutput")
@@ -590,24 +623,15 @@ public class DeviceManagerController {
      * @param higherServerInfoBo
      * @return
      */
-    @RequestMapping(value = "sendRegister")
+    @RequestMapping(value = "setCascadeOutputDetail")
     public GBResult sendRegister(@RequestBody HigherServerInfoBo higherServerInfoBo) {
-        Integer id = higherServerInfoBo.getPid();
         String serverId = higherServerInfoBo.getDstSIP();
         String serverDomain = higherServerInfoBo.getDomain();
         String serverIp = higherServerInfoBo.getDstIp();
         Integer serverPort = higherServerInfoBo.getDstPort();
         String password = higherServerInfoBo.getPassword();
-        String localSerialNum = higherServerInfoBo.getSelfSIP();
-        String localIp = higherServerInfoBo.getSelfIp();
-        Integer localPort = higherServerInfoBo.getSelfPort();
         Integer expireTime = higherServerInfoBo.getRegValid();
-        Integer registerInterval = higherServerInfoBo.getRegPeriod();
-        Integer heartBeatInterval = higherServerInfoBo.getRegHeart();
-        Integer catalogSize = higherServerInfoBo.getCatalogSize();
-        String charsetCode = higherServerInfoBo.getCharSet();
         String transProtocol = higherServerInfoBo.getTransProtocol();
-        String streamProtocol = higherServerInfoBo.getStreamProtocol();
         List<Integer> cameraList = higherServerInfoBo.getCameraList();
         Long cseq = 1L;
         String callId = IDUtils.id();
@@ -615,30 +639,7 @@ public class DeviceManagerController {
         callId = "platform-" + callId;
 
         // 保存数据到数据库
-        GbServerInfo gbServerInfo = new GbServerInfo();
-        gbServerInfo.setId(id);
-        gbServerInfo.setDeviceSerialNum(serverId);
-        gbServerInfo.setDomain(serverDomain);
-        gbServerInfo.setIp(serverIp);
-        gbServerInfo.setPort(serverPort);
-        gbServerInfo.setPassword(password);
-        gbServerInfo.setLocalSerialNum(DeviceManagerController.serverInfoBo.getId());
-        gbServerInfo.setLocalIp(DeviceManagerController.serverInfoBo.getHost());
-        gbServerInfo.setLocalPort(Integer.valueOf(DeviceManagerController.serverInfoBo.getPort()));
-        gbServerInfo.setExpireTime(expireTime);
-        gbServerInfo.setRegisterInterval(registerInterval);
-        gbServerInfo.setHeartBeatInterval(heartBeatInterval);
-        gbServerInfo.setCatalogSize(1);
-        gbServerInfo.setCharsetCode(charsetCode);
-        gbServerInfo.setTransProtocol(transProtocol);
-        gbServerInfo.setStreamProtocol(streamProtocol);
-        gbServerInfo.setStatus(0);
-        StringBuilder sb = new StringBuilder();
-        for (Integer deviceBaseId : cameraList) {
-            sb.append(deviceBaseId).append(",");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        gbServerInfo.setCameraList(sb.toString());
+        GbServerInfo gbServerInfo = new GbServerInfo(higherServerInfoBo);
         gbServerInfoService.saveOrUpdate(gbServerInfo);
 
         // 把级联的服务器放入到redis中
@@ -722,5 +723,21 @@ public class DeviceManagerController {
         }
 
         channel.writeAndFlush(Unpooled.copiedBuffer("test message", CharsetUtil.UTF_8));
+    }
+
+    @GetMapping("getRedisKey")
+    public void getRedisKey() throws DocumentException {
+        String value = RedisUtil.get("client_34020000002000000002");
+        JSONObject valueJson = JSONObject.parseObject(value);
+        String string = valueJson.getString("34020000001320000005");
+        Device device = JSONObject.parseObject(string, Device.class);
+        Map<String, String> channelCatalogMap = device.getChannelCatalogMap();
+        for (String content : channelCatalogMap.values()) {
+            Document xml = DocumentHelper.parseText(content);
+            Element rootElement = xml.getRootElement();
+            Element parentId = rootElement.element("ParentID");
+            parentId.setText(DeviceManagerController.serverInfoBo.getId());
+            System.out.println(parentId.getText());
+        }
     }
 }

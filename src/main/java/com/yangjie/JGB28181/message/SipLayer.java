@@ -2,8 +2,8 @@ package com.yangjie.JGB28181.message;
 
 import java.io.ByteArrayInputStream;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,35 +25,30 @@ import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
-import javax.sip.address.URI;
 import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yangjie.JGB28181.common.constants.BaseConstants;
 import com.yangjie.JGB28181.common.thread.HeartbeatThread;
 import com.yangjie.JGB28181.common.utils.*;
 import com.yangjie.JGB28181.entity.CameraInfo;
+import com.yangjie.JGB28181.entity.GbClientInfo;
 import com.yangjie.JGB28181.entity.GbServerInfo;
-import com.yangjie.JGB28181.entity.bo.HigherServerInfoBo;
 import com.yangjie.JGB28181.entity.bo.ServerInfoBo;
 import com.yangjie.JGB28181.entity.condition.GBDevicePlayCondition;
+import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
+import com.yangjie.JGB28181.entity.enumEntity.NetTypeEnum;
 import com.yangjie.JGB28181.media.server.Server;
-import com.yangjie.JGB28181.media.server.TCPServer;
-import com.yangjie.JGB28181.media.server.UDPServer;
 import com.yangjie.JGB28181.media.server.handler.GBStreamHandler;
 import com.yangjie.JGB28181.media.server.handler.TCPHandler;
 import com.yangjie.JGB28181.media.server.handler.UDPHandler;
-import com.yangjie.JGB28181.message.session.SyncFuture;
 import com.yangjie.JGB28181.service.CameraInfoService;
+import com.yangjie.JGB28181.service.GbClientInfoService;
 import com.yangjie.JGB28181.service.GbServerInfoService;
-import com.yangjie.JGB28181.web.controller.ActionController;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
-import gov.nist.javax.sip.message.SIPRequest;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.apache.catalina.util.ServerInfo;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -85,6 +80,9 @@ public class SipLayer implements SipListener{
 
 	@Autowired
 	private GbServerInfoService gbServerInfoService;
+
+	@Autowired
+	private GbClientInfoService gbClientInfoService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private SipStackImpl mSipStack;
@@ -127,6 +125,10 @@ public class SipLayer implements SipListener{
 	private static final String ELEMENT_DEVICE_LIST = "DeviceList";
 	private static final String ELEMENT_NAME = "Name";
 	private static final String ELEMENT_STATUS = "Status";
+	private static final String ELEMENT_ADDRESS = "Address";
+	private static final String ELEMENT_LONGITUDE = "longitude";
+	private static final String ELEMENT_LATITUDE = "latitude";
+	private static final String ELEMENT_PROJECT = "project";
 
 	public static final String CLIENT_DEVICE_PREFIX = "client_";
 	public static final String SUB_DEVICE_PREFIX = "sub_";
@@ -359,6 +361,10 @@ public class SipLayer implements SipListener{
 		
 		//目录响应，保存到redis
 		else if(MESSAGE_CATALOG.equals(cmd) && QNAME_RESPONSE.equals(name)){
+			FromHeader fromHeader = (FromHeader) request.getHeader(FromHeader.NAME);
+			String uri = fromHeader.getAddress().getURI().toString();
+			String deviceSerialNum = uri.split("@")[0];
+			String domain = uri.split("@")[1];
 			Element parentSerialNumElement = rootElement.element(ELEMENT_DEVICE_ID);
 			String parentSerialNum = parentSerialNumElement.getText().trim();
 
@@ -402,11 +408,17 @@ public class SipLayer implements SipListener{
 					if(channelDeviceElement == null){
 						continue;
 					}
-					String channelDeviceId = channelDeviceElement.getText().toString();
-					Element channdelNameElement = itemDevice.element(ELEMENT_NAME);
-					String channelName = channdelNameElement != null ? channdelNameElement.getText().toString():"";
+					String channelDeviceId = channelDeviceElement.getText();
+					Element channelNameElement = itemDevice.element(ELEMENT_NAME);
+					String channelName = channelNameElement != null ? channelNameElement.getText():"";
 					Element statusElement = itemDevice.element(ELEMENT_STATUS);
-					String status = statusElement != null?statusElement.getText().toString():"ON";
+					String status = statusElement != null?statusElement.getText():"ON";
+					Element addressElement = itemDevice.element(ELEMENT_ADDRESS);
+					String address = addressElement != null? addressElement.getText() : "";
+					Element lngElement = itemDevice.element(ELEMENT_LONGITUDE);
+					String lng = lngElement != null? lngElement.getText() : "";
+					Element latElement = itemDevice.element(ELEMENT_LATITUDE);
+					String lat = latElement != null? latElement.getText() : "";
 
 					DeviceChannel deviceChannel = channelMap.containsKey(channelDeviceId)?channelMap.get(channelDeviceId):new DeviceChannel();
 					deviceChannel.setName(channelName);
@@ -427,12 +439,24 @@ public class SipLayer implements SipListener{
 					subDevice.setChannelId(itemContent);
 					subDevice.setParentSerialNum(parentSerialNum);
 					subDevice.setDeviceId(channelDeviceId);
-
 					subDeviceList.add(subDevice);
 				}
 				device.setSubDeviceList(subDeviceList);
 				subDeviceMap.put(deviceId, device);
 
+				GbClientInfo gbClientInfo = gbClientInfoService.getOne(new QueryWrapper<GbClientInfo>().eq("device_serial_num", deviceSerialNum));
+				if (gbClientInfo == null) {
+					gbClientInfo = new GbClientInfo();
+					gbClientInfo.setCreateTime(LocalDateTime.now());
+				}
+				gbClientInfo.setIp(viaHeader.getHost());
+				gbClientInfo.setAddress(null);
+				gbClientInfo.setDeviceSerialNum(deviceSerialNum);
+				gbClientInfo.setDomain(domain);
+				gbClientInfo.setLinkType(LinkTypeEnum.GB28181.getCode());
+				gbClientInfo.setNetType(NetTypeEnum.IT.getCode());
+				gbClientInfo.setLastUpdateTime(LocalDateTime.now());
+				gbClientInfoService.saveOrUpdate(gbClientInfo);
 
 				//更新Redis
 				RedisUtil.set(SUB_DEVICE_PREFIX + deviceId, JSONObject.toJSONString(device));
@@ -555,7 +579,7 @@ public class SipLayer implements SipListener{
 		String fromTag = IDUtils.id();
 		Host host = device.getHost();
 		String realm = channelId.substring(0,8);
-		Request request = createRequest(receiverAddress,receiverAddress,host.getWanIp(),host.getWanPort(),device.getProtocol(),
+		Request request = createRequest(receiverSerialNum,receiverAddress,host.getWanIp(),host.getWanPort(),device.getProtocol(),
 				mSipId,mSipRealm,fromTag,
 				channelId,realm,null,
 				callId,20,Request.INVITE);
@@ -638,6 +662,23 @@ public class SipLayer implements SipListener{
 			Map<String, String> channelCatalogMap = subDevice.getChannelCatalogMap();
 			for (String subDeviceCatalog : channelCatalogMap.values()) {
 				subDeviceCatalogSet.add(subDeviceCatalog);
+			}
+		}
+
+		GbServerInfo gbServerInfo = gbServerInfoService.getOne(new QueryWrapper<GbServerInfo>().eq("device_serial_num", serverId));
+		String subDevicesStr = RedisUtil.get(CLIENT_DEVICE_PREFIX + clientInfo.getId());
+		JSONObject subDevicesJson = JSONObject.parseObject(subDevicesStr);
+		String cameraList = gbServerInfo.getCameraList();
+		String[] cameraArr = cameraList.split(",");
+		for (String item : cameraArr) {
+			CameraInfo cameraInfo = cameraInfoService.getOne(new QueryWrapper<CameraInfo>().eq("device_base_id", Integer.valueOf(item)));
+			String parentSerialNum = cameraInfo.getParentSerialNum();
+			String deviceSerialNum = cameraInfo.getDeviceSerialNum();
+			String subDeviceStr = subDevicesJson.getString(parentSerialNum);
+			Device subDevice = JSONObject.parseObject(subDeviceStr, Device.class);
+			Map<String, String> channelCatalogMap = subDevice.getChannelCatalogMap();
+			if (channelCatalogMap.containsKey(deviceSerialNum)) {
+				subDeviceCatalogSet.add(channelCatalogMap.get(deviceSerialNum));
 			}
 		}
 

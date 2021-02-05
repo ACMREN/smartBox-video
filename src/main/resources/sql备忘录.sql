@@ -138,3 +138,20 @@ CREATE TABLE `ar_scene_info` (
     data TEXT DEFAULT NULL COMMENT '数据',
     PRIMARY KEY(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ar场景信息表';
+
+CREATE TABLE `gb_client_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    ip VARCHAR(20) NOT NULL COMMENT '下级平台平台ip',
+    device_serial_num VARCHAR(30) DEFAULT NULL COMMENT '下级平台sip编号',
+    domain VARCHAR(20) DEFAULT NULL COMMENT '下级平台sip域',
+    project VARCHAR(100) DEFAULT NULL COMMENT '项目名称',
+    address VARCHAR(100) DEFAULT NULL COMMENT '地址名称',
+    longitude VARCHAR(10) DEFAULT NULL COMMENT '经度',
+    latitude VARCHAR(10) DEFAULT NULL COMMENT '纬度',
+    camera_num INT(10) DEFAULT NULL COMMENT '监控数量',
+    link_type TINYINT(2) DEFAULT 0 COMMENT '注册类型：0-链接，1-国标，2-平台',
+	net_type TINYINT(2) DEFAULT 0 COMMENT '网络类型：0-局域网，1-互联网',
+    create_time DATETIME DEFAULT NULL COMMENT '创建时间',
+    last_update_time DATETIME DEFAULT NULL COMMENT '最后更新时间',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='子设备信息表';
