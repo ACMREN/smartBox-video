@@ -249,6 +249,7 @@ public class ARServiceImpl implements IARService {
         cameraPojo.setRecordDir(recordDir);
         cameraPojo.setApplicationContext(applicationContext);
         WebSocketServer.deviceCameraPojoMap.put(Integer.valueOf(pojo.getDeviceId()), cameraPojo);
+        CacheUtil.callEndMap.put(cameraPojo.getToken(), false);
 
         // 执行任务
         Thread streamThread = new Thread(() -> {
