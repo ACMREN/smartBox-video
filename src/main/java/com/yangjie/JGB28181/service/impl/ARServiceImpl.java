@@ -353,7 +353,9 @@ public class ARServiceImpl implements IARService {
      */
     private FFmpegFrameRecorder setUpRecorder(FFmpegFrameRecorder recorder, FFmpegFrameGrabber grabber, String rtmpLink) throws FrameRecorder.Exception {
         System.out.println(rtmpLink);
-        recorder = new FFmpegFrameRecorder(rtmpLink, grabber.getImageWidth(), grabber.getImageHeight(), 0);
+        int imageWidth = grabber.getImageWidth() > 1920? 1920 : grabber.getImageWidth();
+        int imageHeight = grabber.getImageHeight() > 1440? 1440 : grabber.getImageHeight();
+        recorder = new FFmpegFrameRecorder(rtmpLink, imageWidth, imageHeight, grabber.getAudioChannels());
         recorder.setFormat("flv");
         recorder.setFrameRate(grabber.getFrameRate());
         recorder.setVideoBitrate(grabber.getVideoBitrate());
