@@ -169,6 +169,7 @@ public class WebSocketServer {
             String flvAddress = cameraPojo.getFlv();
             cameraPojo.setCount(cameraPojo.getCount() + 1);
             CacheUtil.callEndMap.put(cameraPojo.getToken(), false);
+            WebSocketServer.deviceKeyFrameMap.put(deviceBaseId, true);
             JSONObject result = new JSONObject();
             result.put("deviceId", deviceBaseId);
             result.put("source", flvAddress);
@@ -185,8 +186,13 @@ public class WebSocketServer {
             for (Session item : sessions) {
                 if (null != sessions) {
                     synchronized (item) {
-                        if (null != item) {
-                            item.getAsyncRemote().sendText(message);
+                        if (null != item && item.isOpen()) {
+                            try {
+                                item.getAsyncRemote().sendText(message);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                System.out.println(deviceId);
+                            }
                         }
                     }
                 }

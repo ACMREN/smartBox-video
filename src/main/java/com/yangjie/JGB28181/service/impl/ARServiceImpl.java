@@ -54,8 +54,6 @@ public class ARServiceImpl implements IARService {
     @Value("${config.streamMediaIp}")
     private String streamMediaIp;
 
-    private Integer deviceId;
-
     private static Map<String, NativeLong> deviceLoginStatusMap = new HashMap<>(20);
 
     private static JSONObject resultJson = new JSONObject();
@@ -260,7 +258,7 @@ public class ARServiceImpl implements IARService {
                 e.printStackTrace();
             }
         });
-        WebSocketServer.deviceThreadMap.put(deviceId, streamThread);
+        WebSocketServer.deviceThreadMap.put(Integer.valueOf(cameraPojo.getDeviceId()), streamThread);
         streamThread.start();
 
 
@@ -275,7 +273,6 @@ public class ARServiceImpl implements IARService {
         String ip = cameraPojo.getIp();
         String username = cameraPojo.getUsername();
         String password = cameraPojo.getPassword();
-        this.deviceId = Integer.valueOf(cameraPojo.getDeviceId());
 
         grabber = this.setUpGrabber(grabber, rtspLink);
         recorder = this.setUpRecorder(recorder, grabber, rtmpLink);
@@ -286,14 +283,14 @@ public class ARServiceImpl implements IARService {
 
         Thread sendDataThread = new Thread(() -> this.getPTZPos(ip, username, password));
         sendDataThread.start();
-        WebSocketServer.deviceDataThreadMap.put(deviceId, sendDataThread);
+        WebSocketServer.deviceDataThreadMap.put(Integer.valueOf(cameraPojo.getDeviceId()), sendDataThread);
 
         Frame frame = null;
         OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
         List<Point> pointList = this.setUpPointList(grabber);
         try {
             while (true) {
-                Boolean isGetKeyFrame = WebSocketServer.deviceKeyFrameMap.get(deviceId);
+                Boolean isGetKeyFrame = WebSocketServer.deviceKeyFrameMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
 
                 frame = grabber.grab();
                 if (null == frame) {
@@ -315,7 +312,7 @@ public class ARServiceImpl implements IARService {
                 if (null != isGetKeyFrame && isGetKeyFrame) {
                     useTime = recorder.getTimestamp();
 
-                    isKeyFrame = this.sendPTZPos(isKeyFrame, token);
+                    isKeyFrame = this.sendPTZPos(isKeyFrame, Integer.valueOf(cameraPojo.getDeviceId()));
 
                     interval++;
                 }
@@ -450,7 +447,7 @@ public class ARServiceImpl implements IARService {
      * @param isKeyFrame
      * @return
      */
-    private boolean sendPTZPos(boolean isKeyFrame, String token) {
+    private boolean sendPTZPos(boolean isKeyFrame, Integer deviceId) {
 
         resultJson.put("deviceId", deviceId);
         resultJson.put("keyFrame", isKeyFrame);
