@@ -146,4 +146,7 @@ public class HigherServerInfoBo {
         this.createTime = gbServerInfo.getCreateTime();
         this.cameraNum = gbServerInfo.getCameraNum();
     }
+
+    public HigherServerInfoBo() {
+    }
 }
