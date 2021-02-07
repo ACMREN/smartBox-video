@@ -202,7 +202,7 @@ public class WebSocketServer {
             Session session = clients.get(token);
             if (null != session) {
                 synchronized (session) {
-                    if (null != session) {
+                    if (null != session && session.isOpen()) {
                         session.getAsyncRemote().sendText(message);
                     }
                 }

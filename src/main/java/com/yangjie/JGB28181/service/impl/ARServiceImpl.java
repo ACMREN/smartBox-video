@@ -388,30 +388,36 @@ public class ARServiceImpl implements IARService {
      * @param password
      */
     private void getPTZPos(String ip, String username, String password) {
-        HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+//        HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
+//
+//        boolean initSuc = hcNetSDK.NET_DVR_Init();
+//
+//        String key = ip;
+//        NativeLong lUserId = deviceLoginStatusMap.get(key);
+//        if (null != lUserId && lUserId.intValue() <= 0) {
+//            lUserId = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
+//            if (lUserId.intValue() > 0) {
+//                System.out.println("======================login success! " + lUserId);
+//            }
+//            deviceLoginStatusMap.put(key, lUserId);
+//        }
+//
+//        while (true) {
+//            HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
+//            Pointer pointer = net_dvr_ptzpos.getPointer();
+//
+//            hcNetSDK.NET_DVR_GetDVRConfig(lUserId, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
+//            net_dvr_ptzpos.read();
+//
+//            resultJson.put("p", HexToDecMa(net_dvr_ptzpos.wPanPos).toString());
+//            resultJson.put("t", HexToDecMa(net_dvr_ptzpos.wTiltPos).toString());
+//            resultJson.put("z", HexToDecMa(net_dvr_ptzpos.wZoomPos).toString());
+//        }
 
-        boolean initSuc = hcNetSDK.NET_DVR_Init();
-
-        String key = ip;
-        NativeLong lUserId = deviceLoginStatusMap.get(key);
-        if (null != lUserId && lUserId.intValue() <= 0) {
-            lUserId = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
-            if (lUserId.intValue() > 0) {
-                System.out.println("======================login success! " + lUserId);
-            }
-            deviceLoginStatusMap.put(key, lUserId);
-        }
+        int i =0;
 
         while (true) {
-            HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
-            Pointer pointer = net_dvr_ptzpos.getPointer();
-
-            hcNetSDK.NET_DVR_GetDVRConfig(lUserId, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
-            net_dvr_ptzpos.read();
-
-            resultJson.put("p", HexToDecMa(net_dvr_ptzpos.wPanPos).toString());
-            resultJson.put("t", HexToDecMa(net_dvr_ptzpos.wTiltPos).toString());
-            resultJson.put("z", HexToDecMa(net_dvr_ptzpos.wZoomPos).toString());
+            resultJson.put("i", i++);
         }
     }
 
