@@ -448,6 +448,9 @@ public class DeviceManagerController {
     @PostMapping(value = "getDeviceDetail")
     public GBResult getDeviceDetail(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+        if (CollectionUtils.isEmpty(deviceIds)) {
+            return GBResult.build(500, "获取摄像头设备的详细信息失败，信息：传入的参数为空", null);
+        }
         List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceIds);
         List<CameraInfo> cameraInfos = cameraInfoService.getBaseMapper().selectList(new QueryWrapper<CameraInfo>().in("device_base_id", deviceIds));
         Map<Integer, String> deviceRtspLinkMap = cameraInfos.stream().collect(Collectors.toMap(CameraInfo::getDeviceBaseId, CameraInfo::getRtspLink));
