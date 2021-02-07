@@ -187,12 +187,7 @@ public class WebSocketServer {
                 if (null != sessions) {
                     synchronized (item) {
                         if (null != item && item.isOpen()) {
-                            try {
-                                item.getAsyncRemote().sendText(message);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                System.out.println(deviceId);
-                            }
+                            item.getAsyncRemote().sendText(message);
                         }
                     }
                 }

@@ -312,7 +312,7 @@ public class ARServiceImpl implements IARService {
                 if (null != isGetKeyFrame && isGetKeyFrame) {
                     useTime = recorder.getTimestamp();
 
-                    isKeyFrame = this.sendPTZPos(isKeyFrame, Integer.valueOf(cameraPojo.getDeviceId()));
+                    isKeyFrame = this.sendPTZPos(isKeyFrame, token, Integer.valueOf(cameraPojo.getDeviceId()));
 
                     interval++;
                 }
@@ -397,7 +397,7 @@ public class ARServiceImpl implements IARService {
         if (null != lUserId && lUserId.intValue() <= 0) {
             lUserId = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
             if (lUserId.intValue() > 0) {
-                System.out.println("login success! " + lUserId);
+                System.out.println("======================login success! " + lUserId);
             }
             deviceLoginStatusMap.put(key, lUserId);
         }
@@ -447,7 +447,7 @@ public class ARServiceImpl implements IARService {
      * @param isKeyFrame
      * @return
      */
-    private boolean sendPTZPos(boolean isKeyFrame, Integer deviceId) {
+    private boolean sendPTZPos(boolean isKeyFrame, String token, Integer deviceId) {
 
         resultJson.put("deviceId", deviceId);
         resultJson.put("keyFrame", isKeyFrame);
@@ -456,7 +456,7 @@ public class ARServiceImpl implements IARService {
 
         isKeyFrame = false;
 
-        webSocketServer.sendMessage(resultJson.toJSONString(), deviceId);
+        webSocketServer.sendMessage(resultJson.toJSONString(), token);
 
         return isKeyFrame;
     }
