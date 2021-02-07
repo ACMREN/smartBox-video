@@ -406,7 +406,6 @@ public class ARServiceImpl implements IARService {
             deviceLoginStatusMap.put(key, lUserId);
         }
 
-        JSONObject resultJson = new JSONObject();
 
         while (true) {
             HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
@@ -414,6 +413,11 @@ public class ARServiceImpl implements IARService {
 
             hcNetSDK.NET_DVR_GetDVRConfig(lUserId, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
             net_dvr_ptzpos.read();
+
+            JSONObject resultJson = ARServiceImpl.deviceResultJsonMap.get(deviceId);
+            if (null == resultJson) {
+                resultJson = new JSONObject();
+            }
 
             resultJson.put("p", HexToDecMa(net_dvr_ptzpos.wPanPos).toString());
             resultJson.put("t", HexToDecMa(net_dvr_ptzpos.wTiltPos).toString());
