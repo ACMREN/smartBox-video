@@ -613,7 +613,13 @@ public class DeviceManagerController {
                         .last("limit " + offset + ", " + pageSize));
         Integer totalCount = gbServerInfoService.count();
 
-        PageListVo pageListVo = new PageListVo(gbServerInfos, pageNo, pageSize, totalCount);
+        List<HigherServerInfoBo> higherServerInfoBos = new ArrayList<>();
+        for (GbServerInfo item : gbServerInfos) {
+            HigherServerInfoBo data = new HigherServerInfoBo(item);
+            higherServerInfoBos.add(data);
+        }
+
+        PageListVo pageListVo = new PageListVo(higherServerInfoBos, pageNo, pageSize, totalCount);
 
         return GBResult.ok(pageListVo);
     }
@@ -661,6 +667,15 @@ public class DeviceManagerController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return GBResult.ok();
+    }
+
+    @PostMapping("removeCascadeOutput")
+    public GBResult removeCascadeOutput(@RequestBody DeviceBaseCondition deviceBaseCondition) {
+        List<Integer> pid = deviceBaseCondition.getPid();
+
+        gbServerInfoService.removeByIds(pid);
 
         return GBResult.ok();
     }

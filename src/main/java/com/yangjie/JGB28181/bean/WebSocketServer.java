@@ -75,8 +75,11 @@ public class WebSocketServer {
                     if (CollectionUtils.isEmpty(streamSet)) {
                         return;
                     }
-
                     for (Integer stream : streamSet) {
+                        // 去掉要关闭的session
+                        Set<Session> sessions = deviceSessionMap.get(stream);
+                        sessions.remove(session);
+                        // 延迟2分钟关闭推流
                         CameraPojo cameraPojo = deviceCameraPojoMap.get(stream);
                         int count = cameraPojo.getCount();
                         if (count - 1 == 0) {
