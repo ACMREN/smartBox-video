@@ -37,6 +37,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -643,11 +644,11 @@ public class DeviceManagerController {
         String callId = IDUtils.id();
         String fromTag = IDUtils.id();
         callId = "platform-" + callId;
-//
-//        // 保存数据到数据库
-//        GbServerInfo gbServerInfo = new GbServerInfo(higherServerInfoBo);
-//        gbServerInfoService.saveOrUpdate(gbServerInfo);
-//
+
+        // 保存数据到数据库
+        GbServerInfo gbServerInfo = new GbServerInfo(higherServerInfoBo);
+        gbServerInfoService.saveOrUpdate(gbServerInfo);
+
 //        // 把级联的服务器放入到redis中
         Device device = new Device();
         device.setDeviceId(serverId);
@@ -674,6 +675,9 @@ public class DeviceManagerController {
     @PostMapping("removeCascadeOutput")
     public GBResult removeCascadeOutput(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> pid = deviceBaseCondition.getPid();
+        if (CollectionUtils.isEmpty(pid)) {
+            return GBResult.build(500, "删除上级级联平台失败，信息：传入的删除id为空", null);
+        }
 
         gbServerInfoService.removeByIds(pid);
 

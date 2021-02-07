@@ -68,8 +68,11 @@
         return content.toString();
     }
 
-    public static String generateResponseCatalogContent(String deviceId, String sn, Set<String> subDeviceCatalogSet) {
-	    int deviceNum = subDeviceCatalogSet.size() + 1;
+    public static String generateResponseCatalogContent(String deviceId, String sn, boolean sendSelf, Set<String> subDeviceCatalogSet) {
+	    int deviceNum = subDeviceCatalogSet.size();
+	    if (sendSelf) {
+	        deviceNum++;
+        }
 	    StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"GB2312\"?>\r\n");
         content.append("<Response>\r\n");
@@ -78,21 +81,23 @@
         content.append("<DeviceID>" + deviceId + "</DeviceID>\r\n");
         content.append("<SumNum>" + deviceNum + "</SumNum>\r\n");
         content.append("<DeviceList Num=\"" + deviceNum + "\">\r\n");
-        content.append("<Item>\r\n");
-        content.append("<DeviceID>" + deviceId + "</DeviceID>\r\n");
-        content.append("<Name>Box 01</Name>\r\n");
-        content.append("<Manufacturer>SmartCity</Manufacturer>\r\n");
-        content.append("<Model>Edge Box</Model>\r\n");
-        content.append("<Owner>Owner</Owner>\r\n");
-        content.append("<CivilCode>CivilCode</CivilCode>\r\n");
-        content.append("<Address>Address</Address>\r\n");
-        content.append("<Parental>0</Parental>\r\n");
-        content.append("<ParentID>" + deviceId + "</ParentID>\r\n");
-        content.append("<SafetyWay>0</SafetyWay>\r\n");
-        content.append("<RegisterWay>1</RegisterWay>\r\n");
-        content.append("<Secrecy>0</Secrecy>\r\n");
-        content.append("<Status>ON</Status>\r\n");
-        content.append("</Item>\r\n");
+        if (sendSelf) {
+            content.append("<Item>\r\n");
+            content.append("<DeviceID>" + deviceId + "</DeviceID>\r\n");
+            content.append("<Name>Box 01</Name>\r\n");
+            content.append("<Manufacturer>SmartCity</Manufacturer>\r\n");
+            content.append("<Model>Edge Box</Model>\r\n");
+            content.append("<Owner>Owner</Owner>\r\n");
+            content.append("<CivilCode>CivilCode</CivilCode>\r\n");
+            content.append("<Address>Address</Address>\r\n");
+            content.append("<Parental>0</Parental>\r\n");
+            content.append("<ParentID>" + deviceId + "</ParentID>\r\n");
+            content.append("<SafetyWay>0</SafetyWay>\r\n");
+            content.append("<RegisterWay>1</RegisterWay>\r\n");
+            content.append("<Secrecy>0</Secrecy>\r\n");
+            content.append("<Status>ON</Status>\r\n");
+            content.append("</Item>\r\n");
+        }
         for (String catalogInfo : subDeviceCatalogSet) {
             content.append(catalogInfo).append("\r\n");
         }
