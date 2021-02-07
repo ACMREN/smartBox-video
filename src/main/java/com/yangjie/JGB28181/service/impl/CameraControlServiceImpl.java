@@ -105,6 +105,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
         if (initCode != 200) {
             return initResult;
         }
+        NativeLong lUserId = (NativeLong) initResult.getData();
 
         // 2.创建PTZPOS参数对象
         HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
@@ -113,7 +114,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
         // 如果是获取云台位置
         if (HCNetSDK.NET_DVR_GET_PTZPOS == command) {
             // 3.获取PTZPOS参数
-            hcNetSDK.NET_DVR_GetDVRConfig(lUserID, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
+            hcNetSDK.NET_DVR_GetDVRConfig(lUserId, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pos, net_dvr_ptzpos.size(), new IntByReference(0));
             net_dvr_ptzpos.read();
 
             JSONObject resultJson = new JSONObject();
@@ -144,7 +145,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
             System.out.println("=============转换位置参数：parseP:" + parseP + ",parseT:" + parseT + ", parseZ:" + parseZ + "=============");
 
 
-            hcNetSDK.NET_DVR_SetDVRConfig(lUserID, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
+            hcNetSDK.NET_DVR_SetDVRConfig(lUserId, command, new NativeLong(1), pos, net_dvr_ptzpos.size());
 
             return GBResult.ok();
         }
@@ -161,6 +162,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
         if (initCode != 200) {
             return initResult;
         }
+        NativeLong lUserId = (NativeLong) initResult.getData();
 
         HCNetSDK.NET_DVR_POINT_FRAME net_dvr_point_frame = new HCNetSDK.NET_DVR_POINT_FRAME();
         net_dvr_point_frame.xTop = framePos.getInteger("left");
@@ -169,7 +171,7 @@ public class CameraControlServiceImpl implements ICameraControlService {
         net_dvr_point_frame.yBottom = framePos.getInteger("bottom");
         net_dvr_point_frame.write();
 
-        hcNetSDK.NET_DVR_PTZSelZoomIn_EX(lUserID, new NativeLong(1), net_dvr_point_frame);
+        hcNetSDK.NET_DVR_PTZSelZoomIn_EX(lUserId, new NativeLong(1), net_dvr_point_frame);
 
         return GBResult.ok();
     }

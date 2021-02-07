@@ -75,6 +75,7 @@ public class WebSocketServer {
                     if (CollectionUtils.isEmpty(streamSet)) {
                         return;
                     }
+
                     for (Integer stream : streamSet) {
                         CameraPojo cameraPojo = deviceCameraPojoMap.get(stream);
                         int count = cameraPojo.getCount();
