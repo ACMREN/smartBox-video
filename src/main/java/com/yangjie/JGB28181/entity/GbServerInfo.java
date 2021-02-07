@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.yangjie.JGB28181.entity.bo.HigherServerInfoBo;
+import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.vo.GbClientInfoVo;
 import com.yangjie.JGB28181.web.controller.DeviceManagerController;
 import lombok.Data;
@@ -148,9 +149,15 @@ public class GbServerInfo implements Serializable {
      */
     private Integer cameraNum;
 
+    /**
+     * 注册类型：0-链接，1-国标，2-平台
+     */
+    private Integer linkType;
+
     public GbServerInfo(HigherServerInfoBo higherServerInfoBo) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.id = higherServerInfoBo.getPid();
+        this.linkType = LinkTypeEnum.getDataByName(higherServerInfoBo.getLinkType()).getCode();
         this.deviceSerialNum = higherServerInfoBo.getDstSIP();
         this.domain = higherServerInfoBo.getDomain();
         this.ip = higherServerInfoBo.getDstIp();

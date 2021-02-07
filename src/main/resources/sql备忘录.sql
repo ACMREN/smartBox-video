@@ -91,6 +91,7 @@ CREATE TABLE `gb_server_info` (
     create_time DATETIME DEFAULT NULL COMMENT '创建时间',
     last_update_time DATETIME DEFAULT NULL COMMENT '最后更新时间',
     camera_num TINYINT(10) DEFAULT NULL COMMENT '监控数量',
+    link_type TINYINT(2) DEFAULT 1 COMMENT '注册类型：0-链接，1-国标，2-平台',
     PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='父设备信息表';
 
