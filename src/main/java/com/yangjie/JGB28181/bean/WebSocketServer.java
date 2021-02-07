@@ -115,7 +115,7 @@ public class WebSocketServer {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, Session session) throws IOException {
         if (message.contains("command")) {
             JSONObject json = JSONObject.parseObject(message);
             String token = json.getString("token");
@@ -196,7 +196,7 @@ public class WebSocketServer {
         }
     }
 
-    public void sendMessage(String message, String token) {
+    public void sendMessage(String message, String token) throws IOException {
         if (null == token) {
             sendAll(message);
         } else {
@@ -204,7 +204,7 @@ public class WebSocketServer {
             if (null != session) {
                 synchronized (session) {
                     if (null != session && session.isOpen()) {
-                        session.getAsyncRemote().sendText(message);
+                        session.getBasicRemote().sendText(message);
                     }
                 }
             }
