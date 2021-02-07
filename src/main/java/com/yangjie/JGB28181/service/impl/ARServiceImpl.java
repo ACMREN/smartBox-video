@@ -459,7 +459,7 @@ public class ARServiceImpl implements IARService {
 
         isKeyFrame = false;
 
-        webSocketServer.sendMessage(resultJson.toJSONString(), token);
+        webSocketServer.sendMessage(resultJson.toJSONString(), deviceId);
 
         return isKeyFrame;
     }

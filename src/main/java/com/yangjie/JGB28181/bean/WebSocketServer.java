@@ -43,6 +43,8 @@ public class WebSocketServer {
 
     public static Map<String, Set<Integer>> tokenStreamSetMap = new HashMap<>(100);
 
+    public static Map<Integer, Set<Session>> deviceSessionMap = new HashMap<>(20);
+
     private static IARService arService;
 
     @Autowired
@@ -112,7 +114,7 @@ public class WebSocketServer {
     }
 
     @OnMessage
-    public void onMessage(String message) {
+    public void onMessage(String message, Session session) {
         if (message.contains("command")) {
             JSONObject json = JSONObject.parseObject(message);
             String token = json.getString("token");
@@ -134,7 +136,13 @@ public class WebSocketServer {
                         if (CollectionUtils.isEmpty(streamSet)) {
                             streamSet = new HashSet<>();
                         }
+                        Set<Session> sessions = WebSocketServer.deviceSessionMap.get(deviceBaseId);
+                        if (CollectionUtils.isEmpty(sessions)) {
+                            sessions = new HashSet<>();
+                        }
+                        sessions.add(session);
                         streamSet.add(deviceBaseId);
+                        WebSocketServer.deviceSessionMap.put(deviceBaseId, sessions);
                         WebSocketServer.tokenStreamSetMap.put(token, streamSet);
                         resultJson.add(arStream);
                     }
@@ -169,8 +177,25 @@ public class WebSocketServer {
         return null;
     }
 
+    public void sendMessage(String message, Integer deviceId) {
+        if (null == deviceId) {
+            sendAll(message);
+        } else {
+            Set<Session> sessions = deviceSessionMap.get(deviceId);
+            for (Session item : sessions) {
+                if (null != sessions) {
+                    synchronized (item) {
+                        if (null != item) {
+                            item.getAsyncRemote().sendText(message);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void sendMessage(String message, String token) {
-        if (StringUtils.isEmpty(token)) {
+        if (null == token) {
             sendAll(message);
         } else {
             Session session = clients.get(token);

@@ -325,9 +325,6 @@ public class RtspToRtmpPusher {
 
                 record.recordPacket(packet);
 
-                // 发送ptz云台的位置坐标
-                this.sendPTZPosition();
-
                 // 检测推流信条
                 String token = cameraPojo.getToken();
                 Long heartbeats = TimerUtil.heartbeatsMap.get(token);
@@ -357,11 +354,6 @@ public class RtspToRtmpPusher {
         record.close();
         logger.info(cameraPojo.getRtsp() + " 推流结束...");
         return this;
-    }
-
-    private void sendPTZPosition() {
-        // 只是发送最新的云台位置坐标
-        webSocketServer.onMessage(resultJson.toJSONString());
     }
 
     private void getPTZPosition() {
