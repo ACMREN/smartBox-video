@@ -643,12 +643,12 @@ public class DeviceManagerController {
         String callId = IDUtils.id();
         String fromTag = IDUtils.id();
         callId = "platform-" + callId;
-
-        // 保存数据到数据库
-        GbServerInfo gbServerInfo = new GbServerInfo(higherServerInfoBo);
-        gbServerInfoService.saveOrUpdate(gbServerInfo);
-
-        // 把级联的服务器放入到redis中
+//
+//        // 保存数据到数据库
+//        GbServerInfo gbServerInfo = new GbServerInfo(higherServerInfoBo);
+//        gbServerInfoService.saveOrUpdate(gbServerInfo);
+//
+//        // 把级联的服务器放入到redis中
         Device device = new Device();
         device.setDeviceId(serverId);
         Host host = new Host();
