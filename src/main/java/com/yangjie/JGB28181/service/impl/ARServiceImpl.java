@@ -398,7 +398,7 @@ public class ARServiceImpl implements IARService {
 
         String key = ip;
         NativeLong lUserId = deviceLoginStatusMap.get(key);
-        if (null != lUserId && lUserId.intValue() <= 0) {
+        if (null == lUserId || lUserId.intValue() <= 0) {
             lUserId = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
             if (lUserId.intValue() > 0) {
                 System.out.println("======================login success! ip : " + ip);
