@@ -309,7 +309,6 @@ public class ARServiceImpl implements IARService {
 
                 recorder.record(frame);
 
-                System.out.println("token:" + token + ", isGetKeyFrame:" + isGetKeyFrame);
                 if (null != isGetKeyFrame && isGetKeyFrame) {
                     useTime = recorder.getTimestamp();
 
