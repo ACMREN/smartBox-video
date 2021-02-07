@@ -168,7 +168,9 @@ public class GbServerInfo implements Serializable {
         for (Integer deviceBaseId : higherServerInfoBo.getCameraList()) {
             sb.append(deviceBaseId).append(",");
         }
-        sb.deleteCharAt(sb.length() - 1);
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
         this.cameraList = sb.toString();
     }
 
