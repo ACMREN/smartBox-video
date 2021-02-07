@@ -457,6 +457,9 @@ public class ARServiceImpl implements IARService {
      */
     private boolean sendPTZPos(boolean isKeyFrame, String token, Integer deviceId) throws IOException {
         JSONObject resultJson = ARServiceImpl.deviceResultJsonMap.get(deviceId);
+        if (null == resultJson) {
+            return false;
+        }
 
         resultJson.put("deviceId", deviceId);
         resultJson.put("keyFrame", isKeyFrame);
