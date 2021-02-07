@@ -403,6 +403,9 @@ public class ARServiceImpl implements IARService {
             if (lUserId.intValue() > 0) {
                 System.out.println("======================login success! ip : " + ip);
             }
+            if (lUserId.intValue() < 0) {
+                System.out.println("======================login fail! ip : " + ip);
+            }
             deviceLoginStatusMap.put(key, lUserId);
         }
 
@@ -411,7 +414,10 @@ public class ARServiceImpl implements IARService {
             HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
             Pointer pointer = net_dvr_ptzpos.getPointer();
 
-            hcNetSDK.NET_DVR_GetDVRConfig(lUserId, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
+            boolean result = hcNetSDK.NET_DVR_GetDVRConfig(lUserId, HCNetSDK.NET_DVR_GET_PTZPOS, new NativeLong(1), pointer, net_dvr_ptzpos.size(), new IntByReference(0));
+            if (!result) {
+                System.out.println("控制云台移动失败，错误码:" + hcNetSDK.NET_DVR_GetLastError());
+            }
             net_dvr_ptzpos.read();
 
             JSONObject resultJson = ARServiceImpl.deviceResultJsonMap.get(deviceId);
