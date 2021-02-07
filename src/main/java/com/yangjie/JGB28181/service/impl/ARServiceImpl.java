@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.bytedeco.opencv.global.opencv_imgproc.circle;
@@ -56,7 +57,7 @@ public class ARServiceImpl implements IARService {
 
     private static Map<String, NativeLong> deviceLoginStatusMap = new HashMap<>(20);
 
-    private static JSONObject resultJson = new JSONObject();
+    private static Map<Integer, JSONObject> deviceResultJsonMap = new HashMap<>(20);
 
     private Long startTime = 0L;
     private Long useTime = 0L;
@@ -281,7 +282,7 @@ public class ARServiceImpl implements IARService {
         boolean isKeyFrame = false;
         startTime = System.currentTimeMillis();
 
-        Thread sendDataThread = new Thread(() -> this.getPTZPos(ip, username, password));
+        Thread sendDataThread = new Thread(() -> this.getPTZPos(ip, username, password, Integer.valueOf(cameraPojo.getDeviceId())));
         sendDataThread.start();
         WebSocketServer.deviceDataThreadMap.put(Integer.valueOf(cameraPojo.getDeviceId()), sendDataThread);
 
@@ -387,7 +388,7 @@ public class ARServiceImpl implements IARService {
      * @param username
      * @param password
      */
-    private void getPTZPos(String ip, String username, String password) {
+    private void getPTZPos(String ip, String username, String password, Integer deviceId) {
         HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
         boolean initSuc = hcNetSDK.NET_DVR_Init();
@@ -405,6 +406,8 @@ public class ARServiceImpl implements IARService {
             deviceLoginStatusMap.put(key, lUserId);
         }
 
+        JSONObject resultJson = new JSONObject();
+
         while (true) {
             HCNetSDK.NET_DVR_PTZPOS net_dvr_ptzpos = new HCNetSDK.NET_DVR_PTZPOS();
             Pointer pointer = net_dvr_ptzpos.getPointer();
@@ -415,6 +418,8 @@ public class ARServiceImpl implements IARService {
             resultJson.put("p", HexToDecMa(net_dvr_ptzpos.wPanPos).toString());
             resultJson.put("t", HexToDecMa(net_dvr_ptzpos.wTiltPos).toString());
             resultJson.put("z", HexToDecMa(net_dvr_ptzpos.wZoomPos).toString());
+
+            ARServiceImpl.deviceResultJsonMap.put(deviceId, resultJson);
         }
     }
 
@@ -450,7 +455,8 @@ public class ARServiceImpl implements IARService {
      * @param isKeyFrame
      * @return
      */
-    private boolean sendPTZPos(boolean isKeyFrame, String token, Integer deviceId) {
+    private boolean sendPTZPos(boolean isKeyFrame, String token, Integer deviceId) throws IOException {
+        JSONObject resultJson = ARServiceImpl.deviceResultJsonMap.get(deviceId);
 
         resultJson.put("deviceId", deviceId);
         resultJson.put("keyFrame", isKeyFrame);

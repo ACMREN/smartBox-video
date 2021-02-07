@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -178,7 +179,7 @@ public class WebSocketServer {
         return null;
     }
 
-    public void sendMessage(String message, Integer deviceId) {
+    public void sendMessage(String message, Integer deviceId) throws IOException {
         if (null == deviceId) {
             sendAll(message);
         } else {
@@ -187,7 +188,7 @@ public class WebSocketServer {
                 if (null != sessions) {
                     synchronized (item) {
                         if (null != item && item.isOpen()) {
-                            item.getAsyncRemote().sendText(message);
+                            item.getBasicRemote().sendText(message);
                         }
                     }
                 }
