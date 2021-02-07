@@ -3,6 +3,8 @@ package com.yangjie.JGB28181.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.yangjie.JGB28181.entity.bo.HigherServerInfoBo;
@@ -147,6 +149,7 @@ public class GbServerInfo implements Serializable {
     private Integer cameraNum;
 
     public GbServerInfo(HigherServerInfoBo higherServerInfoBo) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.id = higherServerInfoBo.getPid();
         this.deviceSerialNum = higherServerInfoBo.getDstSIP();
         this.domain = higherServerInfoBo.getDomain();
@@ -163,6 +166,12 @@ public class GbServerInfo implements Serializable {
         this.charsetCode = higherServerInfoBo.getCharSet();
         this.transProtocol = higherServerInfoBo.getTransProtocol();
         this.streamProtocol = higherServerInfoBo.getStreamProtocol();
+        this.createTime = df.format(LocalDateTime.now());
+        this.lastUpdateTime = df.format(LocalDateTime.now());
+        this.project = higherServerInfoBo.getProject();
+        this.name = higherServerInfoBo.getName();
+        this.catalogSize = 1;
+        this.cameraNum = higherServerInfoBo.getCameraNum();
         this.status = 0;
         StringBuilder sb = new StringBuilder();
         for (Integer deviceBaseId : higherServerInfoBo.getCameraList()) {
