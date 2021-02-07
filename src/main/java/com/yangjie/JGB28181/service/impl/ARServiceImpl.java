@@ -392,13 +392,16 @@ public class ARServiceImpl implements IARService {
         HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
         boolean initSuc = hcNetSDK.NET_DVR_Init();
+        System.out.println(ip);
+        System.out.println(username);
+        System.out.println(password);
 
         String key = ip;
         NativeLong lUserId = deviceLoginStatusMap.get(key);
         if (null != lUserId && lUserId.intValue() <= 0) {
             lUserId = hcNetSDK.NET_DVR_Login_V30(ip, (short) 8000, username, password, null);
             if (lUserId.intValue() > 0) {
-                System.out.println("======================login success! " + lUserId);
+                System.out.println("======================login success! ip : " + ip);
             }
             deviceLoginStatusMap.put(key, lUserId);
         }
@@ -457,7 +460,7 @@ public class ARServiceImpl implements IARService {
 
         isKeyFrame = false;
 
-        webSocketServer.sendMessage(resultJson.toJSONString(), token);
+        webSocketServer.sendMessage(resultJson.toJSONString(), deviceId);
 
         return isKeyFrame;
     }
