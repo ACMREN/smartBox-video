@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class CameraConfigBo {
+    private String streamMediaIp;
     private String recordDir;
     private String recordStTime;
     private String recordStSize;

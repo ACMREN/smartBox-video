@@ -241,6 +241,7 @@ public class DeviceManagerController {
         this.cameraConfigBo.setSnapShootSize(cameraConfigBo.getSnapShootSize());
         this.cameraConfigBo.setSnapShootTumbSize(cameraConfigBo.getSnapShootTumbSize());
         this.cameraConfigBo.setSnapShootQual(cameraConfigBo.getSnapShootQual());
+        this.cameraConfigBo.setStreamMediaIp(cameraConfigBo.getStreamMediaIp());
 
         // 修改写入配置文件
         this.rewriteCameraConfigProperties(cameraConfigBo);
@@ -275,6 +276,7 @@ public class DeviceManagerController {
             properties.setProperty("config.snapShootSize", cameraConfigBo.getSnapShootSize());
             properties.setProperty("config.snapShootTumbSize", cameraConfigBo.getSnapShootTumbSize());
             properties.setProperty("config.snapShootQual", cameraConfigBo.getSnapShootQual());
+            properties.setProperty("config.streamMediaIp", cameraConfigBo.getStreamMediaIp());
 
             FileWriter fileWriter = new FileWriter(file);
             properties.store(fileWriter, null);
