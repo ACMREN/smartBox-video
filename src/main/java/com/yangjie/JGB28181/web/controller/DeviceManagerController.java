@@ -37,6 +37,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -449,6 +450,9 @@ public class DeviceManagerController {
     @PostMapping(value = "getDeviceDetail")
     public GBResult getDeviceDetail(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> deviceIds = deviceBaseCondition.getDeviceId();
+        if (CollectionUtils.isEmpty(deviceIds)) {
+            return GBResult.build(500, "获取摄像头设备的详细信息失败，信息：传入的参数为空", null);
+        }
         List<DeviceBaseInfo> deviceBaseInfos = deviceBaseInfoService.getBaseMapper().selectBatchIds(deviceIds);
         List<CameraInfo> cameraInfos = cameraInfoService.getBaseMapper().selectList(new QueryWrapper<CameraInfo>().in("device_base_id", deviceIds));
         Map<Integer, String> deviceRtspLinkMap = cameraInfos.stream().collect(Collectors.toMap(CameraInfo::getDeviceBaseId, CameraInfo::getRtspLink));
@@ -650,7 +654,7 @@ public class DeviceManagerController {
         GbServerInfo gbServerInfo = new GbServerInfo(higherServerInfoBo);
         gbServerInfoService.saveOrUpdate(gbServerInfo);
 
-        // 把级联的服务器放入到redis中
+//        // 把级联的服务器放入到redis中
         Device device = new Device();
         device.setDeviceId(serverId);
         Host host = new Host();
@@ -676,6 +680,9 @@ public class DeviceManagerController {
     @PostMapping("removeCascadeOutput")
     public GBResult removeCascadeOutput(@RequestBody DeviceBaseCondition deviceBaseCondition) {
         List<Integer> pid = deviceBaseCondition.getPid();
+        if (CollectionUtils.isEmpty(pid)) {
+            return GBResult.build(500, "删除上级级联平台失败，信息：传入的删除id为空", null);
+        }
 
         gbServerInfoService.removeByIds(pid);
 

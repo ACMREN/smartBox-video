@@ -55,6 +55,7 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
@@ -654,38 +655,33 @@ public class SipLayer implements SipListener{
 									String callId, String fromTag, String sn, long cseq) throws ParseException, InvalidArgumentException, SipException {
 		ServerInfoBo clientInfo = DeviceManagerController.serverInfoBo;
 		// 把该设备的下属设备catalog信息拿出来
-		String deviceStr = RedisUtil.get(CLIENT_DEVICE_PREFIX + clientInfo.getId());
 		Set<String> subDeviceCatalogSet = new HashSet<>();
-		Map<String, JSONObject> subDeviceMap = JSONObject.parseObject(deviceStr, HashMap.class);
-		for (Map.Entry<String, JSONObject> item : subDeviceMap.entrySet()) {
-			Device subDevice = item.getValue().toJavaObject(Device.class);
-			Map<String, String> channelCatalogMap = subDevice.getChannelCatalogMap();
-			for (String subDeviceCatalog : channelCatalogMap.values()) {
-				subDeviceCatalogSet.add(subDeviceCatalog);
-			}
-		}
 
 		GbServerInfo gbServerInfo = gbServerInfoService.getOne(new QueryWrapper<GbServerInfo>().eq("device_serial_num", serverId));
 		String subDevicesStr = RedisUtil.get(CLIENT_DEVICE_PREFIX + clientInfo.getId());
 		JSONObject subDevicesJson = JSONObject.parseObject(subDevicesStr);
-		String cameraList = gbServerInfo.getCameraList();
+		String cameraList = "85";
 		String[] cameraArr = cameraList.split(",");
-		for (String item : cameraArr) {
-			CameraInfo cameraInfo = cameraInfoService.getOne(new QueryWrapper<CameraInfo>().eq("device_base_id", Integer.valueOf(item)));
-			String parentSerialNum = cameraInfo.getParentSerialNum();
-			String deviceSerialNum = cameraInfo.getDeviceSerialNum();
-			String subDeviceStr = subDevicesJson.getString(parentSerialNum);
-			Device subDevice = JSONObject.parseObject(subDeviceStr, Device.class);
-			Map<String, String> channelCatalogMap = subDevice.getChannelCatalogMap();
-			if (channelCatalogMap.containsKey(deviceSerialNum)) {
-				subDeviceCatalogSet.add(channelCatalogMap.get(deviceSerialNum));
+		if (null != callId && cameraArr.length > 0) {
+			for (String item : cameraArr) {
+				if (!StringUtils.isEmpty(item)) {
+					CameraInfo cameraInfo = cameraInfoService.getOne(new QueryWrapper<CameraInfo>().eq("device_base_id", Integer.valueOf(item)));
+					String parentSerialNum = cameraInfo.getParentSerialNum();
+					String deviceSerialNum = cameraInfo.getDeviceSerialNum();
+					String subDeviceStr = subDevicesJson.getString(parentSerialNum);
+					Device subDevice = JSONObject.parseObject(subDeviceStr, Device.class);
+					Map<String, String> channelCatalogMap = subDevice.getChannelCatalogMap();
+					if (channelCatalogMap.containsKey(deviceSerialNum)) {
+						subDeviceCatalogSet.add(channelCatalogMap.get(deviceSerialNum));
+					}
+				}
 			}
 		}
 
 		String serverAddress = serverIp + ":" + serverPort;
 		Request request = createRequest(serverId, serverAddress, clientInfo.getHost(), Integer.valueOf(clientInfo.getPort()), "UDP",
 				clientInfo.getId(), clientInfo.getDomain(), fromTag, serverId, serverDomain, null, callId, cseq, Request.MESSAGE);
-		String responseCatalogContent = SipContentHelper.generateResponseCatalogContent(clientInfo.getId(), sn, subDeviceCatalogSet);
+		String responseCatalogContent = SipContentHelper.generateResponseCatalogContent(clientInfo.getId(), sn, false, subDeviceCatalogSet);
 		ContentTypeHeader contentTypeHeader = mHeaderFactory.createContentTypeHeader("Application", "MANSCDP+xml");
 		request.setContent(responseCatalogContent, contentTypeHeader);
 

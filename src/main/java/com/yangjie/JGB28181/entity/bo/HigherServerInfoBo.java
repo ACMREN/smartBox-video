@@ -1,9 +1,12 @@
 package com.yangjie.JGB28181.entity.bo;
 
 import com.yangjie.JGB28181.entity.GbServerInfo;
+import com.yangjie.JGB28181.entity.enumEntity.LinkTypeEnum;
 import com.yangjie.JGB28181.entity.enumEntity.NetStatusEnum;
 import lombok.Data;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -123,6 +126,11 @@ public class HigherServerInfoBo {
      */
     private List<Integer> cameraList;
 
+    /**
+     * 注册类型：0-链接，1-国标，2-平台
+     */
+    private String linkType;
+
     public HigherServerInfoBo (GbServerInfo gbServerInfo) {
         this.pid = gbServerInfo.getId();
         this.name = gbServerInfo.getName();
@@ -145,6 +153,15 @@ public class HigherServerInfoBo {
         this.netStatus = NetStatusEnum.getDataByCode(gbServerInfo.getStatus()).getName();
         this.createTime = gbServerInfo.getCreateTime();
         this.cameraNum = gbServerInfo.getCameraNum();
+        this.cameraList = new ArrayList<>();
+        String cameraStr = gbServerInfo.getCameraList();
+        String[] cameraArr = cameraStr.split(",");
+        for (String item : cameraArr) {
+            if (!StringUtils.isEmpty(item)) {
+                cameraList.add(Integer.valueOf(item));
+            }
+        }
+        this.linkType = LinkTypeEnum.getDataByCode(gbServerInfo.getLinkType()).getName();
     }
 
     public HigherServerInfoBo() {
