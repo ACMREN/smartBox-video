@@ -207,6 +207,7 @@ public class DeviceManagerController {
         this.rtspPort = serverInfoBo.getRtspPort();
         this.udpPort = serverInfoBo.getUdpPort();
         this.tcpPort = serverInfoBo.getTcpPort();
+        this.cameraConfigBo.setStreamMediaIp(cameraConfigBo.getStreamMediaIp());
 
         // 写入到配置文件
         this.rewriteServiceConfigProperties(serverInfoBo);
@@ -242,7 +243,6 @@ public class DeviceManagerController {
         this.cameraConfigBo.setSnapShootSize(cameraConfigBo.getSnapShootSize());
         this.cameraConfigBo.setSnapShootTumbSize(cameraConfigBo.getSnapShootTumbSize());
         this.cameraConfigBo.setSnapShootQual(cameraConfigBo.getSnapShootQual());
-        this.cameraConfigBo.setStreamMediaIp(cameraConfigBo.getStreamMediaIp());
 
         // 修改写入配置文件
         this.rewriteCameraConfigProperties(cameraConfigBo);
@@ -277,7 +277,6 @@ public class DeviceManagerController {
             properties.setProperty("config.snapShootSize", cameraConfigBo.getSnapShootSize());
             properties.setProperty("config.snapShootTumbSize", cameraConfigBo.getSnapShootTumbSize());
             properties.setProperty("config.snapShootQual", cameraConfigBo.getSnapShootQual());
-            properties.setProperty("config.streamMediaIp", cameraConfigBo.getStreamMediaIp());
 
             FileWriter fileWriter = new FileWriter(file);
             properties.store(fileWriter, null);
@@ -312,6 +311,7 @@ public class DeviceManagerController {
             properties.setProperty("config.udp.max", serverInfoBo.getUdpPort().getString("max"));
             properties.setProperty("config.tcp.min", serverInfoBo.getTcpPort().getString("min"));
             properties.setProperty("config.tcp.max", serverInfoBo.getTcpPort().getString("max"));
+            properties.setProperty("config.streamMediaIp", cameraConfigBo.getStreamMediaIp());
 
             FileWriter fileWriter = new FileWriter(file);
             properties.store(fileWriter, null);
