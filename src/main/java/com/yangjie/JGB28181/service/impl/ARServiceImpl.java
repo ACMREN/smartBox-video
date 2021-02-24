@@ -405,6 +405,7 @@ public class ARServiceImpl implements IARService {
             }
             if (lUserId.intValue() < 0) {
                 System.out.println("======================login fail! ip : " + ip);
+                return;
             }
             deviceLoginStatusMap.put(key, lUserId);
         }
