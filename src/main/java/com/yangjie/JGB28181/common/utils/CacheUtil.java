@@ -45,6 +45,8 @@ public final class CacheUtil {
 	// 定时器执行线程池
 	public static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
 
+	public static Map<Integer, ScheduledFuture> scheduledFutureMap = new HashMap<>();
+
 	public static ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 3000, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(10));
 
 	public static Map<String, Integer> callIdCountMap = new HashMap<>(20);

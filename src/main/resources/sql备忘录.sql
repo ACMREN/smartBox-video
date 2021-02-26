@@ -156,3 +156,23 @@ CREATE TABLE `gb_client_info` (
     last_update_time DATETIME DEFAULT NULL COMMENT '最后更新时间',
     PRIMARY KEY(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='子设备信息表';
+
+CREATE TABLE `schedule_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    schedule_name VARCHAR(20) NOT NULL COMMENT '定时任务名称',
+    schedule_desc VARCHAR(200) NOT NULL COMMENT '定时任务介绍',
+    schedule_content TEXT DEFAULT NULL COMMENT '定时任务内容',
+    schedule_cron VARCHAR(30) NOT NULL COMMENT '定时任务执行时间',
+    create_time DATETIME NOT NULL COMMENT '定时任务创建时间',
+    update_time DATETIME NOT NULL COMMENT '定时任务更新时间',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定时任务信息表';
+
+CREATE TABLE `schedule_flow_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    flow_name VARCHAR(20) NOT NULL COMMENT '定时任务流程名称',
+    flow_content TEXT DEFAULT NULL COMMENT '定时任务流程内容',
+    create_time DATETIME NOT NULL COMMENT '流程创建时间',
+    update_time DATETIME NOT NULL COMMENT '流程更新时间',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定时任务流程信息表';
