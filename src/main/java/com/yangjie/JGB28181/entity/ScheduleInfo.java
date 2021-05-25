@@ -61,6 +61,11 @@ public class ScheduleInfo implements Serializable {
      */
     private LocalDateTime updateTime;
 
+    /**
+     * 是否已经删除：0-否，1-是
+     */
+    private Integer isDelete;
+
 
     public ScheduleInfo() {
     }

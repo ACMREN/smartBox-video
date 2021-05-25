@@ -165,6 +165,7 @@ CREATE TABLE `schedule_info` (
     schedule_cron VARCHAR(30) NOT NULL COMMENT '定时任务执行时间',
     create_time DATETIME NOT NULL COMMENT '定时任务创建时间',
     update_time DATETIME NOT NULL COMMENT '定时任务更新时间',
+    is_delete TINYINT(2) DEFAULT '0' COMMENT '是否已经删除：0-否，1-是',
     PRIMARY KEY(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定时任务信息表';
 
@@ -176,3 +177,17 @@ CREATE TABLE `schedule_flow_info` (
     update_time DATETIME NOT NULL COMMENT '流程更新时间',
     PRIMARY KEY(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定时任务流程信息表';
+
+CREATE TABLE `schedule_data_info` (
+    id INT(10) AUTO_INCREMENT COMMENT '自增id',
+    data TEXT DEFAULT NULL COMMENT '保存的数据',
+    schedule_id INT(10) NOT NULL COMMENT '定时任务id',
+    category1 VARCHAR(100) DEFAULT NULL COMMENT '类别1',
+    category2 VARCHAR(100) DEFAULT NULL COMMENT '类别2',
+    category3 VARCHAR(100) DEFAULT NULL COMMENT '类别3',
+    category4 VARCHAR(100) DEFAULT NULL COMMENT '类别4',
+    category5 VARCHAR(100) DEFAULT NULL COMMENT '类别5',
+    create_time DATETIME NOT NULL COMMENT '创建时间',
+    update_time DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定时任务保存数据信息表';

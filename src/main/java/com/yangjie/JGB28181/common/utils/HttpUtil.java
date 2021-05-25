@@ -2,10 +2,15 @@ package com.yangjie.JGB28181.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HttpUtil {
@@ -106,10 +111,7 @@ public class HttpUtil {
         return result.toString();
     }
 
-    public static void main(String[] args) {
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("pageNo", "1");
-        paramMap.put("pageSize", "20");
-        String result = HttpUtil.doPost("http://172.0.0.185:1999/device/getLiveCamList", paramMap);
+    public static void main(String[] args) throws ScriptException {
+
     }
 }

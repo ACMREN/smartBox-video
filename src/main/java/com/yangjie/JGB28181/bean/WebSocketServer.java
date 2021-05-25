@@ -66,6 +66,7 @@ public class WebSocketServer {
 
     @OnClose
     public void onClose(Session session) {
+        logger.info("调用onclose方法成功");
         if (clients.containsValue(session)) {
             for (String item : clients.keySet()) {
                 Session session1 = clients.remove(item);
@@ -189,7 +190,7 @@ public class WebSocketServer {
         } else {
             Set<Session> sessions = deviceSessionMap.get(deviceId);
             for (Session item : sessions) {
-                if (null != sessions) {
+                if (null != item) {
                     synchronized (item) {
                         if (null != item && item.isOpen()) {
                             item.getBasicRemote().sendText(message);

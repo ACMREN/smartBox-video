@@ -10,7 +10,6 @@ import com.yangjie.JGB28181.service.ScheduleFlowInfoService;
 import com.yangjie.JGB28181.service.ScheduleInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,7 @@ public class ScheduleController {
     @PostMapping("/testFlow")
     public GBResult testFlow(@RequestBody ScheduleInfoVo scheduleInfoVo) {
         String scheduleContent = scheduleInfoVo.getScheduleContent();
-        scheduleInfoService.executeFlow(scheduleContent);
+        scheduleInfoService.executeFlow(null, scheduleContent);
 
         return GBResult.ok();
     }
@@ -78,7 +77,9 @@ public class ScheduleController {
         // 如果是更新的话，先暂停定时任务的执行
         if (null != scheduleInfoVo.getId()) {
             ScheduledFuture future = CacheUtil.scheduledFutureMap.get(scheduleInfoVo.getId());
-            future.cancel(true);
+            if (null != future) {
+                future.cancel(true);
+            }
         }
 
         ScheduleInfo scheduleInfo = new ScheduleInfo(scheduleInfoVo);
@@ -140,7 +141,9 @@ public class ScheduleController {
     @PostMapping("/deleteSchedule")
     public GBResult deleteSchedule(@RequestBody ScheduleInfoVo scheduleInfoVo) {
         Integer id = scheduleInfoVo.getId();
-        scheduleInfoService.removeById(id);
+        ScheduleInfo scheduleInfo = scheduleInfoService.getById(id);
+        scheduleInfo.setIsDelete(1);
+        scheduleInfoService.updateById(scheduleInfo);
 
         return GBResult.ok();
     }

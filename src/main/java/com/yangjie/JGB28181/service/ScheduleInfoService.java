@@ -43,10 +43,10 @@ public interface ScheduleInfoService extends IService<ScheduleInfo> {
 
     /**
      * 保存入库
-     * @param saveParamMap
+     * @param resultJson
      * @return
      */
-    Map<String, Object> saveResultParam(Map<String, Object> saveParamMap);
+    Map<String, Object> saveResultParam(Integer scheduleId, JSONObject resultJson, Map<String, Object> saveRuleMap);
 
-    void executeFlow(String scheduleContent);
+    void executeFlow(Integer scheduleId, String scheduleContent);
 }

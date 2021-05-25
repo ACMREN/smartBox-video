@@ -27,8 +27,6 @@ public class CameraThread {
         private String host_extra = "127.0.0.1";
         private String push_port = "1935";
 
-
-
         // 创建线程池
         public static ExecutorService es = Executors.newCachedThreadPool();
 
