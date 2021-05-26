@@ -89,7 +89,9 @@ public class WebSocketServer {
                             CacheUtil.callEndMap.put(cameraPojo.getToken(), true);
                             this.removeStreamDelay(cameraPojo, stream);
                         } else {
-                            cameraPojo.setCount(count - 1);
+                            synchronized (cameraPojo) {
+                                cameraPojo.setCount(count - 1);
+                            }
                         }
                     }
 
@@ -117,6 +119,10 @@ public class WebSocketServer {
                 sendDataThread.interrupt();
             }
             deviceCameraPojoMap.remove(stream);
+            int count = cameraPojo.getCount();
+            synchronized (cameraPojo) {
+                cameraPojo.setCount(count - 1);
+            }
             logger.info("=======================关闭推流，完成================");
         }, 2, TimeUnit.MINUTES);
     }

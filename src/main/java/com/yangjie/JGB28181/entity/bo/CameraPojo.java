@@ -20,7 +20,7 @@ public class CameraPojo implements Serializable {
 	private String hlsUrl;// hls播放地址
 	private String flv;	// flv播放地址
 	private String openTime;// 打开时间
-	private int count = 0;// 使用人数
+	private volatile int count = 0;// 使用人数
 	private int isTest;//是否测试
 	private Integer cid;
 	private String token;
