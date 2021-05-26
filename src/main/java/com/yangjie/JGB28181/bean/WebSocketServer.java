@@ -71,11 +71,13 @@ public class WebSocketServer {
             for (String item : clients.keySet()) {
                 Session session1 = clients.remove(item);
                 if (session.equals(session1)) {
+                    logger.info("session符合，判断是否需要关闭推流");
                     // 判断是否需要关闭推流
                     Set<Integer> streamSet = tokenStreamSetMap.get(item);
                     if (CollectionUtils.isEmpty(streamSet)) {
                         return;
                     }
+                    logger.info("开始关闭推流");
                     for (Integer stream : streamSet) {
                         // 去掉要关闭的session
                         Set<Session> sessions = deviceSessionMap.get(stream);
