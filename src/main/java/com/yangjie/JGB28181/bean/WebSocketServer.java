@@ -183,10 +183,11 @@ public class WebSocketServer {
         } else {
             // 如果已经存在推流，直接返回
             String flvAddress = cameraPojo.getFlv();
-            logger.info("=============设备id：" + deviceBaseId + ", 关闭推流过程，正在观看推流人数：" + cameraPojo.getCount() + ", 关闭标志：" + false);
+            logger.info("=============设备id：" + deviceBaseId + ", 获取推流过程，正在观看推流人数：" + cameraPojo.getCount() + ", 关闭标志：" + false);
             synchronized (cameraPojo) {
                 cameraPojo.setCount(cameraPojo.getCount() + 1);
             }
+            deviceCameraPojoMap.put(deviceBaseId, cameraPojo);
             CacheUtil.callEndMap.put(cameraPojo.getToken(), false);
             WebSocketServer.deviceKeyFrameMap.put(deviceBaseId, true);
             JSONObject result = new JSONObject();
