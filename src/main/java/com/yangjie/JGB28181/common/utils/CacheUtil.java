@@ -40,7 +40,7 @@ public final class CacheUtil {
 
 
 	// 关闭推流的标志位
-	public static volatile Map<String, Boolean> callEndMap = new HashMap<>(20);
+	public static volatile Map<String, Boolean> callEndMap = new ConcurrentHashMap<>(20);
 
 	// 定时器执行线程池
 	public static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);

@@ -119,10 +119,6 @@ public class WebSocketServer {
                 sendDataThread.interrupt();
             }
             deviceCameraPojoMap.remove(stream);
-            int count = cameraPojo.getCount();
-            synchronized (cameraPojo) {
-                cameraPojo.setCount(count - 1);
-            }
             logger.info("=======================关闭推流，完成================");
         }, 2, TimeUnit.MINUTES);
     }
@@ -181,7 +177,9 @@ public class WebSocketServer {
         } else {
             // 如果已经存在推流，直接返回
             String flvAddress = cameraPojo.getFlv();
-            cameraPojo.setCount(cameraPojo.getCount() + 1);
+            synchronized (cameraPojo) {
+                cameraPojo.setCount(cameraPojo.getCount() + 1);
+            }
             CacheUtil.callEndMap.put(cameraPojo.getToken(), false);
             WebSocketServer.deviceKeyFrameMap.put(deviceBaseId, true);
             JSONObject result = new JSONObject();
