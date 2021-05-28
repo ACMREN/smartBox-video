@@ -85,7 +85,7 @@ public class WebSocketServer {
                         // 延迟2分钟关闭推流
                         CameraPojo cameraPojo = deviceCameraPojoMap.get(stream);
                         int count = cameraPojo.getCount();
-                        if (count - 1 == 0) {
+                        if (count - 1 <= 0) {
                             CacheUtil.callEndMap.put(cameraPojo.getToken(), true);
                             this.removeStreamDelay(cameraPojo, stream);
                         } else {
@@ -104,7 +104,13 @@ public class WebSocketServer {
     private void removeStreamDelay(CameraPojo cameraPojo, Integer stream) {
         String callId = cameraPojo.getToken();
         CacheUtil.scheduledExecutorService.schedule(() -> {
+            CameraPojo realTimeCameraPojo = deviceCameraPojoMap.get(stream);
+            logger.info("=============关闭推流过程，正在观看推流人数：" + cameraPojo.getCount());
             Boolean endSymbol = CacheUtil.callEndMap.get(callId);
+            // 不管是否需要关闭推流，先把观看推流人数-1
+            synchronized (realTimeCameraPojo) {
+                realTimeCameraPojo.setCount(cameraPojo.getCount() - 1);
+            }
             if (!endSymbol) {
                 return;
             }
@@ -177,6 +183,7 @@ public class WebSocketServer {
         } else {
             // 如果已经存在推流，直接返回
             String flvAddress = cameraPojo.getFlv();
+            logger.info("=============获取推流过程，正在观看推流人数：" + cameraPojo.getCount());
             synchronized (cameraPojo) {
                 cameraPojo.setCount(cameraPojo.getCount() + 1);
             }
