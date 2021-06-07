@@ -294,6 +294,7 @@ public class ARServiceImpl implements IARService {
         try {
             while (isRunning) {
                 isRunning = WebSocketServer.arStreamMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
+
                 Boolean isGetKeyFrame = WebSocketServer.deviceKeyFrameMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
 
                 frame = grabber.grab();

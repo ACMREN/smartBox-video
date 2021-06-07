@@ -118,6 +118,7 @@ public class WebSocketServer {
             Boolean isRunning = WebSocketServer.arStreamMap.get(stream);
             if (null != isRunning) {
                 isRunning = false;
+                WebSocketServer.arStreamMap.put(stream, isRunning);
                 logger.info("设备关闭推流，设备id" + stream);
             }
             Thread sendDataThread = WebSocketServer.deviceDataThreadMap.remove(stream);
