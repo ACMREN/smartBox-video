@@ -259,7 +259,6 @@ public class ARServiceImpl implements IARService {
                 e.printStackTrace();
             }
         });
-        WebSocketServer.deviceThreadMap.put(Integer.valueOf(cameraPojo.getDeviceId()), streamThread);
         streamThread.start();
 
 
@@ -289,8 +288,10 @@ public class ARServiceImpl implements IARService {
         Frame frame = null;
         OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
         List<Point> pointList = this.setUpPointList(grabber);
+
+        Boolean isRunning = true;
         try {
-            while (true) {
+            while (isRunning) {
                 Boolean isGetKeyFrame = WebSocketServer.deviceKeyFrameMap.get(Integer.valueOf(cameraPojo.getDeviceId()));
 
                 frame = grabber.grab();
@@ -319,6 +320,7 @@ public class ARServiceImpl implements IARService {
                 }
             }
         } catch (Exception e) {
+            logger.info("报错提示：ar推流线程关闭");
             e.printStackTrace();
             recorder.stop();
             recorder.close();
@@ -326,6 +328,7 @@ public class ARServiceImpl implements IARService {
             grabber.close();
         }
 
+        logger.info("正常提示：ar推流线程关闭");
         recorder.stop();
         recorder.close();
         grabber.stop();

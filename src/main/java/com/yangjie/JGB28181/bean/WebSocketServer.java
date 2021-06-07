@@ -38,7 +38,7 @@ public class WebSocketServer {
 
     public static Map<Integer, Boolean> deviceKeyFrameMap = new HashMap<>(20);
 
-    public static Map<Integer, Thread> deviceThreadMap = new HashMap<>(20);
+    public static Map<Integer, Boolean> arStreamMap = new HashMap<>(20);
 
     public static Map<Integer, Thread> deviceDataThreadMap = new HashMap<>(20);
 
@@ -115,9 +115,9 @@ public class WebSocketServer {
                 return;
             }
             logger.info("=======================关闭推流，开始================");
-            Thread streamThread = WebSocketServer.deviceThreadMap.remove(stream);
-            if (null != streamThread) {
-                streamThread.interrupt();
+            Boolean isRunning = WebSocketServer.arStreamMap.get(stream);
+            if (null != isRunning) {
+                isRunning = false;
                 logger.info("设备关闭推流，设备id" + stream);
             }
             Thread sendDataThread = WebSocketServer.deviceDataThreadMap.remove(stream);
