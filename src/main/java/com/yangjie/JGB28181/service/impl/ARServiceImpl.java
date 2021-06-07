@@ -325,6 +325,11 @@ public class ARServiceImpl implements IARService {
             grabber.stop();
             grabber.close();
         }
+
+        recorder.stop();
+        recorder.close();
+        grabber.stop();
+        grabber.close();
     }
 
     /**
