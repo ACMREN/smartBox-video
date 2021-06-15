@@ -160,7 +160,9 @@ public class WebSocketServer {
                         // 如果已经存在有session在推流，则将其踢出关闭
                         if (sessions.size() >= 1) {
                             for (Session item : sessions) {
-                                item.getBasicRemote().sendText("此ws已经关闭");
+                                JSONObject closeJson = new JSONObject();
+                                closeJson.put("close", true);
+                                item.getBasicRemote().sendText(closeJson.toJSONString());
                                 item.close();
                             }
                             sessions = new HashSet<>();
