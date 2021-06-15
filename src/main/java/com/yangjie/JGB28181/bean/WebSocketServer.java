@@ -154,7 +154,11 @@ public class WebSocketServer {
                             streamSet = new HashSet<>();
                         }
                         Set<Session> sessions = WebSocketServer.deviceSessionMap.get(deviceBaseId);
-                        if (CollectionUtils.isEmpty(sessions)) {
+                        // 如果已经存在有session在推流，则将其踢出关闭
+                        if (!CollectionUtils.isEmpty(sessions)) {
+                            for (Session item : sessions) {
+                                item.close();
+                            }
                             sessions = new HashSet<>();
                         }
                         sessions.add(session);
