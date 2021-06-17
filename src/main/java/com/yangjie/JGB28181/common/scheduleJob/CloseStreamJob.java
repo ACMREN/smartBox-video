@@ -114,6 +114,8 @@ public class CloseStreamJob {
                             }
                         }
                     }
+                    // 删除缓存中的数据
+                    CacheUtil.baseDeviceIdCallIdMap.remove(deviceBaseId);
                 }
             }
         }
