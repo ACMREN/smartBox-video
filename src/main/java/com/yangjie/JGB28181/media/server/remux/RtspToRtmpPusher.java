@@ -327,13 +327,13 @@ public class RtspToRtmpPusher {
 
                 // 检测推流信条
                 String token = cameraPojo.getToken();
-                Long heartbeats = TimerUtil.heartbeatsMap.get(token);
+                Long heartbeats = CacheUtil.heartbeatsMap.get(token);
                 if (null != heartbeats) {
                     heartbeats++;
                 } else {
                     heartbeats = 1L;
                 }
-                TimerUtil.heartbeatsMap.put(token, heartbeats);
+                CacheUtil.heartbeatsMap.put(token, heartbeats);
             } catch (InterruptedException e) {
                 CacheUtil.deviceStreamingMap.put(Integer.valueOf(cameraPojo.getDeviceId()), false);
                 e.printStackTrace();

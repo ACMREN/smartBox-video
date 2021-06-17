@@ -89,4 +89,8 @@ public final class CacheUtil {
 
 	public static Map<String, GBStreamHandler> deviceHandlerMap = new HashMap<>(20);
 
+	public static Map<String, Long> heartbeatsMap = new HashMap<>();
+
+	public static Map<String, Long> lastHeartbeatsMap = new HashMap<>();
+
 }
