@@ -68,6 +68,8 @@ public class StreamUtils {
             }
             System.out.println("====================finish file clean up==================");
         }, 1, 120, TimeUnit.SECONDS);
+
+        CacheUtil.deviceHlsCleanTaskMap.put(Integer.valueOf(deviceId), scheduledFuture);
     }
 
     public static void handleStreamInfoMap(String callId, Integer deviceId, String type) {

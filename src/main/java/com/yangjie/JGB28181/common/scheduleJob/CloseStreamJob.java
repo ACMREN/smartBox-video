@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import javax.sip.SipException;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 
 @Component
 public class CloseStreamJob {
@@ -116,6 +117,10 @@ public class CloseStreamJob {
                     }
                     // 删除缓存中的数据
                     CacheUtil.baseDeviceIdCallIdMap.remove(deviceBaseId);
+
+                    // 关闭定时删除ts文件的任务
+                    ScheduledFuture scheduledFuture = CacheUtil.deviceHlsCleanTaskMap.remove(deviceBaseId);
+                    scheduledFuture.cancel(true);
                 }
             }
         }

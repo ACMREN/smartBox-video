@@ -89,8 +89,13 @@ public final class CacheUtil {
 
 	public static Map<String, GBStreamHandler> deviceHandlerMap = new HashMap<>(20);
 
+	// 保持推流的心跳
 	public static Map<String, Long> heartbeatsMap = new HashMap<>();
 
+	// 用于比较推流的心跳是否正常
 	public static Map<String, Long> lastHeartbeatsMap = new HashMap<>();
+
+	// 设备hls推流任务map
+	public static Map<Integer, ScheduledFuture> deviceHlsCleanTaskMap = new HashMap<>(20);
 
 }
