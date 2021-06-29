@@ -164,6 +164,7 @@ public class WebSocketServer {
                                 closeJson.put("close", true);
                                 item.getBasicRemote().sendText(closeJson.toJSONString());
                                 item.close();
+                                sessions.remove(deviceBaseId);
                             }
                             sessions = new HashSet<>();
                         }
