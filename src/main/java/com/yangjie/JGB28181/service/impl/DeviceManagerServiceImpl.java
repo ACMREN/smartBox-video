@@ -425,18 +425,16 @@ public class DeviceManagerServiceImpl implements IDeviceManagerService {
 
         // 将已注册的设备放入到结果数据结构中
         for (LiveCamInfoVo item : registeredDataList) {
-            if (!NetStatusEnum.ONLINE.getName().equals(item.getNetStatus())) {
-                if (LinkTypeEnum.RTSP.getName().equals(item.getLinkType())) {
-                    String ip = item.getIp();
-                    boolean isReachable = Inet4Address.getByName(ip).isReachable(1000);
-                    if (isReachable) {
-                        item.setNetStatus(NetStatusEnum.ONLINE.getName());
-                    } else {
-                        item.setNetStatus(NetStatusEnum.OFFLINE.getName());
-                    }
+            if (LinkTypeEnum.RTSP.getName().equals(item.getLinkType())) {
+                String ip = item.getIp();
+                boolean isReachable = Inet4Address.getByName(ip).isReachable(1000);
+                if (isReachable) {
+                    item.setNetStatus(NetStatusEnum.ONLINE.getName());
                 } else {
                     item.setNetStatus(NetStatusEnum.OFFLINE.getName());
                 }
+            } else {
+                item.setNetStatus(NetStatusEnum.OFFLINE.getName());
             }
             item.setLastUpdateTime(DateUtils.getFormatDateTime(new Date()));
             resultList.add(item);
