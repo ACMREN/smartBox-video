@@ -204,7 +204,7 @@ public class RtspToRtmpPusher {
             } else if ("main".equals(cameraPojo.getStream())) {
                 grabber.start(config.getMain_code());
             } else {
-                grabber.start(config.getSub_code());
+                grabber.start(config.getMain_code());
             }
 
 
