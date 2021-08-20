@@ -31,6 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.*;
 
 import static org.bytedeco.opencv.global.opencv_imgproc.circle;
@@ -469,6 +472,12 @@ public class ARServiceImpl implements IARService {
             Scalar scalar = scalarList.get(colorList.get(i));
             circle(mat, point, 1, scalar, 5, 0, 0);
         }
+
+        int[] keyFrame = new int[]{colorList.get(0), colorList.get(1), colorList.get(2), colorList.get(3)};
+        IntBuffer newBuffer = IntBuffer.allocate(10);
+        newBuffer.put(keyFrame);
+        frame.samples[0] = newBuffer;
+
         return true;
     }
 
