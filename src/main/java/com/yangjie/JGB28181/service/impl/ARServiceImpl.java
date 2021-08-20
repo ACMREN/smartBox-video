@@ -476,6 +476,7 @@ public class ARServiceImpl implements IARService {
         int[] keyFrame = new int[]{colorList.get(0), colorList.get(1), colorList.get(2), colorList.get(3)};
         IntBuffer newBuffer = IntBuffer.allocate(10);
         newBuffer.put(keyFrame);
+        frame.samples = new Buffer[4];
         frame.samples[0] = newBuffer;
 
         return true;
