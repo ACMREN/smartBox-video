@@ -373,6 +373,11 @@ public class ARServiceImpl implements IARService {
         recorder.setVideoBitrate(grabber.getVideoBitrate());
         recorder.setVideoCodecName("h264_nvenc");
         recorder.setAudioChannels(1);
+        recorder.setAudioOption("crf", "0");
+        recorder.setAudioQuality(0);
+        recorder.setAudioBitrate(192000);
+        recorder.setSampleRate(44100);
+        recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
 //        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
         recorder.start();
 

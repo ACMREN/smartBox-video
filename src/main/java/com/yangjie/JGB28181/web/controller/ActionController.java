@@ -2,6 +2,8 @@ package com.yangjie.JGB28181.web.controller;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.nio.Buffer;
+import java.nio.IntBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -40,6 +42,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.CharsetUtil;
+import org.bytedeco.ffmpeg.global.avcodec;
+import org.bytedeco.ffmpeg.global.avutil;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -334,7 +341,47 @@ public class ActionController implements OnProcessListener {
 			cameraPojo.setIsRecord(0);
 			cameraPojo.setIsSwitch(0);
 			cameraPojo.setToFlv(0);
-			this.rtspDevicePlay(cameraPojo);
+
+			FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(rtspLink);
+//			grabber.setOption("hwaccel", "cuda");
+//			grabber.setVideoCodecName("h264_cuvid");
+       		grabber.setVideoCodecName("h264");
+			grabber.setVideoOption("rtsp_transport", "tcp");
+			avutil.av_log_set_level(avutil.AV_LOG_ERROR);
+			grabber.start();
+
+			int imageWidth = grabber.getImageWidth() > 1920? 1920 : grabber.getImageWidth();
+			int imageHeight = grabber.getImageHeight() > 1440? 1440 : grabber.getImageHeight();
+			FFmpegFrameRecorder recorder = new FFmpegFrameRecorder("rtmp://127.0.0.1:1935/live/rtsp_7_1", imageWidth, imageHeight, grabber.getAudioChannels());
+			recorder.setFormat("flv");
+			recorder.setFrameRate(grabber.getFrameRate());
+			recorder.setVideoBitrate(grabber.getVideoBitrate());
+			recorder.setVideoCodecName("h264_nvenc");
+			recorder.setAudioChannels(1);
+			recorder.setAudioOption("crf", "0");
+			recorder.setAudioQuality(0);
+			recorder.setAudioBitrate(192000);
+			recorder.setSampleRate(44100);
+			recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+//        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+			recorder.start();
+
+			while (true) {
+				Frame frame = grabber.grab();
+
+				int[] keyFrame = new int[]{1,2,3,4};
+				IntBuffer newBuffer = IntBuffer.allocate(10);
+				newBuffer.put(keyFrame);
+				frame.samples = new Buffer[4];
+				frame.samples[0] = newBuffer;
+
+				System.out.println(frame.samples[0]);
+				System.out.println(frame.samples[1]);
+
+				recorder.record(frame);
+			}
+
+//			this.rtspDevicePlay(cameraPojo);
 		}
 
 		return GBResult.ok(CacheUtil.failCidList);
