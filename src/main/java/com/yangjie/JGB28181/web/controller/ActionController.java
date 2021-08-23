@@ -3,6 +3,7 @@ package com.yangjie.JGB28181.web.controller;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 import java.util.concurrent.*;
@@ -42,6 +43,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.CharsetUtil;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -376,13 +378,16 @@ public class ActionController implements OnProcessListener {
 				colorList.add(random.nextInt(6));
 				colorList.add(random.nextInt(6));
 
-				int[] keyFrame = new int[]{colorList.get(0), colorList.get(1), colorList.get(2), colorList.get(3)};
-				IntBuffer newBuffer = IntBuffer.allocate(10);
+				byte[] keyFrame = new byte[]{1,1,1,1};
+				ByteBuffer newBuffer = ByteBuffer.allocate(6);
 				newBuffer.put(keyFrame);
 				frame.samples = new Buffer[4];
 				frame.samples[0] = newBuffer;
 
+				System.out.println(HexUtils.toHexString(newBuffer.array()));
+
 				recorder.record(frame);
+				colorList = new ArrayList<>();
 			}
 
 //			this.rtspDevicePlay(cameraPojo);
