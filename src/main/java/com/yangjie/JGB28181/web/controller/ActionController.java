@@ -384,8 +384,8 @@ public class ActionController implements OnProcessListener {
 
 				System.out.println(HexUtils.toHexString(newBuffer.array()));
 
+				recorder.recordSamples(8000, 1, newBuffer);
 				recorder.record(frame);
-				recorder.recordSamples(8750, 1, newBuffer);
 				colorList = new ArrayList<>();
 			}
 
