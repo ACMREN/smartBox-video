@@ -378,7 +378,7 @@ public class ActionController implements OnProcessListener {
 				colorList.add(random.nextInt(6));
 				colorList.add(random.nextInt(6));
 
-				byte[] keyFrame = new byte[]{1,1,1,1};
+				byte[] keyFrame = new byte[]{0x01,0x01,0x01,0x01};
 				ByteBuffer newBuffer = ByteBuffer.allocate(6);
 				newBuffer.put(keyFrame);
 				frame.samples = new Buffer[4];
@@ -387,6 +387,7 @@ public class ActionController implements OnProcessListener {
 				System.out.println(HexUtils.toHexString(newBuffer.array()));
 
 				recorder.record(frame);
+				recorder.recordSamples(frame.samples[0]);
 				colorList = new ArrayList<>();
 			}
 
