@@ -359,7 +359,7 @@ public class ActionController implements OnProcessListener {
 			recorder.setFrameRate(grabber.getFrameRate());
 			recorder.setVideoBitrate(grabber.getVideoBitrate());
 			recorder.setVideoCodecName("h264_nvenc");
-			recorder.setAudioChannels(1);
+			recorder.setAudioChannels(2);
 			recorder.setAudioOption("crf", "0");
 			recorder.setAudioQuality(0);
 			recorder.setAudioBitrate(192000);
@@ -384,7 +384,7 @@ public class ActionController implements OnProcessListener {
 
 				System.out.println(HexUtils.toHexString(newBuffer.array()));
 
-				recorder.recordSamples(8000, 1, newBuffer);
+				recorder.recordSamples(8000, 2, newBuffer);
 				recorder.record(frame);
 				colorList = new ArrayList<>();
 			}
