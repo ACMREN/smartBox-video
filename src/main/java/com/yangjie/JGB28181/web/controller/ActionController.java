@@ -366,17 +366,21 @@ public class ActionController implements OnProcessListener {
 //        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 			recorder.start();
 
+			List<Integer> colorList = new ArrayList<>();
 			while (true) {
 				Frame frame = grabber.grab();
 
-				int[] keyFrame = new int[]{1,2,3,4};
+				Random random = new Random();
+				colorList.add(random.nextInt(6));
+				colorList.add(random.nextInt(6));
+				colorList.add(random.nextInt(6));
+				colorList.add(random.nextInt(6));
+
+				int[] keyFrame = new int[]{colorList.get(0), colorList.get(1), colorList.get(2), colorList.get(3)};
 				IntBuffer newBuffer = IntBuffer.allocate(10);
 				newBuffer.put(keyFrame);
 				frame.samples = new Buffer[4];
 				frame.samples[0] = newBuffer;
-
-				System.out.println(frame.samples[0]);
-				System.out.println(frame.samples[1]);
 
 				recorder.record(frame);
 			}
