@@ -386,7 +386,7 @@ public class ActionController implements OnProcessListener {
 				ShortBuffer shortBuffer = ShortBuffer.allocate(6);
 				shortBuffer.put(shorts);
 
-				recorder.recordSamples(1000, 1, shortBuffer);
+				recorder.recordSamples(10000, 1, shortBuffer);
 				recorder.record(frame);
 				colorList = new ArrayList<>();
 			}
