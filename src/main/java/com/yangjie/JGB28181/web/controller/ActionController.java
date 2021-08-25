@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -359,7 +360,7 @@ public class ActionController implements OnProcessListener {
 			recorder.setFrameRate(grabber.getFrameRate());
 			recorder.setVideoBitrate(grabber.getVideoBitrate());
 			recorder.setVideoCodecName("h264_nvenc");
-			recorder.setAudioChannels(2);
+			recorder.setAudioChannels(1);
 			recorder.setAudioOption("crf", "0");
 			recorder.setAudioQuality(0);
 			recorder.setAudioBitrate(192000);
@@ -378,13 +379,14 @@ public class ActionController implements OnProcessListener {
 				colorList.add(random.nextInt(6));
 				colorList.add(random.nextInt(6));
 
-				byte[] keyFrame = new byte[]{0x01,0x01,0x01,0x01};
-				ByteBuffer newBuffer = ByteBuffer.allocate(6);
-				newBuffer.put(keyFrame);
+//				byte[] keyFrame = new byte[]{0x01,0x01,0x01,0x01};
+//				ByteBuffer newBuffer = ByteBuffer.allocate(6);
 
-				System.out.println(HexUtils.toHexString(newBuffer.array()));
+				short[] shorts = new short[]{1,1,1,1};
+				ShortBuffer shortBuffer = ShortBuffer.allocate(6);
+				shortBuffer.put(shorts);
 
-				recorder.recordSamples(10000, 2, newBuffer);
+				recorder.recordSamples(1000, 1, shortBuffer);
 				recorder.record(frame);
 				colorList = new ArrayList<>();
 			}
