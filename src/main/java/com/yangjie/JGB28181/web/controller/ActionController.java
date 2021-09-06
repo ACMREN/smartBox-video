@@ -359,7 +359,7 @@ public class ActionController implements OnProcessListener {
 			recorder.setFormat("flv");
 			recorder.setFrameRate(grabber.getFrameRate());
 			recorder.setVideoBitrate(grabber.getVideoBitrate());
-			recorder.setVideoCodecName("h264_nvenc");
+			recorder.setVideoCodecName("h264");
 			recorder.setAudioChannels(1);
 			recorder.setAudioOption("crf", "0");
 			recorder.setAudioQuality(0);
