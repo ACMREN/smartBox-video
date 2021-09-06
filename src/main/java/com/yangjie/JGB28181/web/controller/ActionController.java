@@ -382,7 +382,7 @@ public class ActionController implements OnProcessListener {
 //				byte[] keyFrame = new byte[]{0x01,0x01,0x01,0x01};
 //				ByteBuffer newBuffer = ByteBuffer.allocate(6);
 
-				short[] shorts = new short[]{1,1,1,1};
+				short[] shorts = new short[]{2,2,2,2};
 				ShortBuffer shortBuffer = ShortBuffer.allocate(6);
 				shortBuffer.put(shorts);
 
