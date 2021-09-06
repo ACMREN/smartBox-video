@@ -370,6 +370,7 @@ public class ActionController implements OnProcessListener {
 			recorder.start();
 
 			List<Integer> colorList = new ArrayList<>();
+			int interval = 0;
 			while (true) {
 				Frame frame = grabber.grab();
 
@@ -382,13 +383,20 @@ public class ActionController implements OnProcessListener {
 //				byte[] keyFrame = new byte[]{0x01,0x01,0x01,0x01};
 //				ByteBuffer newBuffer = ByteBuffer.allocate(6);
 
-				short[] shorts = new short[]{2,2,2,2};
-				ShortBuffer shortBuffer = ShortBuffer.allocate(6);
-				shortBuffer.put(shorts);
+				if (interval == 10) {
+					short[] shorts = new short[]{2,2,2,2};
+					ShortBuffer shortBuffer = ShortBuffer.allocate(6);
+					shortBuffer.put(shorts);
 
-				recorder.recordSamples(10000, 1, shortBuffer);
+					recorder.recordSamples(10000, 1, shortBuffer);
+				}
+				if (interval > 10) {
+					interval = 0;
+				}
+
 				recorder.record(frame);
 				colorList = new ArrayList<>();
+				interval++;
 			}
 
 //			this.rtspDevicePlay(cameraPojo);
