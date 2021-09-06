@@ -389,6 +389,7 @@ public class ActionController implements OnProcessListener {
 					shortBuffer.put(shorts);
 
 					recorder.recordSamples(10000, 1, shortBuffer);
+					System.out.println("record sample done");
 				}
 				if (interval > 10) {
 					interval = 0;
