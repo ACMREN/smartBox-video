@@ -383,13 +383,12 @@ public class ActionController implements OnProcessListener {
 //				byte[] keyFrame = new byte[]{0x01,0x01,0x01,0x01};
 //				ByteBuffer newBuffer = ByteBuffer.allocate(6);
 
-				if (interval == 10) {
+				if (interval > 10) {
 					short[] shorts = new short[]{2,2,2,2};
 					ShortBuffer shortBuffer = ShortBuffer.allocate(6);
 					shortBuffer.put(shorts);
 
-					recorder.recordSamples(10000, 1, shortBuffer);
-					System.out.println("record sample done");
+					recorder.recordSamples(1000, 1, shortBuffer);
 				}
 				if (interval > 10) {
 					interval = 0;
