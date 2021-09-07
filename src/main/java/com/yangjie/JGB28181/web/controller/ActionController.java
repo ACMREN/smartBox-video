@@ -365,7 +365,7 @@ public class ActionController implements OnProcessListener {
 			recorder.setAudioQuality(0);
 			recorder.setAudioBitrate(192000);
 			recorder.setSampleRate(48000);
-			recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
+			recorder.setAudioCodec(avcodec.AV_CODEC_ID_MP3);
 //        recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
 			recorder.start();
 
