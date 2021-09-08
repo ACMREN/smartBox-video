@@ -304,6 +304,7 @@ public class ARServiceImpl implements IARService {
                 if (null == frame) {
                     continue;
                 }
+                System.out.println(isGetKeyFrame);
                 if (null != isGetKeyFrame && isGetKeyFrame) {
                     if(interval == 10){
                         isKeyFrame = this.packageKeyFrameInfo(converter, frame, pointList);
